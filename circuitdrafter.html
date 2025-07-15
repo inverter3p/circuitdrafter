@@ -183,27 +183,52 @@
         transform: translateX(-50%) translateY(0);
       }
 
-      /* Add this to the end of your CSS <style> block */
+     /* Add this to your CSS <style> block */
 
-/* Style the new help button to look like other action buttons but with a distinct color */
 #helpBtn {
-  color: #007bff; /* Use the primary theme color for an 'info' look */
-  text-decoration: none; /* Important: remove the default link underline */
+  /* Positioning */
+  position: fixed; /* Fixes it relative to the viewport */
+  top: 20px;
+  right: 20px;
+  z-index: 1000; /* Ensures it's on top of all other content */
+
+  /* Appearance */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background-color: #ffffff;
+  border-radius: 50%; /* Makes it a circle */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-decoration: none; /* Remove link underline */
+  transition: all 0.2s ease-out;
 }
 
 #helpBtn:hover {
-  background-color: rgba(0, 123, 255, 0.1); /* Light blue hover background */
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  background-color: #f8f9fa;
 }
 
-/* Ensure the icon inside also gets the right color */
 #helpBtn .material-icons {
-  color: #007bff;
+  font-size: 28px;
+  color: #007bff; /* Primary theme color for the icon */
 }
     </style>
   </head>
   <body>
     <h1>Circuit Drafter V0.1a</h1>
-
+ <!-- New Floating Help Button -->
+    <a href="https://github.com/<your-username>/<your-repo-name>/blob/main/README.md"
+       target="_blank"
+       rel="noopener noreferrer"
+       id="helpBtn"
+       title="Help / View Documentation">
+      <i class="material-icons">help_outline</i>
+    </a>
+    <!-- End of New Button -->
+    
     <div id="toolbar">
       <div class="tool-group">
         <button class="tool-btn" id="tool-select" title="Select/Move (S)">
@@ -368,16 +393,6 @@
         </button>
       </div>
             ...
-      <div class="divider"></div>
-      <!-- New Help Button -->
-      <a href="https://github.com/inverter3p/circuitdrafter/blob/main/README.md"
-         target="_blank"
-         rel="noopener noreferrer"
-         class="action-btn"
-         id="helpBtn"
-         title="Help / View Documentation">
-        <i class="material-icons">help_outline</i>
-      </a>
       <div class="divider"></div>
       <button class="action-btn" id="exportBtn">Export</button>
     </div>
