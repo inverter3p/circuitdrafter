@@ -182,10 +182,27 @@
         pointer-events: auto; /* Allow interaction when visible */
         transform: translateX(-50%) translateY(0);
       }
+
+      /* Add this to the end of your CSS <style> block */
+
+/* Style the new help button to look like other action buttons but with a distinct color */
+#helpBtn {
+  color: #007bff; /* Use the primary theme color for an 'info' look */
+  text-decoration: none; /* Important: remove the default link underline */
+}
+
+#helpBtn:hover {
+  background-color: rgba(0, 123, 255, 0.1); /* Light blue hover background */
+}
+
+/* Ensure the icon inside also gets the right color */
+#helpBtn .material-icons {
+  color: #007bff;
+}
     </style>
   </head>
   <body>
-    <h1>Circuit Drafter</h1>
+    <h1>Circuit Drafter V0.1a</h1>
 
     <div id="toolbar">
       <div class="tool-group">
@@ -350,6 +367,17 @@
           <i class="material-icons">delete</i>
         </button>
       </div>
+            ...
+      <div class="divider"></div>
+      <!-- New Help Button -->
+      <a href="https://github.com/inverter3p/circuitdrafter/blob/main/README.md"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="action-btn"
+         id="helpBtn"
+         title="Help / View Documentation">
+        <i class="material-icons">help_outline</i>
+      </a>
       <div class="divider"></div>
       <button class="action-btn" id="exportBtn">Export</button>
     </div>
