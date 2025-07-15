@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Circuit Drafter - Simple Online Schematic Tool</title>
+    <meta
+      name="description"
+      content="A free, in-browser tool for quickly drafting electronic circuit diagrams. No installation, no accounts, just pure HTML and JavaScript."
+    />
+    <!-- Google Material Icons -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-color: #007bff;
+        --secondary-color: #6c757d;
+        --background-color: #f8f9fa;
+        --surface-color: #ffffff;
+        --text-color: #212529;
+        --border-color: #dee2e6;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        margin: 0;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .hero {
+        text-align: center;
+        padding: 80px 20px;
+      }
+      .hero h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin: 0 0 1rem 0;
+        color: var(--text-color);
+      }
+      .hero .tagline {
+        font-size: 1.25rem;
+        color: var(--secondary-color);
+        margin: 0 0 2rem 0;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .cta-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .cta-button {
+        display: inline-block;
+        padding: 12px 28px;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease-in-out;
+        border: 2px solid transparent;
+      }
+      .cta-button.primary {
+        background-color: var(--primary-color);
+        color: white;
+      }
+      .cta-button.primary:hover {
+        background-color: #0069d9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+      }
+      .cta-button.secondary {
+        background-color: transparent;
+        color: var(--primary-color);
+        border-color: var(--primary-color);
+      }
+      .cta-button.secondary:hover {
+        background-color: var(--primary-color);
+        color: white;
+      }
+      .preview {
+        text-align: center;
+        padding: 40px 0;
+      }
+      .preview-image {
+        max-width: 100%;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      }
+      .features {
+        padding: 60px 0;
+      }
+      .features h2 {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 3rem;
+      }
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+      }
+      .feature-card {
+        background-color: var(--surface-color);
+        padding: 2rem;
+        border-radius: 8px;
+        text-align: center;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+      }
+      .feature-card .material-icons {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+      }
+      .feature-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+      .feature-card p {
+        color: var(--secondary-color);
+      }
+      footer {
+        text-align: center;
+        padding: 40px 20px;
+        margin-top: 40px;
+        border-top: 1px solid var(--border-color);
+      }
+      footer p {
+        margin: 0;
+        color: var(--secondary-color);
+      }
+      footer a {
+        color: var(--primary-color);
+        font-weight: 500;
+        text-decoration: none;
+      }
+      footer a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        .hero h1 {
+          font-size: 2.8rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="hero">
+        <h1>Circuit Drafter</h1>
+        <p class="tagline">
+          A free, in-browser tool for quickly drafting electronic circuit diagrams. No installation, no accounts, just pure HTML and JavaScript.
+        </p>
+        <div class="cta-buttons">
+          <a href="circuitdrafter.html" class="cta-button primary"
+            >Launch Drafter &raquo;</a
+          >
+          <!-- TODO: Replace with your actual GitHub repository URL -->
+          <a
+            href="https://github.com/inverter3p/circuitdrafter"
+            target="_blank"
+            class="cta-button secondary"
+            >View on GitHub</a
+          >
+        </div>
+      </header>
+
+      <main>
+        <section class="preview">
+          <!-- TODO: Replace with a screenshot of your application -->
+          <img
+            src="https://user-images.githubusercontent.com/1011386/160295843-7f551c9d-8c1d-4f68-9844-3151859c76d2.gif"
+            alt="Screenshot of the Circuit Drafter application in use."
+            class="preview-image"
+          />
+        </section>
+
+        <section class="features">
+          <h2>Why Use Circuit Drafter?</h2>
+          <div class="features-grid">
+            <div class="feature-card">
+              <i class="material-icons">cloud_off</i>
+              <h3>100% Client-Side</h3>
+              <p>
+                Runs entirely in your browser. No data is sent to a server.
+                
+              </p>
+            </div>
+            <div class="feature-card">
+              <i class="material-icons">construction</i>
+              <h3>Intuitive Tools</h3>
+              <p>
+                A simple toolbar with essential components, smart wiring that
+                snaps to a grid, and automatic junction dots.
+              </p>
+            </div>
+            <div class="feature-card">
+              <i class="material-icons">keyboard</i>
+              <h3>Keyboard Shortcuts</h3>
+              <p>
+                Speed up your workflow with intuitive hotkeys for tools (S, W,
+                T), editing (Ctrl+Z), and component manipulation (R, Del).
+              </p>
+            </div>
+            <div class="feature-card">
+              <i class="material-icons">image</i>
+              <h3>High-Res Export</h3>
+              <p>
+                Export your finished schematic as a high-quality PNG image,
+                perfect for documentation, reports, or sharing.
+              </p>
+            </div>
+            <div class="feature-card">
+              <i class="material-icons">code</i>
+              <h3>Open & Free</h3>
+              <p>
+                Built with vanilla JavaScript and zero dependencies. The code is
+                open-source and free to use, modify, and learn from.
+              </p>
+            </div>
+            <div class="feature-card">
+              <i class="material-icons">bolt</i>
+              <h3>Instant Access</h3>
+              <p>
+                No downloads, no lengthy setup. Just open the page
+                and start drawing your circuit immediately.
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <p>
+          &copy; 2025 Circuit Drafter (V0.1a).
+          <!-- TODO: Replace with your details -->
+          Created by <a href="https://github.com/inverter3p">JayT</a>.
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>
