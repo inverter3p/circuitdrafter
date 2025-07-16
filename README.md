@@ -10,6 +10,26 @@ A simple, dependency-free, in-browser tool for quickly drafting electronic circu
 <img width="1112" height="556" alt="circuitdrafter" src="https://github.com/user-attachments/assets/59defc63-893b-46f5-b65e-96d953b28c50" />
 
 ---
+## 🚀 What's New in V0.2a
+
+This version is a major update focused on workflow efficiency and professional-grade annotations.
+
+*   **Advanced Selection: Marquee/Area Select**
+    *   You can now click and drag on an empty area of the canvas to select multiple components at once.
+    *   Move, duplicate, rotate, or delete entire groups of elements simultaneously.
+
+*   **Powerful Text Engine with Rich Formatting**
+    *   The text tool now uses a custom parser for advanced labels, no external libraries needed!
+    *   Create **subscripts** using the `_` character (e.g., `V_in` renders as Vᵢₙ).
+    *   Create **superscripts** using the `^` character (e.g., `10^-6` renders as 10⁻⁶).
+    *   An **expanded library of Greek letters** is available using a `\` syntax (e.g., `\alpha`, `\mu`, `\Omega`).
+
+*   **New Components and Drawing Tools**
+    *   **Manual Junctions:** Gain full control over your layout by placing a connection dot anywhere on the canvas with `Ctrl` + `Click`.
+    *   **Current Source:** A standard current source symbol has been added to the sources dropdown menu.
+
+*   **Revised Component Aesthetics**
+    *   The visual style of all components has been refined for a cleaner, more modern look.
 
 ## ✨ Features
 
@@ -65,17 +85,20 @@ That's it! You're ready to start drafting.
 | **Tools**              |                                  |                                                        |
 | Select / Move          | `S` key                          | Select, move, and interact with elements.              |
 | Draw Wire              | `W` key                          | Draw wires between points.                             |
-| Add Text               | `T` key                          | Add a text label to the canvas.                        |
+| Add Text               | `T` key                          | Add a rich text label to the canvas.                   |
 | **Editing**            |                                  |                                                        |
 | Undo                   | `Ctrl` + `Z`                     | Revert the last action.                                |
 | Redo                   | `Ctrl` + `Y`                     | Re-apply the last undone action.                       |
-| Duplicate Selection    | `Ctrl` + `D`                     | Create a copy of the selected element.                 |
-| Rotate Selection       | `R` key                          | Rotate the selected component by 45°.                  |
-| Delete Selection       | `Delete` / `Backspace`           | Delete the currently selected element.                 |
-| **Wire Drawing**       |                                  |                                                        |
-| Straight Line Wire     | Hold `Shift` while drawing a wire | Forces a direct, point-to-point wire.                  |
+| Duplicate Selection    | `Ctrl` + `D`                     | Create a copy of the selected element(s).              |
+| Rotate Selection       | `R` key                          | Rotate the selected component(s) by 45°.               |
+| Delete Selection       | `Delete` / `Backspace`           | Delete the currently selected element(s).              |
+| **Drawing**            |                                  |                                                        |
+| Straight Line Wire     | Hold `Shift` while drawing       | Forces a direct, point-to-point wire.                  |
+| Add Manual Junction    | `Ctrl` + `Click`                 | Places a permanent connection dot on the canvas.       |
+| **Text Syntax**        | `_`, `^`, `\`                    | `V_in` for subscript, `10^6` for superscript, `\muF` for Greek. |
 
 ---
+
 
 ## 🛠️ Technology Stack
 
