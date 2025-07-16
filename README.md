@@ -1,5 +1,5 @@
 # Circuit Drafter (V0.2a) 
-<img width="1024" height="1024" alt="circuit-drafter-logo" src="https://github.com/user-attachments/assets/29b49b83-8617-48fc-aabf-a31d292b27f1" />
+<img width="300" height="300" alt="circuit-drafter-logo" src="https://github.com/user-attachments/assets/29b49b83-8617-48fc-aabf-a31d292b27f1" />
 
 A simple, dependency-free, in-browser tool for quickly drafting electronic circuit diagrams. Everything runs client-side in a single HTML file.
 
