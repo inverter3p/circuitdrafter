@@ -1,13 +1,12 @@
-# Circuit Drafter (V0.1a)
-
-![Circuit Drafter Screenshot](https://user-images.githubusercontent.com/1011386/160295843-7f551c9d-8c1d-4f68-9844-3151859c76d2.gif)
-*(Suggestion: Create a short GIF like the one above showing the tool in action and replace this placeholder)*
+# Circuit Drafter (V0.2a) 
+<img width="1024" height="1024" alt="circuit-drafter-logo" src="https://github.com/user-attachments/assets/29b49b83-8617-48fc-aabf-a31d292b27f1" />
 
 A simple, dependency-free, in-browser tool for quickly drafting electronic circuit diagrams. Everything runs client-side in a single HTML file.
 
 **[➡️ View Live Demo Here](https://inverter3p.github.io/circuitdrafter/)**
 
-<img width="1112" height="556" alt="circuitdrafter" src="https://github.com/user-attachments/assets/59defc63-893b-46f5-b65e-96d953b28c50" />
+<img width="1056" height="465" alt="circuitdrafter-02a" src="https://github.com/user-attachments/assets/dc10be2e-41da-445c-b514-c0a613505a4a" />
+
 
 ---
 ## 🚀 What's New in V0.2a
