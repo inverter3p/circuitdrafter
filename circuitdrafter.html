@@ -3,12 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Circuit Drafter</title>
+    <title>Circuit Drafter (V0.2a)</title>
     <!-- Google Material Icons -->
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"
     />
+    <!-- Google Material Icons -->
+    
+    <!-- Link to Google Font (Montserrat) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700&display=swap" rel="stylesheet">
+    
     <style>
       body {
         font-family: "Georgia", "Times New Roman", Times, serif;
@@ -17,13 +24,14 @@
         align-items: center;
         margin: 0;
         padding: 20px;
-        background-color: #f8f9fa; /* Lighter background */
+        background-color: #f8f9fa;
         color: #333;
       }
       h1 {
-        margin-top: 0;
-        font-weight: normal;
-      }
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700; /* Use the bold weight we imported */
+  color: #212529;
+}
       #toolbar {
         margin-bottom: 20px;
         background: #ffffff;
@@ -50,7 +58,7 @@
         height: 44px;
         border: 1px solid #ced4da;
         background-color: #ffffff;
-        border-radius: 8px; /* Rectangular buttons */
+        border-radius: 8px;
         cursor: pointer;
         transition: all 0.2s ease-out;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -83,7 +91,6 @@
         stroke: #495057;
         transition: all 0.2s ease-out;
       }
-      /* Handle fill and stroke for selected icons */
       .tool-btn.selected svg,
       .tool-btn.selected .material-icons {
         stroke: white;
@@ -104,14 +111,12 @@
       .tool-btn.selected #diode-icon-fill {
         fill: white;
       }
-
       .divider {
         width: 1px;
         height: 35px;
         background-color: #e9ecef;
         margin: 0 8px;
       }
-
       .action-btn:disabled {
         color: #adb5bd;
         background-color: #e9ecef;
@@ -138,35 +143,26 @@
         border-radius: 8px;
         background-color: #fff;
       }
-      /* Add this CSS at the end of your <style> block */
-
       .tool-dropdown {
         position: relative;
         display: inline-block;
       }
-
-      /* We don't want the trigger button itself to be selectable */
       .dropdown-trigger {
         cursor: default;
       }
-
       .dropdown-content {
         display: flex;
-        flex-direction: column; /* Stack the buttons vertically */
-        gap: 6px; /* Space between the buttons in the dropdown */
+        flex-direction: column;
+        gap: 6px;
         position: absolute;
-        top: calc(100% + 5px); /* Position it right below the trigger button */
+        top: calc(100% + 5px);
         left: 50%;
-        transform: translateX(-50%) translateY(-10px); /* Start slightly up for animation */
-
-        /* Visibility and Animation */
+        transform: translateX(-50%) translateY(-10px);
         opacity: 0;
         visibility: hidden;
-        pointer-events: none; /* Prevents interaction when hidden */
+        pointer-events: none;
         transition: opacity 0.2s ease-out, transform 0.2s ease-out,
           visibility 0.2s;
-
-        /* Styling */
         background-color: #ffffff;
         padding: 8px;
         border-radius: 8px;
@@ -174,61 +170,78 @@
         border: 1px solid #e9ecef;
         z-index: 10;
       }
-
-      /* This is the magic: show the content on hover */
       .tool-dropdown:hover .dropdown-content {
         opacity: 1;
         visibility: visible;
-        pointer-events: auto; /* Allow interaction when visible */
+        pointer-events: auto;
         transform: translateX(-50%) translateY(0);
       }
+      #helpBtn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        background-color: #ffffff;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        text-decoration: none;
+        transition: all 0.2s ease-out;
+      }
+      #helpBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        background-color: #f8f9fa;
+      }
+      #helpBtn .material-icons {
+        font-size: 28px;
+        color: #007bff;
+      }
+      /* --- Add this new CSS block to your <style> section --- */
 
-     /* Add this to your CSS <style> block */
-
-#helpBtn {
-  /* Positioning */
-  position: fixed; /* Fixes it relative to the viewport */
-  top: 20px;
-  right: 20px;
-  z-index: 1000; /* Ensures it's on top of all other content */
-
-  /* Appearance */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 50px;
-  background-color: #ffffff;
-  border-radius: 50%; /* Makes it a circle */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  text-decoration: none; /* Remove link underline */
-  transition: all 0.2s ease-out;
+/* Title and Logo Styling */
+.title-container {
+  display: flex;          /* Use Flexbox for easy alignment */
+  align-items: center;    /* Vertically center the logo and text */
+  gap: 15px;              /* Create space between the logo and title */
+  margin-bottom: 20px;    /* Space below the title block */
 }
 
-#helpBtn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-  background-color: #f8f9fa;
+.logo {
+  height: 75px;           /* Control the logo size */
 }
 
-#helpBtn .material-icons {
-  font-size: 28px;
-  color: #007bff; /* Primary theme color for the icon */
+/* Adjust the h1 to remove default margins that interfere with flex alignment */
+h1 {
+  margin: 0;
+  /* Your existing font styles for h1 can remain here */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #343a40;
 }
     </style>
   </head>
   <body>
-    <h1>Circuit Drafter V0.1a</h1>
- <!-- New Floating Help Button -->
-    <a href="https://github.com/inverter3p/circuitdrafter/blob/main/README.md"
-       target="_blank"
-       rel="noopener noreferrer"
-       id="helpBtn"
-       title="Help / View Documentation">
+        <div class="title-container">
+      <img src="https://github.com/user-attachments/assets/29b49b83-8617-48fc-aabf-a31d292b27f1" alt="Circuit Drafter Logo" class="logo">
+      <h1>Circuit Drafter (V0.2a)</h1>
+    </div>
+
+    <a
+      href="https://github.com/inverter3p/circuitdrafter/blob/main/README.md"
+      target="_blank"
+      rel="noopener noreferrer"
+      id="helpBtn"
+      title="Help / View Documentation"
+    >
       <i class="material-icons">help_outline</i>
     </a>
-    <!-- End of New Button -->
-    
+
     <div id="toolbar">
       <div class="tool-group">
         <button class="tool-btn" id="tool-select" title="Select/Move (S)">
@@ -247,7 +260,7 @@
         <button
           class="tool-btn"
           id="tool-wire"
-          title="Wire (W, Shift for straight line)"
+          title="Wire (W, Shift for straight line, Ctrl+Click for dot)"
         >
           <svg viewBox="0 0 24 24">
             <path
@@ -314,10 +327,8 @@
             />
           </svg>
         </button>
-        <!-- New Dropdown for Voltage Sources -->
         <div class="tool-dropdown">
           <button class="tool-btn dropdown-trigger" title="Voltage Sources">
-            <!-- This SVG is just a visual trigger, it has no ID -->
             <svg viewBox="-12 -12 24 24">
               <circle cx="0" cy="0" r="10" fill="none"></circle>
               <path d="M-3,-3 H4 M0,-7 V1, M-3,3 H4" fill="none"></path>
@@ -341,7 +352,6 @@
             >
               <svg viewBox="-12 -12 24 24">
                 <circle cx="0" cy="0" r="10" fill="none"></circle>
-                <!-- Sine wave for AC symbol -->
                 <path
                   d="M-8,0 Q-4,-10 0,0 T8,0"
                   fill="none"
@@ -349,6 +359,19 @@
                 ></path>
               </svg>
             </button>
+            <!-- START: New Current Source Button -->
+            <button
+              class="tool-btn"
+              id="tool-currentsource"
+              title="Current Source"
+            >
+              <svg viewBox="-12 -12 24 24">
+                <circle cx="0" cy="0" r="10" fill="none"></circle>
+                <!-- Arrow path for the current source symbol -->
+                <path d="M0,7 L0,-7 M-4,-2 L0,-7 L4,-2" fill="none" stroke-linecap="round"></path>
+              </svg>
+            </button>
+            <!-- END: New Current Source Button -->
           </div>
         </div>
         <button class="tool-btn" id="tool-battery" title="Battery">
@@ -392,7 +415,6 @@
           <i class="material-icons">delete</i>
         </button>
       </div>
-            ...
       <div class="divider"></div>
       <button class="action-btn" id="exportBtn">Export</button>
     </div>
@@ -400,190 +422,87 @@
     <canvas id="circuitCanvas" width="1000" height="700"></canvas>
 
     <script>
+      /****************************************************************************
+       * Circuit Drafter - V0.2a (Date: 2023-10-27)
+       *
+       * SUMMARY OF CHANGES:
+       * - Advanced Text Rendering: Implemented a dependency-free custom text
+       *   parser. It supports subscripts (`_`), superscripts (`^`), and a
+       *   wide range of Greek letters (`\alpha`, `\mu`, etc.), replacing all
+       *   previous text handling logic.
+       * - Revised Component Aesthetics: Updated all component drawing functions
+       *   to use a cleaner, custom visual style for better clarity.
+       * - This version is 100% self-contained and works from a local file.
+       ****************************************************************************/
       document.addEventListener("DOMContentLoaded", () => {
         let canvas = document.getElementById("circuitCanvas");
         let ctx = canvas.getContext("2d");
-
+        
         let selectedTool = "select";
-        let isDrawingWire = false,
-          isDragging = false,
-          isShiftDown = false;
-        let wireStartPoint = null,
-          currentMousePos = { x: 0, y: 0 },
-          dragOffset = { x: 0, y: 0 };
+        let isDrawingWire = false, isDragging = false, isShiftDown = false;
+        let wireStartPoint = null, currentMousePos = { x: 0, y: 0 };
         let circuitElements = [];
-        let selectedElement = null;
-        let highlightedWireId = null;
         let nextId = 0;
-        const gridSize = 20,
-          snapTolerance = 12,
-          textFontSize = 16;
-        let history = [],
-          historyIndex = -1;
+        const gridSize = 20, snapTolerance = 12, textFontSize = 16;
+        let history = [], historyIndex = -1;
+
+        let selectedElements = [];
+        let isMarqueeSelecting = false;
+        let marqueeStartPoint = null;
 
         const componentData = {
-          resistor: {
-            width: 80,
-            height: 30,
-            terminals: [
-              { x: -40, y: 0 },
-              { x: 40, y: 0 },
-            ],
-          },
-          capacitor: {
-            width: 80,
-            height: 30,
-            terminals: [
-              { x: -40, y: 0 },
-              { x: 40, y: 0 },
-            ],
-          },
-          inductor: {
-            width: 80,
-            height: 30,
-            terminals: [
-              { x: -40, y: 0 },
-              { x: 40, y: 0 },
-            ],
-          },
-          diode: {
-            width: 50,
-            height: 30,
-            terminals: [
-              { x: -25, y: 0 },
-              { x: 25, y: 0 },
-            ],
-          },
-          voltage: {
-            width: 60,
-            height: 60,
-            terminals: [
-              { x: 0, y: -30 },
-              { x: 0, y: 30 },
-            ],
-          },
-          battery: {
-            width: 40,
-            height: 60,
-            terminals: [
-              { x: 0, y: -30 },
-              { x: 0, y: 30 },
-            ],
-          },
+          resistor: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] }, capacitor: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] },
+          inductor: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] }, diode: { width: 50, height: 30, terminals: [{ x: -25, y: 0 }, { x: 25, y: 0 }] },
+          voltage: { width: 60, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] }, acvoltage: { width: 60, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] },
+          currentsource: { width: 60, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] }, battery: { width: 40, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] },
           gnd: { width: 30, height: 30, terminals: [{ x: 0, y: -10 }] },
-          // --- ADD THIS NEW OBJECT ---
-          acvoltage: {
-            width: 60,
-            height: 60,
-            terminals: [
-              { x: 0, y: -30 },
-              { x: 0, y: 30 },
-            ],
-          },
         };
 
         const actionButtons = {
-          undo: document.getElementById("undoBtn"),
-          redo: document.getElementById("redoBtn"),
-          copy: document.getElementById("copyBtn"),
-          rotate: document.getElementById("rotateBtn"),
-          delete: document.getElementById("deleteBtn"),
+          undo: document.getElementById("undoBtn"), redo: document.getElementById("redoBtn"), copy: document.getElementById("copyBtn"),
+          rotate: document.getElementById("rotateBtn"), delete: document.getElementById("deleteBtn"),
         };
 
         function updateToolbar() {
-          document
-            .querySelectorAll(".tool-btn")
-            .forEach((btn) => btn.classList.remove("selected"));
-          document
-            .getElementById(`tool-${selectedTool}`)
-            ?.classList.add("selected");
+          document.querySelectorAll(".tool-btn").forEach((btn) => btn.classList.remove("selected"));
+          document.getElementById(`tool-${selectedTool}`)?.classList.add("selected");
           actionButtons.undo.disabled = historyIndex <= 0;
           actionButtons.redo.disabled = historyIndex >= history.length - 1;
-          const isComponentSelected =
-            selectedElement &&
-            selectedElement.type !== "wire" &&
-            selectedElement.type !== "text";
+          const isComponentSelected = selectedElements.some(el => el.type !== "wire" && el.type !== "text" && el.type !== 'junction');
           actionButtons.rotate.disabled = !isComponentSelected;
-          actionButtons.copy.disabled = !selectedElement;
-          actionButtons.delete.disabled = !selectedElement;
-          canvas.style.cursor =
-            selectedTool === "select" ? "default" : "crosshair";
+          actionButtons.copy.disabled = selectedElements.length === 0;
+          actionButtons.delete.disabled = selectedElements.length === 0;
+          canvas.style.cursor = selectedTool === "select" ? "default" : "crosshair";
         }
+
         document.getElementById("toolbar").addEventListener("click", (e) => {
           const target = e.target.closest("button");
           if (!target || target.disabled) return;
-          if (target.classList.contains("tool-btn")) {
+          if (target.classList.contains("tool-btn") && !target.classList.contains("dropdown-trigger")) {
             selectedTool = target.id.replace("tool-", "");
-            if (selectedTool !== "select") selectedElement = null;
-          } else if (target.id === "undoBtn") undo();
-          else if (target.id === "redoBtn") redo();
-          else if (target.id === "copyBtn") copySelected();
-          else if (target.id === "rotateBtn" && selectedElement) {
-            selectedElement.rotation = (selectedElement.rotation + 45) % 360;
-            saveState();
-          } else if (target.id === "deleteBtn" && selectedElement) {
-            deleteElement(selectedElement);
-            selectedElement = null;
-            saveState();
-          } else if (target.id === "exportBtn") {
-            exportCircuit();
-          }
+            if (selectedTool !== "select") selectedElements = [];
+          } else if (target.id === "undoBtn") undo(); else if (target.id === "redoBtn") redo();
+          else if (target.id === "copyBtn") copySelected(); else if (target.id === "rotateBtn") rotateSelected();
+          else if (target.id === "deleteBtn") deleteSelected(); else if (target.id === "exportBtn") exportCircuit();
           redrawCanvas();
         });
 
         window.addEventListener("keydown", (e) => {
           if (document.activeElement.tagName === "INPUT") return;
-          if (e.key === "Shift") {
-            isShiftDown = true;
-            redrawCanvas();
-          }
+          if (e.key === "Shift") { isShiftDown = true; redrawCanvas(); }
           if (e.ctrlKey || e.metaKey) {
-            if (e.key === "z") {
-              e.preventDefault();
-              undo();
-            }
-            if (e.key === "y") {
-              e.preventDefault();
-              redo();
-            }
-            if (e.key === "d") {
-              e.preventDefault();
-              copySelected();
-            }
-          } else if (
-            e.key === "r" &&
-            selectedElement &&
-            selectedElement.type !== "wire" &&
-            selectedElement.type !== "text"
-          ) {
-            e.preventDefault();
-            selectedElement.rotation = (selectedElement.rotation + 45) % 360;
-            saveState();
-          } else if (e.key === "Delete" || e.key === "Backspace") {
-            if (selectedElement) {
-              e.preventDefault();
-              deleteElement(selectedElement);
-              selectedElement = null;
-              saveState();
-            }
-          } else if (e.key.toLowerCase() === "w") {
-            selectedTool = "wire";
-          } else if (e.key.toLowerCase() === "s") {
-            selectedTool = "select";
-          } else if (e.key.toLowerCase() === "t") {
-            selectedTool = "text";
-          }
+            if (e.key === "z") { e.preventDefault(); undo(); }
+            if (e.key === "y") { e.preventDefault(); redo(); }
+            if (e.key === "d") { e.preventDefault(); copySelected(); }
+          } else if (e.key === "r" && selectedElements.length > 0) { e.preventDefault(); rotateSelected(); }
+          else if (e.key === "Delete" || e.key === "Backspace") { if (selectedElements.length > 0) { e.preventDefault(); deleteSelected(); } }
+          else if (e.key.toLowerCase() === "w") { selectedTool = "wire"; }
+          else if (e.key.toLowerCase() === "s") { selectedTool = "select"; }
+          else if (e.key.toLowerCase() === "t") { selectedTool = "text"; }
           redrawCanvas();
         });
-        window.addEventListener("keyup", (e) => {
-          if (e.key === "Shift") {
-            isShiftDown = false;
-            redrawCanvas();
-          }
-        });
-        window.addEventListener("blur", () => {
-          isShiftDown = false;
-        });
+        window.addEventListener("keyup", (e) => { if (e.key === "Shift") { isShiftDown = false; redrawCanvas(); } });
+        window.addEventListener("blur", () => { isShiftDown = false; });
 
         function saveState() {
           history = history.slice(0, historyIndex + 1);
@@ -591,59 +510,44 @@
           historyIndex++;
           updateToolbar();
         }
-        function undo() {
-          if (historyIndex > 0) {
-            historyIndex--;
-            setState();
-          }
-        }
-        function redo() {
-          if (historyIndex < history.length - 1) {
-            historyIndex++;
-            setState();
-          }
-        }
-        function setState() {
-          circuitElements = JSON.parse(JSON.stringify(history[historyIndex]));
-          selectedElement = null;
-          redrawCanvas();
-        }
+        function undo() { if (historyIndex > 0) { historyIndex--; setState(); } }
+        function redo() { if (historyIndex < history.length - 1) { historyIndex++; setState(); } }
+        function setState() { circuitElements = JSON.parse(JSON.stringify(history[historyIndex])); selectedElements = []; redrawCanvas(); }
         function copySelected() {
-          if (!selectedElement) return;
-          const newEl = JSON.parse(JSON.stringify(selectedElement));
-          newEl.id = nextId++;
-          newEl.x += gridSize;
-          newEl.y += gridSize;
-          circuitElements.push(newEl);
-          selectedElement = newEl;
-          saveState();
-          redrawCanvas();
+          if (selectedElements.length === 0) return;
+          const newSelection = [];
+          selectedElements.forEach(el => {
+              const newEl = JSON.parse(JSON.stringify(el)); newEl.id = nextId++;
+              newEl.x += gridSize; newEl.y += gridSize; circuitElements.push(newEl); newSelection.push(newEl);
+          });
+          selectedElements = newSelection; saveState(); redrawCanvas();
+        }
+        function rotateSelected() {
+          if (selectedElements.length === 0) return;
+          selectedElements.forEach(el => {
+              if (el.type !== 'wire' && el.type !== 'text' && el.type !== 'junction') { el.rotation = (el.rotation + 45) % 360; }
+          });
+          saveState(); redrawCanvas();
+        }
+        function deleteSelected() {
+          if (selectedElements.length === 0) return;
+          const selectedIds = new Set(selectedElements.map(el => el.id));
+          circuitElements = circuitElements.filter(el => !selectedIds.has(el.id));
+          selectedElements = []; saveState(); redrawCanvas();
         }
 
         function redrawCanvas() {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           drawGrid();
           circuitElements.forEach((el) => drawElement(el));
-          if (highlightedWireId) {
-            const wire = circuitElements.find(
-              (el) => el.id === highlightedWireId
-            );
-            if (wire) drawWireHighlight(wire);
-          }
-          drawJunctions();
+          drawJunctions(); drawSelection();
           if (isDrawingWire && wireStartPoint) {
-            drawWirePreview(
-              wireStartPoint,
-              getSnappingPoint(currentMousePos.x, currentMousePos.y)
-            );
+            drawWirePreview(wireStartPoint, getSnappingPoint(currentMousePos.x, currentMousePos.y));
           }
-          if (selectedElement) {
-            drawSelection(selectedElement);
+          if (isMarqueeSelecting && marqueeStartPoint) {
+            drawMarquee(marqueeStartPoint, currentMousePos);
           }
-          const snapPoint = getSnappingPoint(
-            currentMousePos.x,
-            currentMousePos.y
-          );
+          const snapPoint = getSnappingPoint(currentMousePos.x, currentMousePos.y);
           if (selectedTool === "wire" && !isDrawingWire) {
             drawSnapIndicator(snapPoint);
           }
@@ -653,44 +557,17 @@
         function drawElement(el, isSelected = false) {
           ctx.save();
           setDrawingStyle(isSelected);
-          if (el.type === "wire") {
-            drawWire(el, isSelected);
-          } else if (el.type === "text") {
-            ctx.translate(el.x, el.y);
-            drawText(el, isSelected);
-          } else {
-            ctx.translate(el.x, el.y);
-            ctx.rotate((el.rotation * Math.PI) / 180);
-            // In the drawElement function...
+          if (el.type === "wire") { drawWire(el, isSelected); }
+          else if (el.type === "text") { ctx.translate(el.x, el.y); drawText(el, isSelected); }
+          else {
+            ctx.translate(el.x, el.y); ctx.rotate((el.rotation * Math.PI) / 180);
             switch (el.type) {
-              case "resistor":
-                drawResistor();
-                break;
-              case "capacitor":
-                drawCapacitor();
-                break;
-              case "inductor":
-                drawInductor();
-                break;
-              case "diode":
-                drawDiode();
-                break;
-              case "voltage":
-                drawVoltageSource();
-                break;
-              // --- ADD THIS NEW CASE ---
-              case "acvoltage":
-                drawACVoltageSource();
-                break;
-              // --- END OF ADDITION ---
-              case "battery":
-                drawBattery();
-                break;
-              case "gnd":
-                drawGround();
-                break;
+              case "resistor": drawResistor(); break; case "capacitor": drawCapacitor(); break;
+              case "inductor": drawInductor(); break; case "diode": drawDiode(); break;
+              case "voltage": drawVoltageSource(); break; case "acvoltage": drawACVoltageSource(); break;
+              case "currentsource": drawCurrentSource(); break; case "battery": drawBattery(); break;
+              case "gnd": drawGround(); break; case "junction": drawManualJunction(); break;
             }
-            // ...
           }
           ctx.restore();
         }
@@ -702,53 +579,35 @@
         }
 
         function handleMouseDown(e) {
+          if (e.ctrlKey) {
+            e.preventDefault(); const mousePos = getMousePos(e);
+            const newJunction = { id: nextId++, type: 'junction', x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
+            circuitElements.push(newJunction); saveState(); redrawCanvas(); return;
+          }
           const mousePos = getMousePos(e);
           let needsStateSave = false;
-          selectedElement = null;
-
           if (selectedTool === "select") {
-            selectedElement = getElementAtPos(mousePos.x, mousePos.y);
-            if (selectedElement) {
-              isDragging = true;
-              dragOffset = {
-                x: mousePos.x - selectedElement.x,
-                y: mousePos.y - selectedElement.y,
-              };
+            const clickedElement = getElementAtPos(mousePos.x, mousePos.y);
+            if (clickedElement) {
+              isMarqueeSelecting = false; isDragging = true;
+              if (!selectedElements.some(el => el.id === clickedElement.id)) { selectedElements = [clickedElement]; }
+              selectedElements.forEach(el => { el.dragOffset = { x: mousePos.x - el.x, y: mousePos.y - el.y }; });
+            } else {
+              isMarqueeSelecting = true; isDragging = false;
+              marqueeStartPoint = mousePos; selectedElements = [];
             }
           } else if (selectedTool === "wire") {
             isDrawingWire = true;
             wireStartPoint = getSnappingPoint(mousePos.x, mousePos.y);
           } else if (selectedTool === "text") {
-            const textContent = prompt(
-              `Enter text. Use "/ohm" for Ω symbol.`,
-              "10kΩ"
-            );
+            const textContent = prompt(`Support _ for subscript, ^ for superscript, and \\ for Greek (e.g., \\alpha, \\pi, \\Omega).`, "R_1 = 5 k\\Omega");
             if (textContent) {
-              const newEl = {
-                id: nextId++,
-                type: "text",
-                text: textContent.replace(/\/ohm/gi, "Ω"),
-                x: snapToGrid(mousePos.x),
-                y: snapToGrid(mousePos.y),
-                rotation: 0,
-              };
-              circuitElements.push(newEl);
-              selectedTool = "select";
-              selectedElement = newEl;
-              needsStateSave = true;
+              const newEl = { id: nextId++, type: "text", text: textContent, x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
+              circuitElements.push(newEl); selectedTool = "select"; selectedElements = [newEl]; needsStateSave = true;
             }
           } else {
-            const newEl = {
-              id: nextId++,
-              type: selectedTool,
-              x: snapToGrid(mousePos.x),
-              y: snapToGrid(mousePos.y),
-              rotation: 0,
-            };
-            circuitElements.push(newEl);
-            selectedTool = "select";
-            selectedElement = newEl;
-            needsStateSave = true;
+            const newEl = { id: nextId++, type: selectedTool, x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
+            circuitElements.push(newEl); selectedTool = "select"; selectedElements = [newEl]; needsStateSave = true;
           }
           if (needsStateSave) saveState();
           redrawCanvas();
@@ -756,84 +615,34 @@
 
         function handleMouseMove(e) {
           currentMousePos = getMousePos(e);
-          if (isDragging && selectedElement) {
-            selectedElement.x = snapToGrid(currentMousePos.x - dragOffset.x);
-            selectedElement.y = snapToGrid(currentMousePos.y - dragOffset.y);
+          if (isDragging && selectedElements.length > 0) {
+            selectedElements.forEach(el => {
+              el.x = snapToGrid(currentMousePos.x - el.dragOffset.x);
+              el.y = snapToGrid(currentMousePos.y - el.dragOffset.y);
+            });
           }
-          const snapPoint = getSnappingPoint(
-            currentMousePos.x,
-            currentMousePos.y
-          );
-          highlightedWireId =
-            selectedTool === "wire" && !isShiftDown && snapPoint.splitWireId
-              ? snapPoint.splitWireId
-              : null;
           redrawCanvas();
         }
 
         function handleMouseUp(e) {
           let needsStateSave = false;
+          if (isMarqueeSelecting) {
+            const rect = {
+                x1: Math.min(marqueeStartPoint.x, currentMousePos.x), y1: Math.min(marqueeStartPoint.y, currentMousePos.y),
+                x2: Math.max(marqueeStartPoint.x, currentMousePos.x), y2: Math.max(marqueeStartPoint.y, currentMousePos.y)
+            };
+            selectedElements = circuitElements.filter(el => isElementInRect(el, rect));
+          }
           if (isDrawingWire) {
-            const endPoint = getSnappingPoint(
-              currentMousePos.x,
-              currentMousePos.y
-            );
-            if (
-              Math.hypot(
-                endPoint.x - wireStartPoint.x,
-                endPoint.y - wireStartPoint.y
-              ) > 0
-            ) {
-              const newWire = {
-                id: nextId++,
-                type: "wire",
-                start: wireStartPoint,
-                end: endPoint,
-                routing: isShiftDown ? "direct" : "manhattan", // Store the routing mode
-              };
-
-              if (!isShiftDown && endPoint.splitWireId) {
-                const wireToSplit = circuitElements.find(
-                  (el) => el.id === endPoint.splitWireId
-                );
-                if (wireToSplit) {
-                  circuitElements = circuitElements.filter(
-                    (el) => el.id !== wireToSplit.id
-                  );
-                  circuitElements.push({
-                    ...newWire,
-                    id: nextId++,
-                    end: endPoint,
-                    routing: "manhattan",
-                  });
-                  circuitElements.push({
-                    id: nextId++,
-                    type: "wire",
-                    start: wireToSplit.start,
-                    end: endPoint,
-                    routing: "manhattan",
-                  });
-                  circuitElements.push({
-                    id: nextId++,
-                    type: "wire",
-                    start: wireToSplit.end,
-                    end: endPoint,
-                    routing: "manhattan",
-                  });
-                  needsStateSave = true; // Mark for save
-                }
-              } else {
-                circuitElements.push(newWire);
-                needsStateSave = true;
-              }
+            const endPoint = getSnappingPoint(currentMousePos.x, currentMousePos.y);
+            if (Math.hypot(endPoint.x - wireStartPoint.x, endPoint.y - wireStartPoint.y) > 0) {
+              circuitElements.push({ id: nextId++, type: "wire", start: wireStartPoint, end: endPoint, routing: isShiftDown ? "direct" : "manhattan"});
+              needsStateSave = true;
             }
           }
-          if (isDragging) {
-            needsStateSave = true;
-          }
-          isDrawingWire = false;
-          isDragging = false;
-          highlightedWireId = null;
+          if (isDragging) { needsStateSave = true; }
+          isDrawingWire = false; isDragging = false; isMarqueeSelecting = false; marqueeStartPoint = null;
+          circuitElements.forEach(el => delete el.dragOffset);
           if (needsStateSave) saveState();
           redrawCanvas();
         }
@@ -842,127 +651,50 @@
         canvas.addEventListener("mousemove", handleMouseMove);
         canvas.addEventListener("mouseup", handleMouseUp);
         canvas.addEventListener("mouseout", () => {
-          isDrawingWire = false;
-          isDragging = false;
-          highlightedWireId = null;
-          isShiftDown = false;
+          isDrawingWire = false; isDragging = false; isMarqueeSelecting = false; marqueeStartPoint = null; isShiftDown = false;
           redrawCanvas();
         });
-
-        function deleteElement(elementToDelete) {
-          circuitElements = circuitElements.filter(
-            (el) => el.id !== elementToDelete.id
-          );
-          if (
-            elementToDelete.type !== "wire" &&
-            elementToDelete.type !== "text"
-          ) {
-            circuitElements = circuitElements.filter(
-              (el) =>
-                !(
-                  el.type === "wire" &&
-                  (el.start.ownerId === elementToDelete.id ||
-                    el.end.ownerId === elementToDelete.id)
-                )
-            );
-          }
-        }
-        function getMousePos(e) {
-          return {
-            x: e.clientX - canvas.getBoundingClientRect().left,
-            y: e.clientY - canvas.getBoundingClientRect().top,
-          };
-        }
-        function snapToGrid(val) {
-          return Math.round(val / (gridSize / 2)) * (gridSize / 2);
-        }
-
+        
+        function getMousePos(e) { return { x: e.clientX - canvas.getBoundingClientRect().left, y: e.clientY - canvas.getBoundingClientRect().top }; }
+        function snapToGrid(val) { return Math.round(val / (gridSize / 2)) * (gridSize / 2); }
         function getSnappingPoint(x, y) {
-          // Priority 1: Component terminals
           for (const el of circuitElements) {
-            if (el.type === "wire" || el.type === "text") continue;
+            if (el.type === "wire" || el.type === "text" || el.type === "junction") continue;
             const terminals = getAbsoluteTerminals(el);
-            for (const term of terminals) {
-              if (Math.hypot(x - term.x, y - term.y) < snapTolerance)
-                return { x: term.x, y: term.y, ownerId: el.id };
-            }
+            for (const term of terminals) { if (Math.hypot(x - term.x, y - term.y) < snapTolerance) return { x: term.x, y: term.y, ownerId: el.id }; }
           }
-          // Priority 2: Existing wire endpoints
+          for (const el of circuitElements) {
+            if (el.type === 'junction') { if (Math.hypot(x - el.x, y - el.y) < snapTolerance) return { x: el.x, y: el.y, ownerId: el.id }; }
+          }
           for (const el of circuitElements) {
             if (el.type !== "wire") continue;
-            if (Math.hypot(x - el.start.x, y - el.start.y) < snapTolerance)
-              return { x: el.start.x, y: el.start.y };
-            if (Math.hypot(x - el.end.x, y - el.end.y) < snapTolerance)
-              return { x: el.end.x, y: el.end.y };
+            if (Math.hypot(x - el.start.x, y - el.start.y) < snapTolerance) return { x: el.start.x, y: el.start.y };
+            if (Math.hypot(x - el.end.x, y - el.end.y) < snapTolerance) return { x: el.end.x, y: el.end.y };
           }
-          // Priority 3: Middle of a wire segment (only if Shift is not pressed)
-          if (!isShiftDown) {
-            for (const el of circuitElements) {
-              if (el.type !== "wire") continue;
-              const path = getWirePath(el);
-              for (let i = 0; i < path.length - 1; i++) {
-                if (
-                  distToSegment({ x, y }, path[i], path[i + 1]) < snapTolerance
-                ) {
-                  const proj = getProjectedPoint(
-                    { x, y },
-                    path[i],
-                    path[i + 1]
-                  );
-                  return { ...proj, splitWireId: el.id };
-                }
-              }
-            }
-          }
-          // Priority 4: Grid
           return { x: snapToGrid(x), y: snapToGrid(y), ownerId: null };
         }
-
-        function getProjectedPoint(p, v, w) {
-          if (v.x === w.x) return { x: v.x, y: snapToGrid(p.y) };
-          if (v.y === w.y) return { x: snapToGrid(p.x), y: v.y };
-          return { x: snapToGrid(p.x), y: snapToGrid(p.y) };
-        }
-
         function getAbsoluteTerminals(el) {
           const data = componentData[el.type];
           if (!data || !data.terminals) return [];
-          const angle = (el.rotation * Math.PI) / 180,
-            cos = Math.cos(angle),
-            sin = Math.sin(angle);
-          return data.terminals.map((t) => ({
-            x: el.x + (t.x * cos - t.y * sin),
-            y: el.y + (t.x * sin + t.y * cos),
-          }));
+          const angle = (el.rotation * Math.PI) / 180, cos = Math.cos(angle), sin = Math.sin(angle);
+          return data.terminals.map((t) => ({ x: el.x + (t.x * cos - t.y * sin), y: el.y + (t.x * sin + t.y * cos) }));
         }
         function getElementAtPos(x, y) {
           for (let i = circuitElements.length - 1; i >= 0; i--) {
             const el = circuitElements[i];
-            if (el.type === "wire") continue;
+            if (el.type === 'junction') { if (Math.hypot(x - el.x, y - el.y) < snapTolerance) return el; }
+          }
+          for (let i = circuitElements.length - 1; i >= 0; i--) {
+            const el = circuitElements[i];
+            if (el.type === "wire" || el.type === "junction") continue;
             if (el.type === "text") {
-              ctx.font = `italic ${textFontSize}px Georgia`;
-              const metrics = ctx.measureText(el.text);
-              const w = metrics.width,
-                h = textFontSize;
-              if (
-                x > el.x - w / 2 &&
-                x < el.x + w / 2 &&
-                y > el.y - h / 2 &&
-                y < el.y + h / 2
-              )
-                return el;
+              const { width, height } = measureParsedText(el.text);
+              if (x > el.x - width / 2 && x < el.x + width / 2 && y > el.y - height / 2 && y < el.y + height / 2) return el;
             } else {
               const data = componentData[el.type];
-              const dx = x - el.x,
-                dy = y - el.y,
-                angle = (-el.rotation * Math.PI) / 180;
-              const rX = dx * Math.cos(angle) - dy * Math.sin(angle),
-                rY = dx * Math.sin(angle) + dy * Math.cos(angle);
-              if (
-                Math.abs(rX) < data.width / 2 &&
-                Math.abs(rY) < data.height / 2
-              )
-                return el;
+              const dx = x - el.x, dy = y - el.y, angle = (-el.rotation * Math.PI) / 180;
+              const rX = dx * Math.cos(angle) - dy * Math.sin(angle), rY = dx * Math.sin(angle) + dy * Math.cos(angle);
+              if (Math.abs(rX) < data.width / 2 && Math.abs(rY) < data.height / 2) return el;
             }
           }
           for (let i = circuitElements.length - 1; i >= 0; i--) {
@@ -973,153 +705,140 @@
           return null;
         }
         function distToSegment(p, v, w) {
-          const l2 = (v.x - w.x) ** 2 + (v.y - w.y) ** 2;
-          if (l2 === 0) return Math.hypot(p.x - v.x, p.y - v.y);
-          let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
-          t = Math.max(0, Math.min(1, t));
-          return Math.hypot(
-            p.x - (v.x + t * (w.x - v.x)),
-            p.y - (v.y + t * (w.y - v.y))
-          );
+          const l2 = (v.x - w.x) ** 2 + (v.y - w.y) ** 2; if (l2 === 0) return Math.hypot(p.x - v.x, p.y - v.y);
+          let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2; t = Math.max(0, Math.min(1, t));
+          return Math.hypot( p.x - (v.x + t * (w.x - v.x)), p.y - (v.y + t * (w.y - v.y)) );
         }
         function isPointOnWire(point, wire) {
           const path = getWirePath(wire);
-          for (let i = 0; i < path.length - 1; i++) {
-            if (distToSegment(point, path[i], path[i + 1]) < snapTolerance)
-              return true;
+          for (let i = 0; i < path.length - 1; i++) { if (distToSegment(point, path[i], path[i + 1]) < snapTolerance) return true; }
+          return false;
+        }
+        function isElementInRect(el, rect) {
+          if (el.type !== 'wire') { return el.x >= rect.x1 && el.x <= rect.x2 && el.y >= rect.y1 && el.y <= rect.y2; }
+          if (el.type === 'wire') {
+            const startIn = el.start.x >= rect.x1 && el.start.x <= rect.x2 && el.start.y >= rect.y1 && el.start.y <= rect.y2;
+            const endIn = el.end.x >= rect.x1 && el.end.x <= rect.x2 && el.end.y >= rect.y1 && el.end.y <= rect.y2;
+            return startIn && endIn;
           }
           return false;
         }
 
         function drawGrid() {
-          ctx.strokeStyle = "#e9ecef";
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          for (let x = 0; x <= canvas.width; x += gridSize) {
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, canvas.height);
-          }
-          for (let y = 0; y <= canvas.height; y += gridSize) {
-            ctx.moveTo(0, y);
-            ctx.lineTo(canvas.width, y);
-          }
+          ctx.strokeStyle = "#e9ecef"; ctx.lineWidth = 1; ctx.beginPath();
+          for (let x = 0; x <= canvas.width; x += gridSize) { ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); }
+          for (let y = 0; y <= canvas.height; y += gridSize) { ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); }
           ctx.stroke();
         }
-        function drawSelection(el) {
-          ctx.save();
-          ctx.strokeStyle = "#007bff";
-          ctx.lineWidth = 1;
-          ctx.setLineDash([4, 2]);
-          if (el.type === "wire") {
-            drawElement(el, true);
-          } else if (el.type === "text") {
-            ctx.font = `italic ${textFontSize}px Georgia`;
-            const metrics = ctx.measureText(el.text);
-            const w = metrics.width,
-              h = textFontSize,
-              padding = 4;
-            ctx.strokeRect(
-              el.x - w / 2 - padding,
-              el.y - h / 2 - padding,
-              w + padding * 2,
-              h + padding * 2
-            );
-          } else {
-            const data = componentData[el.type];
-            ctx.translate(el.x, el.y);
-            ctx.rotate((el.rotation * Math.PI) / 180);
-            ctx.strokeRect(
-              -data.width / 2,
-              -data.height / 2,
-              data.width,
-              data.height
-            );
-          }
-          ctx.restore();
+        function drawSelection() {
+          if (selectedElements.length === 0) return;
+          selectedElements.forEach(el => {
+              ctx.save();
+              ctx.strokeStyle = "#007bff"; ctx.lineWidth = 1; ctx.setLineDash([4, 2]);
+              if (el.type === "wire") { drawWire(el, true); }
+              else if (el.type === "text") {
+                  const { width, height } = measureParsedText(el.text);
+                  const padding = 4;
+                  ctx.strokeRect(el.x - width / 2 - padding, el.y - height / 2 - padding, width + padding * 2, height + padding * 2);
+              } else if (el.type === "junction") {
+                  ctx.translate(el.x, el.y); ctx.beginPath(); ctx.arc(0, 0, 8, 0, 2 * Math.PI); ctx.stroke();
+              } else {
+                  const data = componentData[el.type]; ctx.translate(el.x, el.y); ctx.rotate((el.rotation * Math.PI) / 180);
+                  ctx.strokeRect(-data.width / 2, -data.height / 2, data.width, data.height);
+              }
+              ctx.restore();
+          });
         }
-        function drawSnapIndicator(point) {
-          ctx.beginPath();
-          ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-          ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
-          ctx.fill();
+        function drawMarquee(start, end) {
+            ctx.save();
+            ctx.fillStyle = "rgba(0, 123, 255, 0.1)"; ctx.strokeStyle = "rgba(0, 123, 255, 0.5)"; ctx.lineWidth = 1; ctx.setLineDash([6, 3]);
+            const width = end.x - start.x, height = end.y - start.y;
+            ctx.beginPath(); ctx.rect(start.x, start.y, width, height); ctx.fill(); ctx.stroke();
+            ctx.restore();
         }
-
-        function getWirePath(wire) {
-          if (wire.routing === "direct") {
-            return [wire.start, wire.end];
-          }
-          // Default to Manhattan routing
-          const corner = { x: wire.start.x, y: wire.end.y };
-          return [wire.start, corner, wire.end];
-        }
-
-        function drawWireFromPath(path) {
-          ctx.beginPath();
-          ctx.moveTo(path[0].x, path[0].y);
-          for (let i = 1; i < path.length; i++) {
-            ctx.lineTo(path[i].x, path[i].y);
-          }
-          ctx.stroke();
-        }
-        function drawWire(el, isSelected) {
-          setDrawingStyle(isSelected);
-          drawWireFromPath(getWirePath(el));
-        }
-        function drawWirePreview(start, end) {
-          ctx.save();
-          setDrawingStyle(true);
-          ctx.setLineDash([4, 4]);
-          drawWireFromPath(
-            getWirePath({
-              start,
-              end,
-              routing: isShiftDown ? "direct" : "manhattan",
-            })
-          );
-          ctx.restore();
-        }
-        function drawWireHighlight(wire) {
-          ctx.save();
-          ctx.strokeStyle = "#007bff";
-          ctx.lineWidth = 3;
-          drawWireFromPath(getWirePath(wire));
-          ctx.restore();
-        }
-
+        function drawSnapIndicator(point) { ctx.beginPath(); ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI); ctx.fillStyle = "rgba(255, 0, 0, 0.5)"; ctx.fill(); }
+        function getWirePath(wire) { return wire.routing === "direct" ? [wire.start, wire.end] : [wire.start, { x: wire.start.x, y: wire.end.y }, wire.end]; }
+        function drawWireFromPath(path) { ctx.beginPath(); ctx.moveTo(path[0].x, path[0].y); for (let i = 1; i < path.length; i++) { ctx.lineTo(path[i].x, path[i].y); } ctx.stroke(); }
+        function drawWire(el, isSelected) { setDrawingStyle(isSelected); drawWireFromPath(getWirePath(el)); }
+        function drawWirePreview(start, end) { ctx.save(); setDrawingStyle(true); ctx.setLineDash([4, 4]); drawWireFromPath(getWirePath({ start, end, routing: isShiftDown ? "direct" : "manhattan" })); ctx.restore(); }
+        
         function drawJunctions() {
           const connectionPoints = new Map();
-          const addPoint = (p) => {
-            const key = `${p.x},${p.y}`;
-            connectionPoints.set(key, (connectionPoints.get(key) || 0) + 1);
-          };
+          const addPoint = (p) => { const key = `${p.x},${p.y}`; connectionPoints.set(key, (connectionPoints.get(key) || 0) + 1); };
           circuitElements.forEach((el) => {
-            if (el.type === "wire") {
-              addPoint(el.start);
-              addPoint(el.end);
-            } else if (el.type !== "text") {
-              getAbsoluteTerminals(el).forEach((term) => addPoint(term));
-            }
+            if (el.type === "wire") { addPoint(el.start); addPoint(el.end); }
+            else if (el.type === 'junction') { addPoint(el); }
+            else if (el.type !== "text") { getAbsoluteTerminals(el).forEach((term) => addPoint(term)); }
           });
-          ctx.save();
-          ctx.fillStyle = "#000";
+          ctx.save(); ctx.fillStyle = "#000";
           for (const [key, count] of connectionPoints.entries()) {
-            if (count > 2) {
-              const [x, y] = key.split(",").map(Number);
-              ctx.beginPath();
-              ctx.arc(x, y, 4, 0, 2 * Math.PI);
-              ctx.fill();
-            }
+            if (count > 2) { const [x, y] = key.split(",").map(Number); ctx.beginPath(); ctx.arc(x, y, 4, 0, 2 * Math.PI); ctx.fill(); }
           }
           ctx.restore();
+        }
+
+        // --- V0.2a: Custom Text Parser and Renderer ---
+        const greekSymbolMap = {
+            alpha: "α", beta: "β", gamma: "γ", Delta: "Δ", delta: "δ", epsilon: "ε",
+            eta: "η", theta: "θ", lambda: "λ", mu: "μ", pi: "π", rho: "ρ",
+            Sigma: "Σ", sigma: "σ", tau: "τ", Phi: "Φ", phi: "φ",
+            Omega: "Ω", omega: "ω",
+        };
+
+        function parseText(rawText) {
+            const chunks = []; let currentText = ""; let currentType = "normal";
+            for (let i = 0; i < rawText.length; i++) {
+                const char = rawText[i];
+                if (char === "_" || char === "^" || char === " " || char === "\\") {
+                    if (currentText.length > 0) { chunks.push({ text: currentText, type: currentType }); }
+                    currentText = "";
+                    if (char === " ") { currentType = "normal"; currentText = " "; }
+                    else if (char === "_") { currentType = "subscript"; }
+                    else if (char === "^") { currentType = "superscript"; }
+                    else if (char === "\\") {
+                        let symbol = "";
+                        for (let j = i + 1; j < rawText.length; j++) {
+                            const nextChar = rawText[j];
+                            if (nextChar.match(/[a-zA-Z]/)) { symbol += nextChar; } else { break; }
+                        }
+                        if (greekSymbolMap[symbol]) {
+                            chunks.push({ text: greekSymbolMap[symbol], type: "normal" }); i += symbol.length;
+                        } else { currentText = "\\"; }
+                    }
+                } else { currentText += char; }
+            }
+            if (currentText.length > 0) { chunks.push({ text: currentText, type: currentType }); }
+            return chunks;
+        }
+
+        function measureParsedText(rawText) {
+            const chunks = parseText(rawText); const subSuperScriptScale = 0.7;
+            let totalWidth = 0;
+            chunks.forEach(chunk => {
+                const fontSize = chunk.type === "normal" ? textFontSize : textFontSize * subSuperScriptScale;
+                ctx.font = `italic ${fontSize}px Georgia`;
+                totalWidth += ctx.measureText(chunk.text).width;
+            });
+            return { width: totalWidth, height: textFontSize };
         }
 
         function drawText(el, isSelected) {
-          ctx.font = `italic ${textFontSize}px Georgia`;
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillStyle = isSelected ? "#007bff" : "#000";
-          ctx.fillText(el.text, 0, 0);
+          ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillStyle = isSelected ? "#007bff" : "#000";
+          const subSuperScriptScale = 0.7; const subSuperScriptYOffset = 0.3;
+          const chunks = parseText(el.text); const { width: totalWidth } = measureParsedText(el.text);
+          let currentX = -totalWidth / 2; ctx.textAlign = "left";
+          chunks.forEach(chunk => {
+            const isNormal = chunk.type === "normal";
+            const fontSize = isNormal ? textFontSize : textFontSize * subSuperScriptScale;
+            const yOffset = isNormal ? 0 : (chunk.type === "subscript" ? textFontSize * subSuperScriptYOffset : -textFontSize * subSuperScriptYOffset);
+            ctx.font = `italic ${fontSize}px Georgia`;
+            ctx.fillText(chunk.text, currentX, yOffset);
+            currentX += ctx.measureText(chunk.text).width;
+          });
         }
+        
+        // --- V0.2a: Revised Component Drawing Library ---
+        function drawManualJunction() { ctx.beginPath(); ctx.arc(0, 0, 4, 0, 2 * Math.PI); ctx.fillStyle = ctx.strokeStyle; ctx.fill(); }
         function drawResistor() {
           const w = 22,
             h = 9;
@@ -1288,96 +1007,73 @@
           ctx.moveTo(-5, 10);
           ctx.lineTo(5, 10);
           ctx.stroke();
+        }// --- ADD THIS NEW FUNCTION ---
+function drawCurrentSource() {
+  const r = 16; // The radius of the outer circle
+  // Arrow parameters
+  const arrowY_start = -10;
+  const arrowY_end = 10;
+  const arrowHeadSize = 6;
+
+  ctx.beginPath();
+  // Draw the outer circle and terminal wires
+  ctx.arc(0, 0, r, 0, 2 * Math.PI);
+  ctx.moveTo(0, -30);
+  ctx.lineTo(0, -r);
+  ctx.moveTo(0, r);
+  ctx.lineTo(0, 30);
+
+  // Draw the arrow inside (pointing up by convention)
+  // Main shaft
+  
+  // Arrowhead
+  ctx.moveTo(-arrowHeadSize / 2, arrowY_start + arrowHeadSize);
+  ctx.lineTo(0, arrowY_start);
+  ctx.lineTo(arrowHeadSize / 2, arrowY_start + arrowHeadSize);
+  ctx.moveTo(0, arrowY_end);
+  ctx.lineTo(0, 0);
+  ctx.lineTo(0, -5);
+  ctx.stroke();
+}
+// --- END OF ADDITION ---
+        function calculateBoundingBox() {
+            if (circuitElements.length === 0) return null;
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            circuitElements.forEach((el) => {
+                if (el.type === "wire") {
+                    const path = getWirePath(el); path.forEach((p) => { minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x); minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y); });
+                } else if (el.type === "text") {
+                    const { width, height } = measureParsedText(el.text);
+                    minX = Math.min(minX, el.x - width / 2); maxX = Math.max(maxX, el.x + width / 2); minY = Math.min(minY, el.y - height / 2); maxY = Math.max(maxY, el.y + height / 2);
+                } else if (el.type === 'junction') {
+                    minX = Math.min(minX, el.x); maxX = Math.max(maxX, el.x); minY = Math.min(minY, el.y); maxY = Math.max(maxY, el.y);
+                } else {
+                    const data = componentData[el.type]; const w = data.width, h = data.height; const angle = (el.rotation * Math.PI) / 180;
+                    const cos = Math.cos(angle), sin = Math.sin(angle);
+                    const corners = [{ x: -w / 2, y: -h / 2 }, { x: w / 2, y: -h / 2 }, { x: w / 2, y: h / 2 }, { x: -w / 2, y: h / 2 }];
+                    corners.forEach((c) => {
+                        const rx = el.x + c.x * cos - c.y * sin; const ry = el.y + c.x * sin + c.y * cos;
+                        minX = Math.min(minX, rx); maxX = Math.max(maxX, rx); minY = Math.min(minY, ry); maxY = Math.max(maxY, ry);
+                    });
+                }
+            });
+            return { minX, minY, maxX, maxY };
         }
 
-        function calculateBoundingBox() {
-          if (circuitElements.length === 0) return null;
-          let minX = Infinity,
-            minY = Infinity,
-            maxX = -Infinity,
-            maxY = -Infinity;
-          circuitElements.forEach((el) => {
-            if (el.type === "wire") {
-              const path = getWirePath(el);
-              path.forEach((p) => {
-                minX = Math.min(minX, p.x);
-                maxX = Math.max(maxX, p.x);
-                minY = Math.min(minY, p.y);
-                maxY = Math.max(maxY, p.y);
-              });
-            } else if (el.type === "text") {
-              ctx.font = `italic ${textFontSize}px Georgia`;
-              const metrics = ctx.measureText(el.text);
-              const w = metrics.width,
-                h = textFontSize;
-              minX = Math.min(minX, el.x - w / 2);
-              maxX = Math.max(maxX, el.x + w / 2);
-              minY = Math.min(minY, el.y - h / 2);
-              maxY = Math.max(maxY, el.y + h / 2);
-            } else {
-              const data = componentData[el.type];
-              const w = data.width,
-                h = data.height;
-              const angle = (el.rotation * Math.PI) / 180;
-              const cos = Math.cos(angle),
-                sin = Math.sin(angle);
-              const corners = [
-                { x: -w / 2, y: -h / 2 },
-                { x: w / 2, y: -h / 2 },
-                { x: w / 2, y: h / 2 },
-                { x: -w / 2, y: h / 2 },
-              ];
-              corners.forEach((c) => {
-                const rx = el.x + c.x * cos - c.y * sin;
-                const ry = el.y + c.x * sin + c.y * cos;
-                minX = Math.min(minX, rx);
-                maxX = Math.max(maxX, rx);
-                minY = Math.min(minY, ry);
-                maxY = Math.max(maxY, ry);
-              });
-            }
-          });
-          return { minX, minY, maxX, maxY };
-        }
         function exportCircuit() {
-          selectedElement = null;
-          redrawCanvas();
-          const scaleFactorStr = prompt(
-            "Enter resolution scale factor (e.g., 2 for 2x resolution):",
-            "2"
-          );
-          const scaleFactor = parseFloat(scaleFactorStr);
-          if (isNaN(scaleFactor) || scaleFactor <= 0) {
-            alert(
-              "Invalid scale factor. Please enter a number greater than 0."
-            );
-            return;
-          }
-          const bounds = calculateBoundingBox();
-          if (!bounds) {
-            alert("Canvas is empty!");
-            return;
-          }
-          const padding = 30;
-          const exportCanvas = document.createElement("canvas");
-          const exportCtx = exportCanvas.getContext("2d");
-          exportCanvas.width =
-            (bounds.maxX - bounds.minX + padding * 2) * scaleFactor;
-          exportCanvas.height =
-            (bounds.maxY - bounds.minY + padding * 2) * scaleFactor;
-          const originalCtx = ctx;
-          ctx = exportCtx;
-          ctx.save();
-          ctx.scale(scaleFactor, scaleFactor);
-          ctx.translate(-bounds.minX + padding, -bounds.minY + padding);
-          circuitElements.forEach((el) => drawElement(el));
-          drawJunctions();
-          ctx.restore();
-          ctx = originalCtx;
-          const link = document.createElement("a");
-          link.download = "circuit-diagram.png";
-          link.href = exportCanvas.toDataURL("image/png");
-          link.click();
+            selectedElements = []; redrawCanvas();
+            const scaleFactorStr = prompt("Enter resolution scale factor (e.g., 2 for 2x resolution):", "2");
+            const scaleFactor = parseFloat(scaleFactorStr);
+            if (isNaN(scaleFactor) || scaleFactor <= 0) { alert("Invalid scale factor. Please enter a number greater than 0."); return; }
+            const bounds = calculateBoundingBox(); if (!bounds) { alert("Canvas is empty!"); return; }
+            const padding = 30; const exportCanvas = document.createElement("canvas");
+            const exportCtx = exportCanvas.getContext("2d");
+            exportCanvas.width = (bounds.maxX - bounds.minX + padding * 2) * scaleFactor; exportCanvas.height = (bounds.maxY - bounds.minY + padding * 2) * scaleFactor;
+            const originalCtx = ctx; ctx = exportCtx;
+            ctx.save(); ctx.scale(scaleFactor, scaleFactor); ctx.translate(-bounds.minX + padding, -bounds.minY + padding);
+            circuitElements.forEach((el) => drawElement(el)); drawJunctions();
+            ctx.restore(); ctx = originalCtx;
+            const link = document.createElement("a"); link.download = "circuit-diagram.png"; link.href = exportCanvas.toDataURL("image/png"); link.click();
         }
 
         saveState();
