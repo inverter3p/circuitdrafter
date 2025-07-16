@@ -229,7 +229,7 @@ h1 {
   <body>
         <div class="title-container">
       <img src="https://github.com/user-attachments/assets/29b49b83-8617-48fc-aabf-a31d292b27f1" alt="Circuit Drafter Logo" class="logo">
-      <h1>Circuit Drafter (V02.a)</h1>
+      <h1>Circuit Drafter (V0.2a)</h1>
     </div>
 
     <a
@@ -449,6 +449,7 @@ h1 {
         let selectedElements = [];
         let isMarqueeSelecting = false;
         let marqueeStartPoint = null;
+        let hoveredWireSegment = null; 
 
         const componentData = {
           resistor: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] }, capacitor: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] },
@@ -487,20 +488,43 @@ h1 {
           redrawCanvas();
         });
 
+        // --- CORRECTED KEYDOWN EVENT LISTENER ---
         window.addEventListener("keydown", (e) => {
           if (document.activeElement.tagName === "INPUT") return;
-          if (e.key === "Shift") { isShiftDown = true; redrawCanvas(); }
+
+          // Handle Shift modifier state independently
+          if (e.key === "Shift") {
+            isShiftDown = true;
+          }
+
+          // Handle Ctrl/Cmd + Key combinations
           if (e.ctrlKey || e.metaKey) {
-            if (e.key === "z") { e.preventDefault(); undo(); }
-            if (e.key === "y") { e.preventDefault(); redo(); }
-            if (e.key === "d") { e.preventDefault(); copySelected(); }
-          } else if (e.key === "r" && selectedElements.length > 0) { e.preventDefault(); rotateSelected(); }
-          else if (e.key === "Delete" || e.key === "Backspace") { if (selectedElements.length > 0) { e.preventDefault(); deleteSelected(); } }
-          else if (e.key.toLowerCase() === "w") { selectedTool = "wire"; }
-          else if (e.key.toLowerCase() === "s") { selectedTool = "select"; }
-          else if (e.key.toLowerCase() === "t") { selectedTool = "text"; }
+            switch (e.key.toLowerCase()) {
+              case 'z': e.preventDefault(); undo(); break;
+              case 'y': e.preventDefault(); redo(); break;
+              case 'd': e.preventDefault(); copySelected(); break;
+            }
+          } 
+          // Handle single-key shortcuts only if Ctrl/Cmd are NOT pressed
+          else {
+            switch (e.key.toLowerCase()) {
+              case 'r':
+                if (selectedElements.length > 0) { e.preventDefault(); rotateSelected(); }
+                break;
+              case 'delete':
+              case 'backspace':
+                if (selectedElements.length > 0) { e.preventDefault(); deleteSelected(); }
+                break;
+              case 'w': selectedTool = "wire"; break;
+              case 's': selectedTool = "select"; break;
+              case 't': selectedTool = "text"; break;
+            }
+          }
+
+          // Redraw at the end to reflect any changes
           redrawCanvas();
         });
+
         window.addEventListener("keyup", (e) => { if (e.key === "Shift") { isShiftDown = false; redrawCanvas(); } });
         window.addEventListener("blur", () => { isShiftDown = false; });
 
@@ -537,21 +561,43 @@ h1 {
         }
 
         function redrawCanvas() {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          drawGrid();
-          circuitElements.forEach((el) => drawElement(el));
-          drawJunctions(); drawSelection();
-          if (isDrawingWire && wireStartPoint) {
-            drawWirePreview(wireStartPoint, getSnappingPoint(currentMousePos.x, currentMousePos.y));
-          }
-          if (isMarqueeSelecting && marqueeStartPoint) {
-            drawMarquee(marqueeStartPoint, currentMousePos);
-          }
-          const snapPoint = getSnappingPoint(currentMousePos.x, currentMousePos.y);
-          if (selectedTool === "wire" && !isDrawingWire) {
-            drawSnapIndicator(snapPoint);
-          }
-          updateToolbar();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawGrid();
+            circuitElements.forEach((el) => drawElement(el));
+
+            // Draw wire hover highlight
+            if (hoveredWireSegment) {
+                ctx.save();
+                ctx.strokeStyle = '#007bff';
+                ctx.lineWidth = 4;
+                ctx.shadowColor = 'rgba(0, 123, 255, 0.7)';
+                ctx.shadowBlur = 8;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.moveTo(hoveredWireSegment.p1.x, hoveredWireSegment.p1.y);
+                ctx.lineTo(hoveredWireSegment.p2.x, hoveredWireSegment.p2.y);
+                ctx.stroke();
+                ctx.restore();
+            }
+          
+            drawJunctions();
+            drawSelection();
+
+            // Draw wire preview and snap indicators
+            if (isDrawingWire && wireStartPoint) {
+                let endPoint = getSnappingPoint(currentMousePos.x, currentMousePos.y);
+                drawWirePreview(wireStartPoint, endPoint);
+                drawSnapIndicator(endPoint); // Draw red dot at the preview's end
+            } else if (selectedTool === "wire") {
+                const snapPoint = getSnappingPoint(currentMousePos.x, currentMousePos.y);
+                drawSnapIndicator(snapPoint); // Draw red dot when not drawing
+            }
+
+            if (isMarqueeSelecting && marqueeStartPoint) {
+                drawMarquee(marqueeStartPoint, currentMousePos);
+            }
+            
+            updateToolbar();
         }
 
         function drawElement(el, isSelected = false) {
@@ -579,38 +625,75 @@ h1 {
         }
 
         function handleMouseDown(e) {
-          if (e.ctrlKey) {
-            e.preventDefault(); const mousePos = getMousePos(e);
-            const newJunction = { id: nextId++, type: 'junction', x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
-            circuitElements.push(newJunction); saveState(); redrawCanvas(); return;
-          }
-          const mousePos = getMousePos(e);
-          let needsStateSave = false;
-          if (selectedTool === "select") {
-            const clickedElement = getElementAtPos(mousePos.x, mousePos.y);
-            if (clickedElement) {
-              isMarqueeSelecting = false; isDragging = true;
-              if (!selectedElements.some(el => el.id === clickedElement.id)) { selectedElements = [clickedElement]; }
-              selectedElements.forEach(el => { el.dragOffset = { x: mousePos.x - el.x, y: mousePos.y - el.y }; });
+            const mousePos = getMousePos(e);
+            if (e.ctrlKey) {
+                e.preventDefault();
+                const newJunction = { id: nextId++, type: 'junction', x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
+                circuitElements.push(newJunction);
+                saveState();
+                redrawCanvas();
+                return;
+            }
+
+            let needsStateSave = false;
+            if (selectedTool === "select") {
+                const clickedElement = getElementAtPos(mousePos.x, mousePos.y);
+                if (clickedElement) {
+                    isMarqueeSelecting = false;
+                    isDragging = true;
+                    if (!selectedElements.some(el => el.id === clickedElement.id)) {
+                        selectedElements = [clickedElement];
+                    }
+                    selectedElements.forEach(el => {
+                        el.dragOffset = { x: mousePos.x - el.x, y: mousePos.y - el.y };
+                    });
+                } else {
+                    isMarqueeSelecting = true;
+                    isDragging = false;
+                    marqueeStartPoint = mousePos;
+                    selectedElements = [];
+                }
+            } else if (selectedTool === "wire") {
+                isDrawingWire = true;
+                wireStartPoint = getSnappingPoint(mousePos.x, mousePos.y);
+            } else if (selectedTool === "text") {
+                const textContent = prompt(`Support _ for subscript, ^ for superscript, and \\ for Greek (e.g., \\alpha, \\pi, \\Omega).`, "R_1 = 5 k\\Omega");
+                if (textContent) {
+                    const newEl = { id: nextId++, type: "text", text: textContent, x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
+                    circuitElements.push(newEl);
+                    selectedTool = "select";
+                    selectedElements = [newEl];
+                    needsStateSave = true;
+                }
             } else {
-              isMarqueeSelecting = true; isDragging = false;
-              marqueeStartPoint = mousePos; selectedElements = [];
+                const newEl = { id: nextId++, type: selectedTool, x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
+                circuitElements.push(newEl);
+                selectedTool = "select";
+                selectedElements = [newEl];
+                needsStateSave = true;
             }
-          } else if (selectedTool === "wire") {
-            isDrawingWire = true;
-            wireStartPoint = getSnappingPoint(mousePos.x, mousePos.y);
-          } else if (selectedTool === "text") {
-            const textContent = prompt(`Support _ for subscript, ^ for superscript, and \\ for Greek (e.g., \\alpha, \\pi, \\Omega).`, "R_1 = 5 k\\Omega");
-            if (textContent) {
-              const newEl = { id: nextId++, type: "text", text: textContent, x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
-              circuitElements.push(newEl); selectedTool = "select"; selectedElements = [newEl]; needsStateSave = true;
+            if (needsStateSave) saveState();
+            redrawCanvas();
+        }
+        
+        function updateHoveredWireSegment() {
+            if (selectedTool !== 'wire') {
+                hoveredWireSegment = null;
+                return;
             }
-          } else {
-            const newEl = { id: nextId++, type: selectedTool, x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
-            circuitElements.push(newEl); selectedTool = "select"; selectedElements = [newEl]; needsStateSave = true;
-          }
-          if (needsStateSave) saveState();
-          redrawCanvas();
+            hoveredWireSegment = null; // Reset
+            for (const wire of circuitElements) {
+                if (wire.type !== 'wire') continue;
+                const path = getWirePath(wire);
+                for (let i = 0; i < path.length - 1; i++) {
+                    const p1 = path[i];
+                    const p2 = path[i + 1];
+                    if (distToSegment(currentMousePos, p1, p2) < snapTolerance) {
+                        hoveredWireSegment = { p1, p2 };
+                        return;
+                    }
+                }
+            }
         }
 
         function handleMouseMove(e) {
@@ -621,6 +704,7 @@ h1 {
               el.y = snapToGrid(currentMousePos.y - el.dragOffset.y);
             });
           }
+          updateHoveredWireSegment();
           redrawCanvas();
         }
 
@@ -652,27 +736,59 @@ h1 {
         canvas.addEventListener("mouseup", handleMouseUp);
         canvas.addEventListener("mouseout", () => {
           isDrawingWire = false; isDragging = false; isMarqueeSelecting = false; marqueeStartPoint = null; isShiftDown = false;
+          hoveredWireSegment = null;
           redrawCanvas();
         });
         
         function getMousePos(e) { return { x: e.clientX - canvas.getBoundingClientRect().left, y: e.clientY - canvas.getBoundingClientRect().top }; }
         function snapToGrid(val) { return Math.round(val / (gridSize / 2)) * (gridSize / 2); }
-        function getSnappingPoint(x, y) {
-          for (const el of circuitElements) {
-            if (el.type === "wire" || el.type === "text" || el.type === "junction") continue;
-            const terminals = getAbsoluteTerminals(el);
-            for (const term of terminals) { if (Math.hypot(x - term.x, y - term.y) < snapTolerance) return { x: term.x, y: term.y, ownerId: el.id }; }
-          }
-          for (const el of circuitElements) {
-            if (el.type === 'junction') { if (Math.hypot(x - el.x, y - el.y) < snapTolerance) return { x: el.x, y: el.y, ownerId: el.id }; }
-          }
-          for (const el of circuitElements) {
-            if (el.type !== "wire") continue;
-            if (Math.hypot(x - el.start.x, y - el.start.y) < snapTolerance) return { x: el.start.x, y: el.start.y };
-            if (Math.hypot(x - el.end.x, y - el.end.y) < snapTolerance) return { x: el.end.x, y: el.end.y };
-          }
-          return { x: snapToGrid(x), y: snapToGrid(y), ownerId: null };
+
+        function getWireSegmentSnapPoint(pos) {
+            for (const wire of circuitElements) {
+                if (wire.type !== 'wire') continue;
+                const path = getWirePath(wire);
+                for (let i = 0; i < path.length - 1; i++) {
+                    const p1 = path[i];
+                    const p2 = path[i + 1];
+                    if (distToSegment(pos, p1, p2) < snapTolerance) {
+                        return projectPointOnSegment(pos, p1, p2);
+                    }
+                }
+            }
+            return null;
         }
+
+        function getSnappingPoint(x, y) {
+            // Priority 1: Snap to a point on an existing wire segment
+            if (selectedTool === 'wire') {
+                const segmentSnap = getWireSegmentSnapPoint({ x, y });
+                if (segmentSnap) return segmentSnap;
+            }
+
+            // Priority 2: Snap to component terminals
+            for (const el of circuitElements) {
+                if (el.type === "wire" || el.type === "text" || el.type === "junction") continue;
+                const terminals = getAbsoluteTerminals(el);
+                for (const term of terminals) {
+                    if (Math.hypot(x - term.x, y - term.y) < snapTolerance) return { x: term.x, y: term.y, ownerId: el.id };
+                }
+            }
+            // Priority 3: Snap to junctions
+            for (const el of circuitElements) {
+                if (el.type === 'junction') {
+                    if (Math.hypot(x - el.x, y - el.y) < snapTolerance) return { x: el.x, y: el.y, ownerId: el.id };
+                }
+            }
+            // Priority 4: Snap to wire endpoints
+            for (const el of circuitElements) {
+                if (el.type !== "wire") continue;
+                if (Math.hypot(x - el.start.x, y - el.start.y) < snapTolerance) return { x: el.start.x, y: el.start.y };
+                if (Math.hypot(x - el.end.x, y - el.end.y) < snapTolerance) return { x: el.end.x, y: el.end.y };
+            }
+            // Priority 5: Snap to grid
+            return { x: snapToGrid(x), y: snapToGrid(y), ownerId: null };
+        }
+
         function getAbsoluteTerminals(el) {
           const data = componentData[el.type];
           if (!data || !data.terminals) return [];
@@ -709,6 +825,18 @@ h1 {
           let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2; t = Math.max(0, Math.min(1, t));
           return Math.hypot( p.x - (v.x + t * (w.x - v.x)), p.y - (v.y + t * (w.y - v.y)) );
         }
+
+        function projectPointOnSegment(p, v, w) {
+            const l2 = (v.x - w.x) ** 2 + (v.y - w.y) ** 2;
+            if (l2 === 0) return { x: v.x, y: v.y }; // a zero-length segment
+            let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+            t = Math.max(0, Math.min(1, t)); // Clamp t to the segment
+            return {
+                x: v.x + t * (w.x - v.x),
+                y: v.y + t * (w.y - v.y)
+            };
+        }
+
         function isPointOnWire(point, wire) {
           const path = getWirePath(wire);
           for (let i = 0; i < path.length - 1; i++) { if (distToSegment(point, path[i], path[i + 1]) < snapTolerance) return true; }
@@ -931,63 +1059,43 @@ h1 {
           ctx.stroke();
         }
 
-        // --- ADD THIS NEW FUNCTION ---
         function drawACVoltageSource() {
           const r = 16;
           ctx.beginPath();
-          // Draw the outer circle and terminal wires
           ctx.arc(0, 0, r, 0, 2 * Math.PI);
           ctx.moveTo(0, -30);
           ctx.lineTo(0, -r);
           ctx.moveTo(0, r);
           ctx.lineTo(0, 30);
-
-          // Draw the sine wave inside using quadratic curves
           const waveStartX = -10;
           const waveEndX = 10;
           const waveAmplitude = 8;
           ctx.moveTo(waveStartX, 0);
           ctx.quadraticCurveTo(waveStartX / 2, -waveAmplitude, 0, 0);
           ctx.quadraticCurveTo(waveEndX / 2, waveAmplitude, waveEndX, 0);
-
           ctx.stroke();
         }
-        // --- END OF ADDITION ---
 
         function drawBattery() {
           const longPlateW = 34,
             shortPlateW = 14,
             plateY1 = -5,
             plateY2 = 5;
-
-          // Define position and size for the '+' symbol
           const plusSignX = 10;
-          const plusSignY = -16; // Positioned along the top wire
-          const plusSignSize = 4; // Half the length of the cross bars
-
+          const plusSignY = -16;
+          const plusSignSize = 4;
           ctx.beginPath();
-          // Top wire (positive terminal)
           ctx.moveTo(0, -30);
           ctx.lineTo(0, plateY1);
-          // Bottom wire (negative terminal)
           ctx.moveTo(0, plateY2);
           ctx.lineTo(0, 30);
-          // Long plate (positive plate)
           ctx.moveTo(-longPlateW / 2, plateY1);
           ctx.lineTo(longPlateW / 2, plateY1);
-
-          // --- START: Added code for '+' sign ---
-          // Horizontal bar of the '+'
           ctx.moveTo(plusSignX - plusSignSize, plusSignY);
           ctx.lineTo(plusSignX + plusSignSize, plusSignY);
-          // Vertical bar of the '+'
           ctx.moveTo(plusSignX, plusSignY - plusSignSize);
           ctx.lineTo(plusSignX, plusSignY + plusSignSize);
-          // --- END: Added code for '+' sign ---
-
-          ctx.stroke(); // Stroke the main body and the plus sign together
-
-          // Draw the thicker, shorter plate (negative plate)
+          ctx.stroke();
           ctx.save();
           ctx.lineWidth = ctx.lineWidth * 1.5;
           ctx.beginPath();
@@ -1007,26 +1115,18 @@ h1 {
           ctx.moveTo(-5, 10);
           ctx.lineTo(5, 10);
           ctx.stroke();
-        }// --- ADD THIS NEW FUNCTION ---
+        }
 function drawCurrentSource() {
-  const r = 16; // The radius of the outer circle
-  // Arrow parameters
+  const r = 16;
   const arrowY_start = -10;
   const arrowY_end = 10;
   const arrowHeadSize = 6;
-
   ctx.beginPath();
-  // Draw the outer circle and terminal wires
   ctx.arc(0, 0, r, 0, 2 * Math.PI);
   ctx.moveTo(0, -30);
   ctx.lineTo(0, -r);
   ctx.moveTo(0, r);
   ctx.lineTo(0, 30);
-
-  // Draw the arrow inside (pointing up by convention)
-  // Main shaft
-  
-  // Arrowhead
   ctx.moveTo(-arrowHeadSize / 2, arrowY_start + arrowHeadSize);
   ctx.lineTo(0, arrowY_start);
   ctx.lineTo(arrowHeadSize / 2, arrowY_start + arrowHeadSize);
@@ -1035,7 +1135,6 @@ function drawCurrentSource() {
   ctx.lineTo(0, -5);
   ctx.stroke();
 }
-// --- END OF ADDITION ---
         function calculateBoundingBox() {
             if (circuitElements.length === 0) return null;
             let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
