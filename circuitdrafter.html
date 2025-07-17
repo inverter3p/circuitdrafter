@@ -952,7 +952,7 @@ h1 {
 
         function drawText(el, isSelected) {
           ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillStyle = isSelected ? "#007bff" : "#000";
-          const subSuperScriptScale = 0.7; const subSuperScriptYOffset = 0.3;
+          const subSuperScriptScale = 0.85; const subSuperScriptYOffset = 0.35;
           const chunks = parseText(el.text); const { width: totalWidth } = measureParsedText(el.text);
           let currentX = -totalWidth / 2; ctx.textAlign = "left";
           chunks.forEach(chunk => {
@@ -968,7 +968,7 @@ h1 {
         // --- V0.2a: Revised Component Drawing Library ---
         function drawManualJunction() { ctx.beginPath(); ctx.arc(0, 0, 4, 0, 2 * Math.PI); ctx.fillStyle = ctx.strokeStyle; ctx.fill(); }
         function drawResistor() {
-          const w = 22,
+          const w = 18,
             h = 9;
           ctx.beginPath();
           ctx.moveTo(-40, 0);
@@ -1097,7 +1097,7 @@ h1 {
           ctx.lineTo(plusSignX, plusSignY + plusSignSize);
           ctx.stroke();
           ctx.save();
-          ctx.lineWidth = ctx.lineWidth * 1.5;
+          ctx.lineWidth = ctx.lineWidth * 2;
           ctx.beginPath();
           ctx.moveTo(-shortPlateW / 2, plateY2);
           ctx.lineTo(shortPlateW / 2, plateY2);
