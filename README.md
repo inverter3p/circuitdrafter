@@ -76,6 +76,8 @@ Since this is a self-contained application, running it locally is extremely simp
 That's it! You're ready to start drafting.
 
 ---
+<img width="800"  alt="circuit-diagram (11)" src="https://github.com/user-attachments/assets/a0d6743d-8c30-48fa-bb09-aa8d223a1312" />
+
 
 ## ⌨️ Controls & Keyboard Shortcuts
 
