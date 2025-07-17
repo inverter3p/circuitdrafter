@@ -9,9 +9,10 @@
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=folder_open" />
     <!-- Google Material Icons -->
     
-    <!-- Link to Google Font (Montserrat) -->
+    <!-- Link to Google Font (Outfit) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700&display=swap" rel="stylesheet">
@@ -28,10 +29,10 @@
         color: #333;
       }
       h1 {
-  font-family: 'Outfit', sans-serif;
-  font-weight: 700; /* Use the bold weight we imported */
-  color: #212529;
-}
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+        color: #212529;
+      }
       #toolbar {
         margin-bottom: 20px;
         background: #ffffff;
@@ -78,7 +79,7 @@
         background-color: #f8f9fa;
         transition-duration: 0.1s;
       }
-      .tool-btn.selected {
+      .tool-btn.selected, .action-btn.selected {
         background-color: #007bff;
         border-color: #007bff;
         color: white;
@@ -91,25 +92,26 @@
         stroke: #495057;
         transition: all 0.2s ease-out;
       }
-      .tool-btn.selected svg,
-      .tool-btn.selected .material-icons {
-        stroke: white;
-        color: white;
+      /* Universal rule for selected button icons */
+      .tool-btn.selected svg, .tool-btn.selected .material-icons,
+      .action-btn.selected svg, .action-btn.selected .material-icons {
+          stroke: white;
+          color: white;
       }
+      /* Rule for filling shapes within selected icons */
+      .tool-btn.selected svg path[fill]:not([fill="none"]) {
+          fill: white;
+      }
+      /* Rule for filling shapes within normal icons */
+      .tool-btn svg path[fill]:not([fill="none"]) {
+          fill: #495057;
+      }
+      /* Specific override for select icon arrow */
       .tool-btn #select-icon-arrow {
-        fill: #495057;
+          fill: #495057;
       }
       .tool-btn.selected #select-icon-arrow {
-        fill: white;
-      }
-      .tool-btn.selected #select-icon-box {
-        stroke: white;
-      }
-      .tool-btn #diode-icon-fill {
-        fill: #495057;
-      }
-      .tool-btn.selected #diode-icon-fill {
-        fill: white;
+          fill: white;
       }
       .divider {
         width: 1px;
@@ -125,19 +127,17 @@
         box-shadow: none;
         border-color: #ced4da;
       }
-      #exportBtn {
-        width: auto;
-        padding: 0 20px;
+      /* --- START: Style for the new green file button --- */
+      #fileOpsBtn {
         background-color: #28a745;
         border-color: #28a745;
         color: white;
-        font-weight: 600;
-        font-size: 16px;
       }
-      #exportBtn:hover {
+      #fileOpsBtn:hover:not(:disabled) {
         background-color: #218838;
         border-color: #1e7e34;
       }
+      /* --- END: Style for the new green file button --- */
       #circuitCanvas {
         border: 1px solid #dee2e6;
         border-radius: 8px;
@@ -201,43 +201,36 @@
         font-size: 28px;
         color: #007bff;
       }
-      /* --- Add this new CSS block to your <style> section --- */
-
-/* Title and Logo Styling */
-.title-container {
-  display: flex;          /* Use Flexbox for easy alignment */
-  align-items: center;    /* Vertically center the logo and text */
-  gap: 15px;              /* Create space between the logo and title */
-  margin-bottom: 20px;    /* Space below the title block */
-}
-
-.logo {
-  height: 75px;           /* Control the logo size */
-}
-
-/* Adjust the h1 to remove default margins that interfere with flex alignment */
-h1 {
-  margin: 0;
-  /* Your existing font styles for h1 can remain here */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  color: #343a40;
-}
-#tagline {
-  margin: 2px 0 0 0; /* Removes default paragraph margins and adds a tiny bit of space */
-  font-size: 1.1rem;
-  color: #6c757d; /* A subtle, professional gray */
-  font-weight: 400; /* Normal font weight */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-}
+      .title-container {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+      .logo {
+        height: 75px;
+      }
+      h1 {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        color: #343a40;
+      }
+      #tagline {
+        margin: 2px 0 0 0;
+        font-size: 1.1rem;
+        color: #6c757d;
+        font-weight: 400;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      }
     </style>
   </head>
   <body>
-            <div class="title-container">
+    <div class="title-container">
       <img src="https://github.com/user-attachments/assets/29b49b83-8617-48fc-aabf-a31d292b27f1" alt="Circuit Drafter Logo" class="logo">
       <div>
-        <h1>Circuit Drafter (V0.21a)</h1>
+        <h1>Circuit Drafter (V0.28a)</h1>
         <p id="tagline">Effortless circuit schematics.</p>
       </div>
     </div>
@@ -279,8 +272,8 @@ h1 {
               stroke-linejoin="round"
               stroke-linecap="round"
             ></path>
-            <circle id="pointA" cx="4" cy="12" r="2" stroke="red" fill="red" />
-            <circle id="pointA" cx="20" cy="12" r="2" stroke="red" fill="red" />
+            <circle cx="4" cy="12" r="2" stroke="red" fill="red" />
+            <circle cx="20" cy="12" r="2" stroke="red" fill="red" />
           </svg>
         </button>
         <button class="tool-btn" id="tool-text" title="Text (T)">
@@ -317,26 +310,51 @@ h1 {
             ></path>
           </svg>
         </button>
+        <button class="tool-btn" id="tool-switch" title="Switch (Double-click to toggle)">
+            <svg viewBox="-45 -20 50 40">
+                <path d="M-40,0 L-30,0 M-8, 0 L10,0 M-30,0 L-8,-18" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                <circle cx="-30" cy="0" r="4" stroke-width="1.5" fill="white"/>
+                <circle cx="-8" cy="0" r="4" stroke-width="1.5" fill="white"/>
+            </svg>
+        </button>
       </div>
       <div class="divider"></div>
       <div class="tool-group">
-        <button class="tool-btn" id="tool-diode" title="Diode">
-          <svg viewBox="-2 -10 24 20">
-            <path
-              d="M-4,0 H12 M16,0 H22"
-              fill="none"
-              stroke-linejoin="round"
-              stroke-linecap="round"
-            />
-            <path id="diode-icon-fill" d="M5,-6 V6 L16,0 Z" />
-            <path
-              d="M16,-6 V6"
-              fill="none"
-              stroke-linejoin="round"
-              stroke-linecap="round"
-            />
-          </svg>
-        </button>
+        <div class="tool-dropdown">
+            <button class="tool-btn dropdown-trigger" title="Diodes">
+                <svg viewBox="-2 -10 24 20">
+                    <path d="M-4,0 H12 M16,0 H22" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+                    <path fill="#495057" d="M5,-6 V6 L16,0 Z" />
+                    <path d="M16,-6 V6" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+                </svg>
+            </button>
+            <div class="dropdown-content">
+                <button class="tool-btn" id="tool-diode" title="Diode">
+                    <svg viewBox="-2 -10 24 20">
+                        <path d="M-4,0 H12 M16,0 H22" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+                        <path fill="#495057" d="M5,-6 V6 L16,0 Z" />
+                        <path d="M16,-6 V6" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <button class="tool-btn" id="tool-zener" title="Zener Diode">
+                    <svg viewBox="-2 -12 24 24">
+                        <path d="M-4,0 H12 M16,0 H22" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+                        <path fill="#495057" d="M5,-6 V6 L16,0 Z" />
+                        <path d="M16,-6 V6" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+                        <path d="M16,-6 L13,-8 M16,6 L19,8" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <button class="tool-btn" id="tool-led" title="LED">
+                    <svg viewBox="-2 -16 26 26">
+                        <path d="M-4,0 H12 M16,0 H22" fill="none"/>
+                        <path d="M5,-6 V6 L16,0 Z" fill="#495057"/>
+                        <path d="M16,-6 V6" fill="none"/>
+                        <path d="M10,-10 L15,-15 M13,-15 H15 V-13" fill="none" stroke-linecap="round"/>
+                        <path d="M14,-8 L19,-13 M17,-13 H19 V-11" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
         <div class="tool-dropdown">
           <button class="tool-btn dropdown-trigger" title="Voltage Sources">
             <svg viewBox="-12 -12 24 24">
@@ -369,7 +387,6 @@ h1 {
                 ></path>
               </svg>
             </button>
-            <!-- START: New Current Source Button -->
             <button
               class="tool-btn"
               id="tool-currentsource"
@@ -377,11 +394,9 @@ h1 {
             >
               <svg viewBox="-12 -12 24 24">
                 <circle cx="0" cy="0" r="10" fill="none"></circle>
-                <!-- Arrow path for the current source symbol -->
                 <path d="M0,7 L0,-7 M-4,-2 L0,-7 L4,-2" fill="none" stroke-linecap="round"></path>
               </svg>
             </button>
-            <!-- END: New Current Source Button -->
           </div>
         </div>
         <button class="tool-btn" id="tool-battery" title="Battery">
@@ -426,31 +441,46 @@ h1 {
         </button>
       </div>
       <div class="divider"></div>
-      <button class="action-btn" id="exportBtn">Export</button>
+      <!-- START: File Operations Dropdown -->
+      <div class="tool-dropdown">
+          <button id="fileOpsBtn" class="action-btn dropdown-trigger" title="File Operations">
+              <i class="material-icons">save</i>
+          </button>
+          <div class="dropdown-content">
+              <button class="action-btn" id="saveExportBtn" title="Save or Export... (Ctrl+S)">
+                  <i class="material-icons">save_alt</i>
+              </button>
+              <button class="action-btn" id="loadBtn" title="Load File (Ctrl+O)">
+                  <i class="material-symbols-outlined">
+folder_open
+</i>
+              </button>
+          </div>
+      </div>
+      <!-- END: File Operations Dropdown -->
     </div>
 
     <canvas id="circuitCanvas" width="1000" height="700"></canvas>
+    <input type="file" id="fileInput" accept=".json" style="display: none;" />
 
     <script>
       /****************************************************************************
-       * Circuit Drafter - V0.2a (Date: 2023-10-27)
+       * Circuit Drafter - V0.28a (Date: 2024-05-22)
        *
        * SUMMARY OF CHANGES:
-       * - Advanced Text Rendering: Implemented a dependency-free custom text
-       *   parser. It supports subscripts (`_`), superscripts (`^`), and a
-       *   wide range of Greek letters (`\alpha`, `\mu`, etc.), replacing all
-       *   previous text handling logic.
-       * - Revised Component Aesthetics: Updated all component drawing functions
-       *   to use a cleaner, custom visual style for better clarity.
-       * - This version is 100% self-contained and works from a local file.
+       * - Bug Fix (PNG Export): Corrected the drawing context handling,
+       *   which was preventing the PNG export from functioning properly.
+       * - UI Enhancement (Green Button): The main file operations button
+       *   is now styled in green for better visibility.
        ****************************************************************************/
       document.addEventListener("DOMContentLoaded", () => {
         let canvas = document.getElementById("circuitCanvas");
         let ctx = canvas.getContext("2d");
+        const fileInput = document.getElementById('fileInput');
         
         let selectedTool = "select";
         let isDrawingWire = false, isDragging = false, isShiftDown = false;
-        let wireStartPoint = null, currentMousePos = { x: 0, y: 0 };
+        let wireStartPoint = null, currentMousePos = { x: 0, y: 0 }, dragStartPoint = null;
         let circuitElements = [];
         let nextId = 0;
         const gridSize = 20, snapTolerance = 12, textFontSize = 16;
@@ -464,6 +494,8 @@ h1 {
         const componentData = {
           resistor: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] }, capacitor: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] },
           inductor: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] }, diode: { width: 50, height: 30, terminals: [{ x: -25, y: 0 }, { x: 25, y: 0 }] },
+          zener: { width: 50, height: 30, terminals: [{ x: -25, y: 0 }, { x: 25, y: 0 }] }, led: { width: 50, height: 30, terminals: [{ x: -25, y: 0 }, { x: 25, y: 0 }] },
+          switch: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] },
           voltage: { width: 60, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] }, acvoltage: { width: 60, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] },
           currentsource: { width: 60, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] }, battery: { width: 40, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] },
           gnd: { width: 30, height: 30, terminals: [{ x: 0, y: -10 }] },
@@ -475,11 +507,16 @@ h1 {
         };
 
         function updateToolbar() {
-          document.querySelectorAll(".tool-btn").forEach((btn) => btn.classList.remove("selected"));
-          document.getElementById(`tool-${selectedTool}`)?.classList.add("selected");
+          document.querySelectorAll(".tool-btn, .action-btn").forEach((btn) => btn.classList.remove("selected"));
+          const currentToolButton = document.getElementById(`tool-${selectedTool}`);
+          if (currentToolButton) {
+              currentToolButton.classList.add("selected");
+              const parentDropdown = currentToolButton.closest('.tool-dropdown');
+              if (parentDropdown) parentDropdown.querySelector('.dropdown-trigger').classList.add('selected');
+          }
           actionButtons.undo.disabled = historyIndex <= 0;
           actionButtons.redo.disabled = historyIndex >= history.length - 1;
-          const isComponentSelected = selectedElements.some(el => el.type !== "wire" && el.type !== "text" && el.type !== 'junction' && el.type !== 'open_terminal'); // MODIFIED
+          const isComponentSelected = selectedElements.some(el => el.type !== "wire" && el.type !== "text" && el.type !== 'junction' && el.type !== 'open_terminal');
           actionButtons.rotate.disabled = !isComponentSelected;
           actionButtons.copy.disabled = selectedElements.length === 0;
           actionButtons.delete.disabled = selectedElements.length === 0;
@@ -494,53 +531,46 @@ h1 {
             if (selectedTool !== "select") selectedElements = [];
           } else if (target.id === "undoBtn") undo(); else if (target.id === "redoBtn") redo();
           else if (target.id === "copyBtn") copySelected(); else if (target.id === "rotateBtn") rotateSelected();
-          else if (target.id === "deleteBtn") deleteSelected(); else if (target.id === "exportBtn") exportCircuit();
+          else if (target.id === "deleteBtn") deleteSelected();
+          else if (target.id === "saveExportBtn") handleSaveExport();
+          else if (target.id === 'loadBtn') fileInput.click();
           redrawCanvas();
         });
 
-        // --- CORRECTED KEYDOWN EVENT LISTENER ---
         window.addEventListener("keydown", (e) => {
           if (document.activeElement.tagName === "INPUT") return;
-
-          // Handle Shift modifier state independently
-          if (e.key === "Shift") {
-            isShiftDown = true;
-          }
-
-          // Handle Ctrl/Cmd + Key combinations
+          if (e.key === "Shift") isShiftDown = true;
+          
           if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
             switch (e.key.toLowerCase()) {
-              case 'z': e.preventDefault(); undo(); break;
-              case 'y': e.preventDefault(); redo(); break;
-              case 'd': e.preventDefault(); copySelected(); break;
+              case 'z': undo(); break;
+              case 'y': redo(); break;
+              case 'd': copySelected(); break;
+              case 's': handleSaveExport(); break;
+              case 'o': fileInput.click(); break;
             }
           } 
-          // Handle single-key shortcuts only if Ctrl/Cmd are NOT pressed
           else {
             switch (e.key.toLowerCase()) {
-              case 'r':
-                if (selectedElements.length > 0) { e.preventDefault(); rotateSelected(); }
-                break;
-              case 'delete':
-              case 'backspace':
-                if (selectedElements.length > 0) { e.preventDefault(); deleteSelected(); }
-                break;
+              case 'r': if (selectedElements.length > 0) { e.preventDefault(); rotateSelected(); } break;
+              case 'delete': case 'backspace': if (selectedElements.length > 0) { e.preventDefault(); deleteSelected(); } break;
               case 'w': selectedTool = "wire"; break;
               case 's': selectedTool = "select"; break;
               case 't': selectedTool = "text"; break;
             }
           }
-
-          // Redraw at the end to reflect any changes
           redrawCanvas();
         });
 
         window.addEventListener("keyup", (e) => { if (e.key === "Shift") { isShiftDown = false; redrawCanvas(); } });
         window.addEventListener("blur", () => { isShiftDown = false; });
+        fileInput.addEventListener('change', handleFileLoad);
 
         function saveState() {
           history = history.slice(0, historyIndex + 1);
-          history.push(JSON.parse(JSON.stringify(circuitElements)));
+          const cleanState = JSON.parse(JSON.stringify(circuitElements, (key, value) => key === 'dragInitialState' ? undefined : value));
+          history.push(cleanState);
           historyIndex++;
           updateToolbar();
         }
@@ -552,14 +582,20 @@ h1 {
           const newSelection = [];
           selectedElements.forEach(el => {
               const newEl = JSON.parse(JSON.stringify(el)); newEl.id = nextId++;
-              newEl.x += gridSize; newEl.y += gridSize; circuitElements.push(newEl); newSelection.push(newEl);
+              if (newEl.type === 'wire') {
+                  newEl.start.x += gridSize; newEl.start.y += gridSize;
+                  newEl.end.x += gridSize; newEl.end.y += gridSize;
+              } else {
+                  newEl.x += gridSize; newEl.y += gridSize;
+              }
+              circuitElements.push(newEl); newSelection.push(newEl);
           });
           selectedElements = newSelection; saveState(); redrawCanvas();
         }
         function rotateSelected() {
           if (selectedElements.length === 0) return;
           selectedElements.forEach(el => {
-              if (el.type !== 'wire' && el.type !== 'text' && el.type !== 'junction' && el.type !== 'open_terminal') { el.rotation = (el.rotation + 45) % 360; } // MODIFIED
+              if (el.type !== 'wire' && el.type !== 'text' && el.type !== 'junction' && el.type !== 'open_terminal') { el.rotation = (el.rotation + 45) % 360; }
           });
           saveState(); redrawCanvas();
         }
@@ -574,39 +610,23 @@ h1 {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawGrid();
             circuitElements.forEach((el) => drawElement(el));
-
-            // Draw wire hover highlight
             if (hoveredWireSegment) {
-                ctx.save();
-                ctx.strokeStyle = '#007bff';
-                ctx.lineWidth = 4;
-                ctx.shadowColor = 'rgba(0, 123, 255, 0.7)';
-                ctx.shadowBlur = 8;
-                ctx.lineCap = 'round';
-                ctx.beginPath();
-                ctx.moveTo(hoveredWireSegment.p1.x, hoveredWireSegment.p1.y);
-                ctx.lineTo(hoveredWireSegment.p2.x, hoveredWireSegment.p2.y);
-                ctx.stroke();
-                ctx.restore();
+                ctx.save(); ctx.strokeStyle = '#007bff'; ctx.lineWidth = 4;
+                ctx.shadowColor = 'rgba(0, 123, 255, 0.7)'; ctx.shadowBlur = 8;
+                ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(hoveredWireSegment.p1.x, hoveredWireSegment.p1.y);
+                ctx.lineTo(hoveredWireSegment.p2.x, hoveredWireSegment.p2.y); ctx.stroke(); ctx.restore();
             }
-          
             drawJunctions();
             drawSelection();
-
-            // Draw wire preview and snap indicators
             if (isDrawingWire && wireStartPoint) {
                 let endPoint = getSnappingPoint(currentMousePos.x, currentMousePos.y);
                 drawWirePreview(wireStartPoint, endPoint);
-                drawSnapIndicator(endPoint); // Draw red dot at the preview's end
+                drawSnapIndicator(endPoint);
             } else if (selectedTool === "wire") {
                 const snapPoint = getSnappingPoint(currentMousePos.x, currentMousePos.y);
-                drawSnapIndicator(snapPoint); // Draw red dot when not drawing
+                drawSnapIndicator(snapPoint);
             }
-
-            if (isMarqueeSelecting && marqueeStartPoint) {
-                drawMarquee(marqueeStartPoint, currentMousePos);
-            }
-            
+            if (isMarqueeSelecting && marqueeStartPoint) { drawMarquee(marqueeStartPoint, currentMousePos); }
             updateToolbar();
         }
 
@@ -620,11 +640,11 @@ h1 {
             switch (el.type) {
               case "resistor": drawResistor(); break; case "capacitor": drawCapacitor(); break;
               case "inductor": drawInductor(); break; case "diode": drawDiode(); break;
-              case "voltage": drawVoltageSource(); break; case "acvoltage": drawACVoltageSource(); break;
-              case "currentsource": drawCurrentSource(); break; case "battery": drawBattery(); break;
-              case "gnd": drawGround(); break; 
-              case "junction": drawManualJunction(); break;
-              case "open_terminal": drawOpenTerminal(); break; // NEW
+              case "zener": drawZenerDiode(); break; case "led": drawLED(); break;
+              case "switch": drawSwitch(el); break; case "voltage": drawVoltageSource(); break;
+              case "acvoltage": drawACVoltageSource(); break; case "currentsource": drawCurrentSource(); break;
+              case "battery": drawBattery(); break; case "gnd": drawGround(); break; 
+              case "junction": drawManualJunction(); break; case "open_terminal": drawOpenTerminal(); break;
             }
           }
           ctx.restore();
@@ -638,32 +658,22 @@ h1 {
 
         function handleMouseDown(e) {
             const mousePos = getMousePos(e);
-            if (e.ctrlKey) {
+            if (e.ctrlKey && !e.metaKey) {
                 e.preventDefault();
                 const newJunction = { id: nextId++, type: 'junction', x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
                 circuitElements.push(newJunction);
-                saveState();
-                redrawCanvas();
-                return;
+                saveState(); redrawCanvas(); return;
             }
 
             let needsStateSave = false;
             if (selectedTool === "select") {
                 const clickedElement = getElementAtPos(mousePos.x, mousePos.y);
                 if (clickedElement) {
-                    isMarqueeSelecting = false;
-                    isDragging = true;
-                    if (!selectedElements.some(el => el.id === clickedElement.id)) {
-                        selectedElements = [clickedElement];
-                    }
-                    selectedElements.forEach(el => {
-                        el.dragOffset = { x: mousePos.x - el.x, y: mousePos.y - el.y };
-                    });
+                    isMarqueeSelecting = false; isDragging = true; dragStartPoint = mousePos;
+                    if (!selectedElements.some(el => el.id === clickedElement.id)) { selectedElements = [clickedElement]; }
+                    selectedElements.forEach(el => { el.dragInitialState = { x: el.x, y: el.y, start: el.start ? { ...el.start } : undefined, end: el.end ? { ...el.end } : undefined }; });
                 } else {
-                    isMarqueeSelecting = true;
-                    isDragging = false;
-                    marqueeStartPoint = mousePos;
-                    selectedElements = [];
+                    isMarqueeSelecting = true; isDragging = false; marqueeStartPoint = mousePos; selectedElements = [];
                 }
             } else if (selectedTool === "wire") {
                 isDrawingWire = true;
@@ -672,61 +682,55 @@ h1 {
                 const textContent = prompt(`Support _ for subscript, ^ for superscript, and \\ for Greek (e.g., \\alpha, \\pi, \\Omega).`, "R_1 = 5 k\\Omega");
                 if (textContent) {
                     const newEl = { id: nextId++, type: "text", text: textContent, x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
-                    circuitElements.push(newEl);
-                    selectedTool = "select";
-                    selectedElements = [newEl];
-                    needsStateSave = true;
+                    circuitElements.push(newEl); selectedTool = "select"; selectedElements = [newEl]; needsStateSave = true;
                 }
             } else {
                 const newEl = { id: nextId++, type: selectedTool, x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
-                circuitElements.push(newEl);
-                selectedTool = "select";
-                selectedElements = [newEl];
-                needsStateSave = true;
+                if (newEl.type === 'switch') { newEl.state = 'open'; }
+                circuitElements.push(newEl); selectedTool = "select"; selectedElements = [newEl]; needsStateSave = true;
             }
             if (needsStateSave) saveState();
             redrawCanvas();
         }
         
         function updateHoveredWireSegment() {
-            if (selectedTool !== 'wire') {
-                hoveredWireSegment = null;
-                return;
-            }
-            hoveredWireSegment = null; // Reset
+            if (selectedTool !== 'wire') { hoveredWireSegment = null; return; }
+            hoveredWireSegment = null;
             for (const wire of circuitElements) {
                 if (wire.type !== 'wire') continue;
                 const path = getWirePath(wire);
                 for (let i = 0; i < path.length - 1; i++) {
-                    const p1 = path[i];
-                    const p2 = path[i + 1];
-                    if (distToSegment(currentMousePos, p1, p2) < snapTolerance) {
-                        hoveredWireSegment = { p1, p2 };
-                        return;
-                    }
+                    const p1 = path[i]; const p2 = path[i + 1];
+                    if (distToSegment(currentMousePos, p1, p2) < snapTolerance) { hoveredWireSegment = { p1, p2 }; return; }
                 }
             }
         }
 
         function handleMouseMove(e) {
-          currentMousePos = getMousePos(e);
-          if (isDragging && selectedElements.length > 0) {
-            selectedElements.forEach(el => {
-              el.x = snapToGrid(currentMousePos.x - el.dragOffset.x);
-              el.y = snapToGrid(currentMousePos.y - el.dragOffset.y);
-            });
-          }
-          updateHoveredWireSegment();
-          redrawCanvas();
+            currentMousePos = getMousePos(e);
+            if (isDragging && selectedElements.length > 0 && dragStartPoint) {
+                const dx = currentMousePos.x - dragStartPoint.x, dy = currentMousePos.y - dragStartPoint.y;
+                selectedElements.forEach(el => {
+                    const initialState = el.dragInitialState; if (!initialState) return;
+                    if (el.type === 'wire') {
+                        if (initialState.start && initialState.end) {
+                            el.start.x = snapToGrid(initialState.start.x + dx); el.start.y = snapToGrid(initialState.start.y + dy);
+                            el.end.x = snapToGrid(initialState.end.x + dx); el.end.y = snapToGrid(initialState.end.y + dy);
+                        }
+                    } else {
+                        if (initialState.x !== undefined && initialState.y !== undefined) {
+                           el.x = snapToGrid(initialState.x + dx); el.y = snapToGrid(initialState.y + dy);
+                        }
+                    }
+                });
+            }
+            updateHoveredWireSegment(); redrawCanvas();
         }
 
         function handleMouseUp(e) {
           let needsStateSave = false;
           if (isMarqueeSelecting) {
-            const rect = {
-                x1: Math.min(marqueeStartPoint.x, currentMousePos.x), y1: Math.min(marqueeStartPoint.y, currentMousePos.y),
-                x2: Math.max(marqueeStartPoint.x, currentMousePos.x), y2: Math.max(marqueeStartPoint.y, currentMousePos.y)
-            };
+            const rect = { x1: Math.min(marqueeStartPoint.x, currentMousePos.x), y1: Math.min(marqueeStartPoint.y, currentMousePos.y), x2: Math.max(marqueeStartPoint.x, currentMousePos.x), y2: Math.max(marqueeStartPoint.y, currentMousePos.y) };
             selectedElements = circuitElements.filter(el => isElementInRect(el, rect));
           }
           if (isDrawingWire) {
@@ -737,8 +741,8 @@ h1 {
             }
           }
           if (isDragging) { needsStateSave = true; }
-          isDrawingWire = false; isDragging = false; isMarqueeSelecting = false; marqueeStartPoint = null;
-          circuitElements.forEach(el => delete el.dragOffset);
+          isDrawingWire = false; isDragging = false; isMarqueeSelecting = false; marqueeStartPoint = null; dragStartPoint = null;
+          circuitElements.forEach(el => delete el.dragInitialState);
           if (needsStateSave) saveState();
           redrawCanvas();
         }
@@ -746,14 +750,18 @@ h1 {
         function handleDoubleClick(e) {
             e.preventDefault();
             const mousePos = getMousePos(e);
+            const clickedElement = getElementAtPos(mousePos.x, mousePos.y);
+
+            if (clickedElement && clickedElement.type === 'switch') {
+                clickedElement.state = (clickedElement.state === 'closed') ? 'open' : 'closed';
+                saveState();
+                redrawCanvas();
+                return;
+            }
             
-            // Add an open terminal (white circle) on double click
-            // MODIFIED: Changed type from 'junction' to 'open_terminal'
             const newTerminal = { id: nextId++, type: 'open_terminal', x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
             circuitElements.push(newTerminal);
-            
-            saveState();
-            redrawCanvas();
+            saveState(); redrawCanvas();
         }
 
         canvas.addEventListener("mousedown", handleMouseDown);
@@ -762,8 +770,7 @@ h1 {
         canvas.addEventListener("dblclick", handleDoubleClick);
         canvas.addEventListener("mouseout", () => {
           isDrawingWire = false; isDragging = false; isMarqueeSelecting = false; marqueeStartPoint = null; isShiftDown = false;
-          hoveredWireSegment = null;
-          redrawCanvas();
+          hoveredWireSegment = null; redrawCanvas();
         });
         
         function getMousePos(e) { return { x: e.clientX - canvas.getBoundingClientRect().left, y: e.clientY - canvas.getBoundingClientRect().top }; }
@@ -774,44 +781,28 @@ h1 {
                 if (wire.type !== 'wire') continue;
                 const path = getWirePath(wire);
                 for (let i = 0; i < path.length - 1; i++) {
-                    const p1 = path[i];
-                    const p2 = path[i + 1];
-                    if (distToSegment(pos, p1, p2) < snapTolerance) {
-                        return projectPointOnSegment(pos, p1, p2);
-                    }
+                    const p1 = path[i]; const p2 = path[i + 1];
+                    if (distToSegment(pos, p1, p2) < snapTolerance) { return projectPointOnSegment(pos, p1, p2); }
                 }
             }
             return null;
         }
 
         function getSnappingPoint(x, y) {
-            // Priority 1: Snap to a point on an existing wire segment
-            if (selectedTool === 'wire') {
-                const segmentSnap = getWireSegmentSnapPoint({ x, y });
-                if (segmentSnap) return segmentSnap;
-            }
-
-            // Priority 2: Snap to component terminals
+            if (selectedTool === 'wire') { const segmentSnap = getWireSegmentSnapPoint({ x, y }); if (segmentSnap) return segmentSnap; }
             for (const el of circuitElements) {
-                if (el.type === "wire" || el.type === "text" || el.type === "junction" || el.type === 'open_terminal') continue; // MODIFIED
+                if (el.type === "wire" || el.type === "text" || el.type === "junction" || el.type === 'open_terminal') continue;
                 const terminals = getAbsoluteTerminals(el);
-                for (const term of terminals) {
-                    if (Math.hypot(x - term.x, y - term.y) < snapTolerance) return { x: term.x, y: term.y, ownerId: el.id };
-                }
+                for (const term of terminals) { if (Math.hypot(x - term.x, y - term.y) < snapTolerance) return { x: term.x, y: term.y, ownerId: el.id }; }
             }
-            // Priority 3: Snap to junctions and open terminals
             for (const el of circuitElements) {
-                if (el.type === 'junction' || el.type === 'open_terminal') { // MODIFIED
-                    if (Math.hypot(x - el.x, y - el.y) < snapTolerance) return { x: el.x, y: el.y, ownerId: el.id };
-                }
+                if (el.type === 'junction' || el.type === 'open_terminal') { if (Math.hypot(x - el.x, y - el.y) < snapTolerance) return { x: el.x, y: el.y, ownerId: el.id }; }
             }
-            // Priority 4: Snap to wire endpoints
             for (const el of circuitElements) {
                 if (el.type !== "wire") continue;
                 if (Math.hypot(x - el.start.x, y - el.start.y) < snapTolerance) return { x: el.start.x, y: el.start.y };
                 if (Math.hypot(x - el.end.x, y - el.end.y) < snapTolerance) return { x: el.end.x, y: el.end.y };
             }
-            // Priority 5: Snap to grid
             return { x: snapToGrid(x), y: snapToGrid(y), ownerId: null };
         }
 
@@ -824,13 +815,11 @@ h1 {
         function getElementAtPos(x, y) {
           for (let i = circuitElements.length - 1; i >= 0; i--) {
             const el = circuitElements[i];
-            if (el.type === 'junction' || el.type === 'open_terminal') { // MODIFIED
-                if (Math.hypot(x - el.x, y - el.y) < snapTolerance) return el; 
-            }
+            if (el.type === 'junction' || el.type === 'open_terminal') { if (Math.hypot(x - el.x, y - el.y) < snapTolerance) return el;  }
           }
           for (let i = circuitElements.length - 1; i >= 0; i--) {
             const el = circuitElements[i];
-            if (el.type === "wire" || el.type === "junction" || el.type === 'open_terminal') continue; // MODIFIED
+            if (el.type === "wire" || el.type === "junction" || el.type === 'open_terminal') continue;
             if (el.type === "text") {
               const { width, height } = measureParsedText(el.text);
               if (x > el.x - width / 2 && x < el.x + width / 2 && y > el.y - height / 2 && y < el.y + height / 2) return el;
@@ -856,13 +845,10 @@ h1 {
 
         function projectPointOnSegment(p, v, w) {
             const l2 = (v.x - w.x) ** 2 + (v.y - w.y) ** 2;
-            if (l2 === 0) return { x: v.x, y: v.y }; // a zero-length segment
+            if (l2 === 0) return { x: v.x, y: v.y };
             let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
-            t = Math.max(0, Math.min(1, t)); // Clamp t to the segment
-            return {
-                x: v.x + t * (w.x - v.x),
-                y: v.y + t * (w.y - v.y)
-            };
+            t = Math.max(0, Math.min(1, t));
+            return { x: v.x + t * (w.x - v.x), y: v.y + t * (w.y - v.y) };
         }
 
         function isPointOnWire(point, wire) {
@@ -896,7 +882,7 @@ h1 {
                   const { width, height } = measureParsedText(el.text);
                   const padding = 4;
                   ctx.strokeRect(el.x - width / 2 - padding, el.y - height / 2 - padding, width + padding * 2, height + padding * 2);
-              } else if (el.type === "junction" || el.type === "open_terminal") { // MODIFIED
+              } else if (el.type === "junction" || el.type === "open_terminal") {
                   ctx.translate(el.x, el.y); ctx.beginPath(); ctx.arc(0, 0, 8, 0, 2 * Math.PI); ctx.stroke();
               } else {
                   const data = componentData[el.type]; ctx.translate(el.x, el.y); ctx.rotate((el.rotation * Math.PI) / 180);
@@ -923,7 +909,7 @@ h1 {
           const addPoint = (p) => { const key = `${p.x},${p.y}`; connectionPoints.set(key, (connectionPoints.get(key) || 0) + 1); };
           circuitElements.forEach((el) => {
             if (el.type === "wire") { addPoint(el.start); addPoint(el.end); }
-            else if (el.type === 'junction' || el.type === 'open_terminal') { addPoint(el); } // MODIFIED
+            else if (el.type === 'junction' || el.type === 'open_terminal') { addPoint(el); }
             else if (el.type !== "text") { getAbsoluteTerminals(el).forEach((term) => addPoint(term)); }
           });
           ctx.save(); ctx.fillStyle = "#000";
@@ -933,13 +919,11 @@ h1 {
           ctx.restore();
         }
 
-        // --- V0.2a: Custom Text Parser and Renderer ---
         const greekSymbolMap = {
             alpha: "α", beta: "β", gamma: "γ", Delta: "Δ", delta: "δ", epsilon: "ε",
             eta: "η", theta: "θ", lambda: "λ", mu: "μ", pi: "π", rho: "ρ",
             Sigma: "Σ", sigma: "σ", tau: "τ", Phi: "Φ", phi: "φ", Omega: "Ω", omega: "ω",
         };
-
         function parseText(rawText) {
             const chunks = []; let currentText = ""; let currentType = "normal";
             for (let i = 0; i < rawText.length; i++) {
@@ -953,22 +937,17 @@ h1 {
                     else if (char === "\\") {
                         let symbol = "";
                         for (let j = i + 1; j < rawText.length; j++) {
-                            const nextChar = rawText[j];
-                            if (nextChar.match(/[a-zA-Z]/)) { symbol += nextChar; } else { break; }
+                            const nextChar = rawText[j]; if (nextChar.match(/[a-zA-Z]/)) { symbol += nextChar; } else { break; }
                         }
-                        if (greekSymbolMap[symbol]) {
-                            chunks.push({ text: greekSymbolMap[symbol], type: "normal" }); i += symbol.length;
-                        } else { currentText = "\\"; }
+                        if (greekSymbolMap[symbol]) { chunks.push({ text: greekSymbolMap[symbol], type: "normal" }); i += symbol.length; } else { currentText = "\\"; }
                     }
                 } else { currentText += char; }
             }
             if (currentText.length > 0) { chunks.push({ text: currentText, type: currentType }); }
             return chunks;
         }
-
         function measureParsedText(rawText) {
-            const chunks = parseText(rawText); const subSuperScriptScale = 0.7;
-            let totalWidth = 0;
+            const chunks = parseText(rawText); const subSuperScriptScale = 0.7; let totalWidth = 0;
             chunks.forEach(chunk => {
                 const fontSize = chunk.type === "normal" ? textFontSize : textFontSize * subSuperScriptScale;
                 ctx.font = `italic ${fontSize}px Georgia`;
@@ -976,7 +955,6 @@ h1 {
             });
             return { width: totalWidth, height: textFontSize };
         }
-
         function drawText(el, isSelected) {
           ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillStyle = isSelected ? "#007bff" : "#000";
           const subSuperScriptScale = 0.85; const subSuperScriptYOffset = 0.35;
@@ -986,193 +964,109 @@ h1 {
             const isNormal = chunk.type === "normal";
             const fontSize = isNormal ? textFontSize : textFontSize * subSuperScriptScale;
             const yOffset = isNormal ? 0 : (chunk.type === "subscript" ? textFontSize * subSuperScriptYOffset : -textFontSize * subSuperScriptYOffset);
-            ctx.font = `italic ${fontSize}px Georgia`;
-            ctx.fillText(chunk.text, currentX, yOffset);
+            ctx.font = `italic ${fontSize}px Georgia`; ctx.fillText(chunk.text, currentX, yOffset);
             currentX += ctx.measureText(chunk.text).width;
           });
         }
         
-        // --- V0.2a: Revised Component Drawing Library ---
         function drawManualJunction() { ctx.beginPath(); ctx.arc(0, 0, 4, 0, 2 * Math.PI); ctx.fillStyle = ctx.strokeStyle; ctx.fill(); }
-        
-        // NEW: Drawing function for the white circle terminal
-        function drawOpenTerminal() {
-            ctx.beginPath();
-            ctx.arc(0, 0, 4, 0, 2 * Math.PI); // Slightly larger radius
-            ctx.fillStyle = '#fff'; // White fill
-            ctx.fill();
-            ctx.strokeStyle = '#000'; // Black outline
-            ctx.stroke();
-        }
+        function drawOpenTerminal() { ctx.beginPath(); ctx.arc(0, 0, 4, 0, 2 * Math.PI); ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = '#000'; ctx.stroke(); }
 
         function drawResistor() {
-          const w = 18,
-            h = 9;
-          ctx.beginPath();
-          ctx.moveTo(-40, 0);
-          ctx.lineTo(-w, 0);
+          const w = 18, h = 9;
+          ctx.beginPath(); ctx.moveTo(-40, 0); ctx.lineTo(-w, 0);
           ctx.moveTo(-w, 0);
-          for (let i = 0; i < 6; i++) {
-            ctx.lineTo(-w + (i * 2 + 1) * (w / 6), i % 2 === 0 ? -h : h);
-          }
-          ctx.lineTo(w, 0);
-          ctx.lineTo(40, 0);
-          ctx.stroke();
+          for (let i = 0; i < 6; i++) { ctx.lineTo(-w + (i * 2 + 1) * (w / 6), i % 2 === 0 ? -h : h); }
+          ctx.lineTo(w, 0); ctx.lineTo(40, 0); ctx.stroke();
         }
         function drawCapacitor() {
-          const plateDist = 10,
-            plateLen = 28;
-          ctx.beginPath();
-          ctx.moveTo(-40, 0);
-          ctx.lineTo(-plateDist / 2, 0);
-          ctx.moveTo(-plateDist / 2, -plateLen / 2);
-          ctx.lineTo(-plateDist / 2, plateLen / 2);
-          ctx.moveTo(plateDist / 2, -plateLen / 2);
-          ctx.lineTo(plateDist / 2, plateLen / 2);
-          ctx.moveTo(plateDist / 2, 0);
-          ctx.lineTo(40, 0);
-          ctx.stroke();
+          const plateDist = 10, plateLen = 28;
+          ctx.beginPath(); ctx.moveTo(-40, 0); ctx.lineTo(-plateDist / 2, 0);
+          ctx.moveTo(-plateDist / 2, -plateLen / 2); ctx.lineTo(-plateDist / 2, plateLen / 2);
+          ctx.moveTo(plateDist / 2, -plateLen / 2); ctx.lineTo(plateDist / 2, plateLen / 2);
+          ctx.moveTo(plateDist / 2, 0); ctx.lineTo(40, 0); ctx.stroke();
         }
         function drawInductor() {
-          const radiusX = 6;
-          const radiusY = 12;
-          const startX = -21;
-          ctx.beginPath();
-          ctx.lineJoin = "round";
-          ctx.moveTo(-40, 0);
-          ctx.lineTo(startX, 0);
+          const radiusX = 6, radiusY = 12, startX = -21;
+          ctx.beginPath(); ctx.lineJoin = "round"; ctx.moveTo(-40, 0); ctx.lineTo(startX, 0);
           ctx.ellipse(-11, 0, radiusX, radiusY, 0, Math.PI, Math.PI / 8, false);
-          ctx.ellipse(
-            0,
-            0,
-            radiusX,
-            radiusY,
-            0,
-            (Math.PI * 7) / 8,
-            Math.PI / 8,
-            false
-          );
+          ctx.ellipse(0, 0, radiusX, radiusY, 0, (Math.PI * 7) / 8, Math.PI / 8, false);
           ctx.ellipse(11, 0, radiusX, radiusY, 0, (Math.PI * 7) / 8, 0, false);
-          ctx.lineTo(40, 0);
-          ctx.stroke();
+          ctx.lineTo(40, 0); ctx.stroke();
+        }
+        function drawSwitch(el) {
+            const circleRadius = 4, leftContactX = -15, rightContactX = 15;
+            ctx.beginPath();
+            ctx.moveTo(-40, 0); ctx.lineTo(leftContactX, 0);
+            ctx.moveTo(40, 0); ctx.lineTo(rightContactX, 0);
+            if (el.state === 'closed') {
+                ctx.moveTo(leftContactX, -5);
+                ctx.lineTo(rightContactX, -5);
+            } else {
+                const bladeLength = 30, bladeAngle = -30 * Math.PI / 180;
+                ctx.moveTo(leftContactX, 0);
+                ctx.lineTo(leftContactX + bladeLength * Math.cos(bladeAngle), bladeLength * Math.sin(bladeAngle));
+            }
+            ctx.stroke();
+            ctx.save(); ctx.fillStyle = "white";
+            ctx.beginPath(); ctx.arc(leftContactX, 0, circleRadius, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.arc(rightContactX, 0, circleRadius, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+            ctx.restore();
         }
         function drawDiode() {
-          const triWidth = 24;
-          const triHeight = 22;
-          const barHeight = 24;
-          const baseX = -10;
-          const tipX = 10;
-          ctx.beginPath();
-          ctx.lineJoin = "round";
-          ctx.moveTo(-40, 0);
-          ctx.lineTo(baseX, 0);
-          ctx.moveTo(tipX, 0);
-          ctx.lineTo(40, 0);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(baseX, -triHeight / 2);
-          ctx.lineTo(tipX, 0);
-          ctx.lineTo(baseX, triHeight / 2);
-          ctx.closePath();
-          ctx.fill();
-          ctx.beginPath();
-          ctx.moveTo(tipX, -barHeight / 2);
-          ctx.lineTo(tipX, barHeight / 2);
-          ctx.stroke();
+          const triHeight = 22, baseX = -10, tipX = 10;
+          ctx.beginPath(); ctx.lineJoin = "round"; ctx.moveTo(-25, 0); ctx.lineTo(baseX, 0);
+          ctx.moveTo(tipX, 0); ctx.lineTo(25, 0); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(baseX, -triHeight / 2); ctx.lineTo(tipX, 0); ctx.lineTo(baseX, triHeight / 2); ctx.closePath(); ctx.fill();
+          ctx.beginPath(); ctx.moveTo(tipX, -triHeight / 2); ctx.lineTo(tipX, triHeight / 2); ctx.stroke();
+        }
+        function drawZenerDiode() {
+            drawDiode();
+            const tipX = 10, h = 11, tick = 5;
+            ctx.beginPath(); ctx.moveTo(tipX, -h); ctx.lineTo(tipX - tick, -h - tick); ctx.moveTo(tipX, h); ctx.lineTo(tipX + tick, h + tick); ctx.stroke();
+        }
+        function drawLED() {
+            drawDiode();
+            ctx.save(); ctx.lineCap = "round";
+            ctx.lineWidth = ctx.lineWidth * 0.6; 
+            ctx.beginPath(); ctx.moveTo(-3, -12); ctx.lineTo(8, -24); ctx.moveTo(4, -22); ctx.lineTo(8, -24); ctx.lineTo(6, -20); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(2, -9); ctx.lineTo(13, -21); ctx.moveTo(9, -19); ctx.lineTo(13, -21); ctx.lineTo(11, -17); ctx.stroke();
+            ctx.restore();
         }
         function drawVoltageSource() {
           const r = 16;
-          ctx.beginPath();
-          ctx.arc(0, 0, r, 0, 2 * Math.PI);
-          ctx.moveTo(0, -30);
-          ctx.lineTo(0, -r);
-          ctx.moveTo(0, r);
-          ctx.lineTo(0, 30);
-          ctx.moveTo(-r / 4, -r / 2);
-          ctx.lineTo(r / 4, -r / 2);
-          ctx.moveTo(0, -r / 2 - 5);
-          ctx.lineTo(0, -r / 2 + 5);
-          ctx.moveTo(-r / 4, r / 2);
-          ctx.lineTo(r / 4, r / 2);
-          ctx.stroke();
+          ctx.beginPath(); ctx.arc(0, 0, r, 0, 2 * Math.PI); ctx.moveTo(0, -30); ctx.lineTo(0, -r);
+          ctx.moveTo(0, r); ctx.lineTo(0, 30); ctx.moveTo(-r / 4, -r / 2); ctx.lineTo(r / 4, -r / 2);
+          ctx.moveTo(0, -r / 2 - 5); ctx.lineTo(0, -r / 2 + 5); ctx.moveTo(-r / 4, r / 2); ctx.lineTo(r / 4, r / 2); ctx.stroke();
         }
-
         function drawACVoltageSource() {
           const r = 16;
-          ctx.beginPath();
-          ctx.arc(0, 0, r, 0, 2 * Math.PI);
-          ctx.moveTo(0, -30);
-          ctx.lineTo(0, -r);
-          ctx.moveTo(0, r);
-          ctx.lineTo(0, 30);
-          const waveStartX = -10;
-          const waveEndX = 10;
-          const waveAmplitude = 8;
-          ctx.moveTo(waveStartX, 0);
-          ctx.quadraticCurveTo(waveStartX / 2, -waveAmplitude, 0, 0);
-          ctx.quadraticCurveTo(waveEndX / 2, waveAmplitude, waveEndX, 0);
-          ctx.stroke();
+          ctx.beginPath(); ctx.arc(0, 0, r, 0, 2 * Math.PI); ctx.moveTo(0, -30); ctx.lineTo(0, -r);
+          ctx.moveTo(0, r); ctx.lineTo(0, 30); const waveStartX = -10, waveEndX = 10, waveAmplitude = 8;
+          ctx.moveTo(waveStartX, 0); ctx.quadraticCurveTo(waveStartX / 2, -waveAmplitude, 0, 0);
+          ctx.quadraticCurveTo(waveEndX / 2, waveAmplitude, waveEndX, 0); ctx.stroke();
         }
-
         function drawBattery() {
-          const longPlateW = 34,
-            shortPlateW = 14,
-            plateY1 = -5,
-            plateY2 = 5;
-          const plusSignX = 10;
-          const plusSignY = -16;
-          const plusSignSize = 4;
-          ctx.beginPath();
-          ctx.moveTo(0, -30);
-          ctx.lineTo(0, plateY1);
-          ctx.moveTo(0, plateY2);
-          ctx.lineTo(0, 30);
-          ctx.moveTo(-longPlateW / 2, plateY1);
-          ctx.lineTo(longPlateW / 2, plateY1);
-          ctx.moveTo(plusSignX - plusSignSize, plusSignY);
-          ctx.lineTo(plusSignX + plusSignSize, plusSignY);
-          ctx.moveTo(plusSignX, plusSignY - plusSignSize);
-          ctx.lineTo(plusSignX, plusSignY + plusSignSize);
-          ctx.stroke();
-          ctx.save();
-          ctx.lineWidth = ctx.lineWidth * 2;
-          ctx.beginPath();
-          ctx.moveTo(-shortPlateW / 2, plateY2);
-          ctx.lineTo(shortPlateW / 2, plateY2);
-          ctx.stroke();
-          ctx.restore();
+          const longPlateW = 34, shortPlateW = 14, plateY1 = -5, plateY2 = 5;
+          const plusSignX = 10, plusSignY = -16, plusSignSize = 4;
+          ctx.beginPath(); ctx.moveTo(0, -30); ctx.lineTo(0, plateY1); ctx.moveTo(0, plateY2); ctx.lineTo(0, 30);
+          ctx.moveTo(-longPlateW / 2, plateY1); ctx.lineTo(longPlateW / 2, plateY1);
+          ctx.moveTo(plusSignX - plusSignSize, plusSignY); ctx.lineTo(plusSignX + plusSignSize, plusSignY);
+          ctx.moveTo(plusSignX, plusSignY - plusSignSize); ctx.lineTo(plusSignX, plusSignY + plusSignSize);
+          ctx.stroke(); ctx.save(); ctx.lineWidth = ctx.lineWidth * 2; ctx.beginPath();
+          ctx.moveTo(-shortPlateW / 2, plateY2); ctx.lineTo(shortPlateW / 2, plateY2); ctx.stroke(); ctx.restore();
         }
         function drawGround() {
-          ctx.beginPath();
-          ctx.moveTo(0, -10);
-          ctx.lineTo(0, 0);
-          ctx.moveTo(-15, 0);
-          ctx.lineTo(15, 0);
-          ctx.moveTo(-10, 6);
-          ctx.lineTo(10, 6);
-          ctx.moveTo(-5, 12);
-          ctx.lineTo(5, 12);
-          ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(0, -10); ctx.lineTo(0, 0); ctx.moveTo(-15, 0); ctx.lineTo(15, 0);
+          ctx.moveTo(-10, 6); ctx.lineTo(10, 6); ctx.moveTo(-5, 12); ctx.lineTo(5, 12); ctx.stroke();
         }
-function drawCurrentSource() {
-  const r = 16;
-  const arrowY_start = -10;
-  const arrowY_end = 10;
-  const arrowHeadSize = 6;
-  ctx.beginPath();
-  ctx.arc(0, 0, r, 0, 2 * Math.PI);
-  ctx.moveTo(0, -30);
-  ctx.lineTo(0, -r);
-  ctx.moveTo(0, r);
-  ctx.lineTo(0, 30);
-  ctx.moveTo(-arrowHeadSize / 2, arrowY_start + arrowHeadSize);
-  ctx.lineTo(0, arrowY_start);
-  ctx.lineTo(arrowHeadSize / 2, arrowY_start + arrowHeadSize);
-  ctx.moveTo(0, arrowY_end);
-  ctx.lineTo(0, 0);
-  ctx.lineTo(0, -5);
-  ctx.stroke();
-}
+        function drawCurrentSource() {
+          const r = 16, arrowY_start = -10, arrowY_end = 10, arrowHeadSize = 6;
+          ctx.beginPath(); ctx.arc(0, 0, r, 0, 2 * Math.PI); ctx.moveTo(0, -30); ctx.lineTo(0, -r);
+          ctx.moveTo(0, r); ctx.lineTo(0, 30); ctx.moveTo(-arrowHeadSize / 2, arrowY_start + arrowHeadSize);
+          ctx.lineTo(0, arrowY_start); ctx.lineTo(arrowHeadSize / 2, arrowY_start + arrowHeadSize);
+          ctx.moveTo(0, arrowY_end); ctx.lineTo(0, 0); ctx.lineTo(0, -5); ctx.stroke();
+        }
         function calculateBoundingBox() {
             if (circuitElements.length === 0) return null;
             let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
@@ -1182,7 +1076,7 @@ function drawCurrentSource() {
                 } else if (el.type === "text") {
                     const { width, height } = measureParsedText(el.text);
                     minX = Math.min(minX, el.x - width / 2); maxX = Math.max(maxX, el.x + width / 2); minY = Math.min(minY, el.y - height / 2); maxY = Math.max(maxY, el.y + height / 2);
-                } else if (el.type === 'junction' || el.type === 'open_terminal') { // MODIFIED
+                } else if (el.type === 'junction' || el.type === 'open_terminal') {
                     minX = Math.min(minX, el.x); maxX = Math.max(maxX, el.x); minY = Math.min(minY, el.y); maxY = Math.max(maxY, el.y);
                 } else {
                     const data = componentData[el.type]; const w = data.width, h = data.height; const angle = (el.rotation * Math.PI) / 180;
@@ -1197,20 +1091,91 @@ function drawCurrentSource() {
             return { minX, minY, maxX, maxY };
         }
 
+        function handleSaveExport() {
+            const choiceRaw = prompt("Save as project file (json) or export as image (png)?", "json");
+            if (!choiceRaw) return;
+            const choice = choiceRaw.toLowerCase().trim();
+
+            if (choice === 'json' || choice === 'j') {
+                saveCircuit();
+            } else if (choice === 'png' || choice === 'p') {
+                exportCircuit();
+            } else {
+                alert("Invalid choice. Please enter 'json' or 'png'.");
+            }
+        }
+
+        function saveCircuit() {
+            const filename = prompt("Enter filename for project file:", "circuit.json");
+            if (!filename) return;
+            const dataToSave = { version: "0.28a", elements: circuitElements, nextId: nextId };
+            const dataStr = JSON.stringify(dataToSave, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const link = document.createElement("a");
+            link.download = filename.endsWith('.json') ? filename : filename + '.json';
+            link.href = URL.createObjectURL(blob);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+        }
+
+        function handleFileLoad(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data && data.version && data.elements && data.nextId !== undefined) {
+                        circuitElements = data.elements;
+                        nextId = data.nextId;
+                        history = [];
+                        historyIndex = -1;
+                        selectedElements = [];
+                        saveState(); 
+                        redrawCanvas();
+                        alert('Circuit loaded successfully!');
+                    } else {
+                        alert('Invalid or corrupted circuit file.');
+                    }
+                } catch (error) {
+                    console.error("Error parsing JSON file:", error);
+                    alert('Error reading file. Make sure it is a valid JSON circuit file.');
+                }
+                fileInput.value = '';
+            };
+            reader.readAsText(file);
+        }
+
         function exportCircuit() {
             selectedElements = []; redrawCanvas();
-            const scaleFactorStr = prompt("Enter resolution scale factor (e.g., 2 for 2x resolution):", "2");
+            const scaleFactorStr = prompt("Enter resolution scale factor for PNG (e.g., 2 for 2x resolution):", "2");
             const scaleFactor = parseFloat(scaleFactorStr);
-            if (isNaN(scaleFactor) || scaleFactor <= 0) { alert("Invalid scale factor. Please enter a number greater than 0."); return; }
+            if (isNaN(scaleFactor) || scaleFactor <= 0) { alert("Invalid scale factor."); return; }
             const bounds = calculateBoundingBox(); if (!bounds) { alert("Canvas is empty!"); return; }
-            const padding = 30; const exportCanvas = document.createElement("canvas");
+            const padding = 30;
+            const exportCanvas = document.createElement("canvas");
             const exportCtx = exportCanvas.getContext("2d");
-            exportCanvas.width = (bounds.maxX - bounds.minX + padding * 2) * scaleFactor; exportCanvas.height = (bounds.maxY - bounds.minY + padding * 2) * scaleFactor;
-            const originalCtx = ctx; ctx = exportCtx;
-            ctx.save(); ctx.scale(scaleFactor, scaleFactor); ctx.translate(-bounds.minX + padding, -bounds.minY + padding);
-            circuitElements.forEach((el) => drawElement(el)); drawJunctions();
-            ctx.restore(); ctx = originalCtx;
-            const link = document.createElement("a"); link.download = "circuit-diagram.png"; link.href = exportCanvas.toDataURL("image/png"); link.click();
+            exportCanvas.width = (bounds.maxX - bounds.minX + padding * 2) * scaleFactor;
+            exportCanvas.height = (bounds.maxY - bounds.minY + padding * 2) * scaleFactor;
+            
+            const originalCtx = ctx;
+            ctx = exportCtx;
+            
+            ctx.save();
+            ctx.scale(scaleFactor, scaleFactor);
+            ctx.translate(-bounds.minX + padding, -bounds.minY + padding);
+            circuitElements.forEach((el) => drawElement(el));
+            drawJunctions();
+            ctx.restore();
+            
+            ctx = originalCtx; // BUG FIX: Restore the original context
+            
+            const link = document.createElement("a");
+            link.download = "circuit-diagram.png";
+            link.href = exportCanvas.toDataURL("image/png");
+            link.click();
         }
 
         saveState();
