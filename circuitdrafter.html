@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Circuit Drafter - The lazy way to draw</title>
+    <title>Circuit Drafter - Effortless circuit schematics</title>
     <!-- Google Material Icons -->
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
@@ -224,12 +224,22 @@ h1 {
   letter-spacing: 0.5px;
   color: #343a40;
 }
+#tagline {
+  margin: 2px 0 0 0; /* Removes default paragraph margins and adds a tiny bit of space */
+  font-size: 1.1rem;
+  color: #6c757d; /* A subtle, professional gray */
+  font-weight: 400; /* Normal font weight */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
     </style>
   </head>
   <body>
-        <div class="title-container">
+            <div class="title-container">
       <img src="https://github.com/user-attachments/assets/29b49b83-8617-48fc-aabf-a31d292b27f1" alt="Circuit Drafter Logo" class="logo">
-      <h1>Circuit Drafter (V0.2a)</h1>
+      <div>
+        <h1>Circuit Drafter (V0.21a)</h1>
+        <p id="tagline">Effortless circuit schematics.</p>
+      </div>
     </div>
 
     <a
@@ -469,7 +479,7 @@ h1 {
           document.getElementById(`tool-${selectedTool}`)?.classList.add("selected");
           actionButtons.undo.disabled = historyIndex <= 0;
           actionButtons.redo.disabled = historyIndex >= history.length - 1;
-          const isComponentSelected = selectedElements.some(el => el.type !== "wire" && el.type !== "text" && el.type !== 'junction');
+          const isComponentSelected = selectedElements.some(el => el.type !== "wire" && el.type !== "text" && el.type !== 'junction' && el.type !== 'open_terminal'); // MODIFIED
           actionButtons.rotate.disabled = !isComponentSelected;
           actionButtons.copy.disabled = selectedElements.length === 0;
           actionButtons.delete.disabled = selectedElements.length === 0;
@@ -549,7 +559,7 @@ h1 {
         function rotateSelected() {
           if (selectedElements.length === 0) return;
           selectedElements.forEach(el => {
-              if (el.type !== 'wire' && el.type !== 'text' && el.type !== 'junction') { el.rotation = (el.rotation + 45) % 360; }
+              if (el.type !== 'wire' && el.type !== 'text' && el.type !== 'junction' && el.type !== 'open_terminal') { el.rotation = (el.rotation + 45) % 360; } // MODIFIED
           });
           saveState(); redrawCanvas();
         }
@@ -612,7 +622,9 @@ h1 {
               case "inductor": drawInductor(); break; case "diode": drawDiode(); break;
               case "voltage": drawVoltageSource(); break; case "acvoltage": drawACVoltageSource(); break;
               case "currentsource": drawCurrentSource(); break; case "battery": drawBattery(); break;
-              case "gnd": drawGround(); break; case "junction": drawManualJunction(); break;
+              case "gnd": drawGround(); break; 
+              case "junction": drawManualJunction(); break;
+              case "open_terminal": drawOpenTerminal(); break; // NEW
             }
           }
           ctx.restore();
@@ -731,9 +743,23 @@ h1 {
           redrawCanvas();
         }
 
+        function handleDoubleClick(e) {
+            e.preventDefault();
+            const mousePos = getMousePos(e);
+            
+            // Add an open terminal (white circle) on double click
+            // MODIFIED: Changed type from 'junction' to 'open_terminal'
+            const newTerminal = { id: nextId++, type: 'open_terminal', x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
+            circuitElements.push(newTerminal);
+            
+            saveState();
+            redrawCanvas();
+        }
+
         canvas.addEventListener("mousedown", handleMouseDown);
         canvas.addEventListener("mousemove", handleMouseMove);
         canvas.addEventListener("mouseup", handleMouseUp);
+        canvas.addEventListener("dblclick", handleDoubleClick);
         canvas.addEventListener("mouseout", () => {
           isDrawingWire = false; isDragging = false; isMarqueeSelecting = false; marqueeStartPoint = null; isShiftDown = false;
           hoveredWireSegment = null;
@@ -767,15 +793,15 @@ h1 {
 
             // Priority 2: Snap to component terminals
             for (const el of circuitElements) {
-                if (el.type === "wire" || el.type === "text" || el.type === "junction") continue;
+                if (el.type === "wire" || el.type === "text" || el.type === "junction" || el.type === 'open_terminal') continue; // MODIFIED
                 const terminals = getAbsoluteTerminals(el);
                 for (const term of terminals) {
                     if (Math.hypot(x - term.x, y - term.y) < snapTolerance) return { x: term.x, y: term.y, ownerId: el.id };
                 }
             }
-            // Priority 3: Snap to junctions
+            // Priority 3: Snap to junctions and open terminals
             for (const el of circuitElements) {
-                if (el.type === 'junction') {
+                if (el.type === 'junction' || el.type === 'open_terminal') { // MODIFIED
                     if (Math.hypot(x - el.x, y - el.y) < snapTolerance) return { x: el.x, y: el.y, ownerId: el.id };
                 }
             }
@@ -798,11 +824,13 @@ h1 {
         function getElementAtPos(x, y) {
           for (let i = circuitElements.length - 1; i >= 0; i--) {
             const el = circuitElements[i];
-            if (el.type === 'junction') { if (Math.hypot(x - el.x, y - el.y) < snapTolerance) return el; }
+            if (el.type === 'junction' || el.type === 'open_terminal') { // MODIFIED
+                if (Math.hypot(x - el.x, y - el.y) < snapTolerance) return el; 
+            }
           }
           for (let i = circuitElements.length - 1; i >= 0; i--) {
             const el = circuitElements[i];
-            if (el.type === "wire" || el.type === "junction") continue;
+            if (el.type === "wire" || el.type === "junction" || el.type === 'open_terminal') continue; // MODIFIED
             if (el.type === "text") {
               const { width, height } = measureParsedText(el.text);
               if (x > el.x - width / 2 && x < el.x + width / 2 && y > el.y - height / 2 && y < el.y + height / 2) return el;
@@ -868,7 +896,7 @@ h1 {
                   const { width, height } = measureParsedText(el.text);
                   const padding = 4;
                   ctx.strokeRect(el.x - width / 2 - padding, el.y - height / 2 - padding, width + padding * 2, height + padding * 2);
-              } else if (el.type === "junction") {
+              } else if (el.type === "junction" || el.type === "open_terminal") { // MODIFIED
                   ctx.translate(el.x, el.y); ctx.beginPath(); ctx.arc(0, 0, 8, 0, 2 * Math.PI); ctx.stroke();
               } else {
                   const data = componentData[el.type]; ctx.translate(el.x, el.y); ctx.rotate((el.rotation * Math.PI) / 180);
@@ -895,7 +923,7 @@ h1 {
           const addPoint = (p) => { const key = `${p.x},${p.y}`; connectionPoints.set(key, (connectionPoints.get(key) || 0) + 1); };
           circuitElements.forEach((el) => {
             if (el.type === "wire") { addPoint(el.start); addPoint(el.end); }
-            else if (el.type === 'junction') { addPoint(el); }
+            else if (el.type === 'junction' || el.type === 'open_terminal') { addPoint(el); } // MODIFIED
             else if (el.type !== "text") { getAbsoluteTerminals(el).forEach((term) => addPoint(term)); }
           });
           ctx.save(); ctx.fillStyle = "#000";
@@ -909,8 +937,7 @@ h1 {
         const greekSymbolMap = {
             alpha: "α", beta: "β", gamma: "γ", Delta: "Δ", delta: "δ", epsilon: "ε",
             eta: "η", theta: "θ", lambda: "λ", mu: "μ", pi: "π", rho: "ρ",
-            Sigma: "Σ", sigma: "σ", tau: "τ", Phi: "Φ", phi: "φ",
-            Omega: "Ω", omega: "ω",
+            Sigma: "Σ", sigma: "σ", tau: "τ", Phi: "Φ", phi: "φ", Omega: "Ω", omega: "ω",
         };
 
         function parseText(rawText) {
@@ -967,6 +994,17 @@ h1 {
         
         // --- V0.2a: Revised Component Drawing Library ---
         function drawManualJunction() { ctx.beginPath(); ctx.arc(0, 0, 4, 0, 2 * Math.PI); ctx.fillStyle = ctx.strokeStyle; ctx.fill(); }
+        
+        // NEW: Drawing function for the white circle terminal
+        function drawOpenTerminal() {
+            ctx.beginPath();
+            ctx.arc(0, 0, 4, 0, 2 * Math.PI); // Slightly larger radius
+            ctx.fillStyle = '#fff'; // White fill
+            ctx.fill();
+            ctx.strokeStyle = '#000'; // Black outline
+            ctx.stroke();
+        }
+
         function drawResistor() {
           const w = 18,
             h = 9;
@@ -1144,7 +1182,7 @@ function drawCurrentSource() {
                 } else if (el.type === "text") {
                     const { width, height } = measureParsedText(el.text);
                     minX = Math.min(minX, el.x - width / 2); maxX = Math.max(maxX, el.x + width / 2); minY = Math.min(minY, el.y - height / 2); maxY = Math.max(maxY, el.y + height / 2);
-                } else if (el.type === 'junction') {
+                } else if (el.type === 'junction' || el.type === 'open_terminal') { // MODIFIED
                     minX = Math.min(minX, el.x); maxX = Math.max(maxX, el.x); minY = Math.min(minY, el.y); maxY = Math.max(maxY, el.y);
                 } else {
                     const data = componentData[el.type]; const w = data.width, h = data.height; const angle = (el.rotation * Math.PI) / 180;
