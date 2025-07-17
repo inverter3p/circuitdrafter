@@ -9,6 +9,22 @@ A simple, dependency-free, in-browser tool for quickly drafting electronic circu
 
 
 ---
+## Key Features and Improvements (V0.21a to V0.28a)
+###   1. File Management
+* Save & Load Project: Schematics can be saved to and loaded from .json files, preserving the complete workspace.
+PNG Export: The functionality to export circuits as high-resolution .png images has been fixed and is fully operational.
+### 2. Component Library
+* Toggleable Switch: Added a switch component that toggles between open and closed states with a double-click.
+* Expanded Diode Family: The diode tool is now a dropdown menu including Zener Diode and Light-Emitting Diode (LED) symbols.
+### 3. UI and Workflow
+* Toolbar Refinements: The toolbar layout has been updated for clarity.
+* Grouped File Actions: Save, Load, and Export functions are consolidated into a single dropdown menu to save space.
+* Combined Save/Export Prompt: A single action (Ctrl+S) now prompts the user to choose between saving a .json project or exporting a .png image.
+* Reorganized Component Groups: Buttons were reordered into more relevant groups (e.g., Switch with passives, Diodes with actives).
+### 4. Core Functionality
+* Group Dragging for Wires and Components: Multiple elements, including wires, can now be selected and moved together as a single group.
+<img width="600" alt="v028a" src="https://github.com/user-attachments/assets/5b4086a4-c937-4531-91e9-b432d3d90106" />
+
 ## 🚀 What's New in V0.2a
 
 This version is a major update focused on workflow efficiency and professional-grade annotations.
