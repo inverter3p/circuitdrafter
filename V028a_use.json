@@ -1,0 +1,356 @@
+{
+  "version": "0.28a",
+  "elements": [
+    {
+      "id": 0,
+      "type": "diode",
+      "x": 290,
+      "y": 50,
+      "rotation": 0
+    },
+    {
+      "id": 1,
+      "type": "zener",
+      "x": 290,
+      "y": 100,
+      "rotation": 0
+    },
+    {
+      "id": 3,
+      "type": "led",
+      "x": 290,
+      "y": 150,
+      "rotation": 0
+    },
+    {
+      "id": 4,
+      "type": "resistor",
+      "x": 180,
+      "y": 50,
+      "rotation": 0
+    },
+    {
+      "id": 5,
+      "type": "capacitor",
+      "x": 180,
+      "y": 100,
+      "rotation": 0
+    },
+    {
+      "id": 6,
+      "type": "inductor",
+      "x": 180,
+      "y": 150,
+      "rotation": 0
+    },
+    {
+      "id": 7,
+      "type": "voltage",
+      "x": 380,
+      "y": 80,
+      "rotation": 0
+    },
+    {
+      "id": 8,
+      "type": "acvoltage",
+      "x": 440,
+      "y": 80,
+      "rotation": 0
+    },
+    {
+      "id": 9,
+      "type": "currentsource",
+      "x": 500,
+      "y": 80,
+      "rotation": 0
+    },
+    {
+      "id": 10,
+      "type": "battery",
+      "x": 560,
+      "y": 80,
+      "rotation": 0
+    },
+    {
+      "id": 11,
+      "type": "gnd",
+      "x": 460,
+      "y": 140,
+      "rotation": 0
+    },
+    {
+      "id": 12,
+      "type": "switch",
+      "x": 660,
+      "y": 60,
+      "rotation": 0,
+      "state": "open"
+    },
+    {
+      "id": 13,
+      "type": "switch",
+      "x": 660,
+      "y": 100,
+      "rotation": 0,
+      "state": "closed"
+    },
+    {
+      "id": 14,
+      "type": "wire",
+      "start": {
+        "x": 160,
+        "y": 230,
+        "ownerId": null
+      },
+      "end": {
+        "x": 260,
+        "y": 230,
+        "ownerId": null
+      },
+      "routing": "manhattan"
+    },
+    {
+      "id": 15,
+      "type": "open_terminal",
+      "x": 210,
+      "y": 290,
+      "rotation": 0
+    },
+    {
+      "id": 16,
+      "type": "junction",
+      "x": 210,
+      "y": 320,
+      "rotation": 0
+    },
+    {
+      "id": 18,
+      "type": "wire",
+      "start": {
+        "x": 160,
+        "y": 270,
+        "ownerId": null
+      },
+      "end": {
+        "x": 260,
+        "y": 250,
+        "ownerId": null
+      },
+      "routing": "direct"
+    },
+    {
+      "id": 19,
+      "type": "text",
+      "text": "Passive",
+      "x": 230,
+      "y": 20,
+      "rotation": 0
+    },
+    {
+      "id": 20,
+      "type": "text",
+      "text": "Source",
+      "x": 460,
+      "y": 20,
+      "rotation": 0
+    },
+    {
+      "id": 21,
+      "type": "text",
+      "text": "Toggle Switch",
+      "x": 660,
+      "y": 20,
+      "rotation": 0
+    },
+    {
+      "id": 22,
+      "type": "text",
+      "text": "Connection",
+      "x": 200,
+      "y": 200,
+      "rotation": 0
+    },
+    {
+      "id": 24,
+      "type": "text",
+      "text": "W (wire mode)",
+      "x": 340,
+      "y": 200,
+      "rotation": 0
+    },
+    {
+      "id": 25,
+      "type": "text",
+      "text": "Click + Drag to draw line",
+      "x": 370,
+      "y": 230,
+      "rotation": 0
+    },
+    {
+      "id": 26,
+      "type": "text",
+      "text": "Shift while Drag to draw any angle line",
+      "x": 420,
+      "y": 260,
+      "rotation": 0
+    },
+    {
+      "id": 27,
+      "type": "text",
+      "text": "Double Click",
+      "x": 320,
+      "y": 290,
+      "rotation": 0
+    },
+    {
+      "id": 28,
+      "type": "text",
+      "text": "Ctrl + Click",
+      "x": 320,
+      "y": 320,
+      "rotation": 0
+    },
+    {
+      "id": 29,
+      "type": "text",
+      "text": "Double Clcik to toggle state",
+      "x": 810,
+      "y": 80,
+      "rotation": 0
+    },
+    {
+      "id": 30,
+      "type": "resistor",
+      "x": 650,
+      "y": 230,
+      "rotation": 0
+    },
+    {
+      "id": 31,
+      "type": "resistor",
+      "x": 670,
+      "y": 250,
+      "rotation": 0
+    },
+    {
+      "id": 32,
+      "type": "text",
+      "text": "Ctrl + D to duplicate",
+      "x": 800,
+      "y": 240,
+      "rotation": 0
+    },
+    {
+      "id": 33,
+      "type": "diode",
+      "x": 660,
+      "y": 300,
+      "rotation": 45
+    },
+    {
+      "id": 34,
+      "type": "text",
+      "text": "R to rotate in 45 degress in cremental",
+      "x": 830,
+      "y": 290,
+      "rotation": 0
+    },
+    {
+      "id": 35,
+      "type": "text",
+      "text": "File Operation",
+      "x": 210,
+      "y": 360,
+      "rotation": 0
+    },
+    {
+      "id": 37,
+      "type": "text",
+      "text": "Save to project file (.json) or Export the image (.png)",
+      "x": 470,
+      "y": 400,
+      "rotation": 0
+    },
+    {
+      "id": 38,
+      "type": "text",
+      "text": "Ctrl + S",
+      "x": 220,
+      "y": 400,
+      "rotation": 0
+    },
+    {
+      "id": 39,
+      "type": "text",
+      "text": "Ctrl + O",
+      "x": 220,
+      "y": 430,
+      "rotation": 0
+    },
+    {
+      "id": 40,
+      "type": "text",
+      "text": "Load the save project file (.json)",
+      "x": 400,
+      "y": 430,
+      "rotation": 0
+    },
+    {
+      "id": 42,
+      "type": "text",
+      "text": "Text Input",
+      "x": 200,
+      "y": 490,
+      "rotation": 0
+    },
+    {
+      "id": 43,
+      "type": "text",
+      "text": "Manipulation",
+      "x": 660,
+      "y": 190,
+      "rotation": 0
+    },
+    {
+      "id": 46,
+      "type": "text",
+      "text": "Support subscript (underscore) and superscript (hat)",
+      "x": 390,
+      "y": 520,
+      "rotation": 0
+    },
+    {
+      "id": 47,
+      "type": "text",
+      "text": "Support \\+Greek alphabet for symbols ",
+      "x": 340,
+      "y": 550,
+      "rotation": 0
+    },
+    {
+      "id": 48,
+      "type": "text",
+      "text": "alpha: \"α\", beta: \"β\", gamma: \"γ\", Delta: \"Δ\", delta: \"δ\", epsilon: \"ε\",",
+      "x": 480,
+      "y": 580,
+      "rotation": 0
+    },
+    {
+      "id": 49,
+      "type": "text",
+      "text": "eta: \"η\", theta: \"θ\", lambda: \"λ\", mu: \"μ\", pi: \"π\", rho: \"ρ\",",
+      "x": 440,
+      "y": 610,
+      "rotation": 0
+    },
+    {
+      "id": 50,
+      "type": "text",
+      "text": "Sigma: \"Σ\", sigma: \"σ\", tau: \"τ\", Phi: \"Φ\", phi: \"φ\", Omega: \"Ω\", omega: \"ω\",",
+      "x": 510,
+      "y": 640,
+      "rotation": 0
+    }
+  ],
+  "nextId": 51
+}
