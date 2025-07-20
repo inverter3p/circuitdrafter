@@ -9,14 +9,20 @@
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=folder_open" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=folder_open"
+    />
     <!-- Google Material Icons -->
-    
+
     <!-- Link to Google Font (Outfit) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700&display=swap" rel="stylesheet">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@700&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
       body {
         font-family: "Georgia", "Times New Roman", Times, serif;
@@ -29,7 +35,7 @@
         color: #333;
       }
       h1 {
-        font-family: 'Outfit', sans-serif;
+        font-family: "Outfit", sans-serif;
         font-weight: 700;
         color: #212529;
       }
@@ -79,7 +85,8 @@
         background-color: #f8f9fa;
         transition-duration: 0.1s;
       }
-      .tool-btn.selected, .action-btn.selected {
+      .tool-btn.selected,
+      .action-btn.selected {
         background-color: #007bff;
         border-color: #007bff;
         color: white;
@@ -93,25 +100,27 @@
         transition: all 0.2s ease-out;
       }
       /* Universal rule for selected button icons */
-      .tool-btn.selected svg, .tool-btn.selected .material-icons,
-      .action-btn.selected svg, .action-btn.selected .material-icons {
-          stroke: white;
-          color: white;
+      .tool-btn.selected svg,
+      .tool-btn.selected .material-icons,
+      .action-btn.selected svg,
+      .action-btn.selected .material-icons {
+        stroke: white;
+        color: white;
       }
       /* Rule for filling shapes within selected icons */
       .tool-btn.selected svg path[fill]:not([fill="none"]) {
-          fill: white;
+        fill: white;
       }
       /* Rule for filling shapes within normal icons */
       .tool-btn svg path[fill]:not([fill="none"]) {
-          fill: #495057;
+        fill: #495057;
       }
       /* Specific override for select icon arrow */
       .tool-btn #select-icon-arrow {
-          fill: #495057;
+        fill: #495057;
       }
       .tool-btn.selected #select-icon-arrow {
-          fill: white;
+        fill: white;
       }
       .divider {
         width: 1px;
@@ -212,7 +221,8 @@
       }
       h1 {
         margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
         font-weight: 600;
         letter-spacing: 0.5px;
         color: #343a40;
@@ -222,7 +232,8 @@
         font-size: 1.1rem;
         color: #6c757d;
         font-weight: 400;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
       }
 
       /* --- START: Modal Styles --- */
@@ -235,7 +246,7 @@
         width: 100%;
         height: 100%;
         overflow: auto;
-        background-color: rgba(0,0,0,0.5);
+        background-color: rgba(0, 0, 0, 0.5);
         align-items: center;
         justify-content: center;
       }
@@ -247,9 +258,10 @@
         width: 80%;
         max-width: 600px;
         border-radius: 12px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         position: relative;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
       }
       .modal-close {
         color: #aaa;
@@ -266,100 +278,105 @@
         text-decoration: none;
       }
       .modal-content h3 {
-          margin-top: 0;
-          color: #343a40;
+        margin-top: 0;
+        color: #343a40;
       }
       .modal-table-container {
-          max-height: 40vh;
-          overflow-y: auto;
-          margin: 20px 0;
-          border: 1px solid #dee2e6;
-          border-radius: 8px;
+        max-height: 40vh;
+        overflow-y: auto;
+        margin: 20px 0;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
       }
       #bulk-input-table {
-          width: 100%;
-          border-collapse: collapse;
+        width: 100%;
+        border-collapse: collapse;
       }
-      #bulk-input-table th, #bulk-input-table td {
-          border-bottom: 1px solid #dee2e6;
-          padding: 12px;
-          text-align: left;
+      #bulk-input-table th,
+      #bulk-input-table td {
+        border-bottom: 1px solid #dee2e6;
+        padding: 12px;
+        text-align: left;
       }
       #bulk-input-table th {
-          background-color: #f8f9fa;
-          position: sticky;
-          top: 0;
+        background-color: #f8f9fa;
+        position: sticky;
+        top: 0;
       }
       #bulk-input-table td input {
-          width: 95%;
-          padding: 8px;
-          border: 1px solid #ced4da;
-          border-radius: 4px;
-          font-size: 14px;
+        width: 95%;
+        padding: 8px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
       }
       #bulk-input-table .delete-row-btn {
-          background: none;
-          border: none;
-          color: #dc3545;
-          cursor: pointer;
-          font-size: 24px;
-          line-height: 1;
-          padding: 0 5px;
+        background: none;
+        border: none;
+        color: #dc3545;
+        cursor: pointer;
+        font-size: 24px;
+        line-height: 1;
+        padding: 0 5px;
       }
       .modal-actions {
-          display: flex;
-          justify-content: flex-end;
-          gap: 10px;
-          margin-top: 20px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
       }
       .modal-button {
-          padding: 10px 20px;
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
-          font-weight: 500;
-          transition: background-color 0.2s;
-          font-size: 1rem;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background-color 0.2s;
+        font-size: 1rem;
       }
       .modal-button.primary {
-          background-color: #007bff;
-          color: white;
+        background-color: #007bff;
+        color: white;
       }
       .modal-button.primary:hover {
-          background-color: #0056b3;
+        background-color: #0056b3;
       }
       .modal-button.secondary {
-          background-color: #6c757d;
-          color: white;
+        background-color: #6c757d;
+        color: white;
       }
       .modal-button.secondary:hover {
-          background-color: #5a6268;
+        background-color: #5a6268;
       }
       #add-row-btn {
-          background-color: #28a745;
-          color: white;
+        background-color: #28a745;
+        color: white;
       }
       #add-row-btn:hover {
-          background-color: #218838;
+        background-color: #218838;
       }
       /* Style for the bulk text textarea */
       #bulk-text-input {
-          width: 98%;
-          min-height: 150px;
-          margin-top: 10px;
-          padding: 10px;
-          border: 1px solid #ced4da;
-          border-radius: 8px;
-          font-size: 1rem;
-          font-family: inherit;
-          resize: vertical;
+        width: 98%;
+        min-height: 150px;
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-family: inherit;
+        resize: vertical;
       }
       /* --- END: Modal Styles --- */
     </style>
   </head>
   <body>
     <div class="title-container">
-      <img src="https://github.com/user-attachments/assets/29b49b83-8617-48fc-aabf-a31d292b27f1" alt="Circuit Drafter Logo" class="logo">
+      <img
+        src="https://github.com/user-attachments/assets/29b49b83-8617-48fc-aabf-a31d292b27f1"
+        alt="Circuit Drafter Logo"
+        class="logo"
+      />
       <div>
         <h1>Circuit Drafter (V0.32b)</h1>
         <p id="tagline">Effortless circuit schematics.</p>
@@ -415,66 +432,139 @@
       <div class="tool-group">
         <!-- START: RLC Dropdown -->
         <div class="tool-dropdown">
-            <button class="tool-btn dropdown-trigger" title="Passive Components">
-                <svg viewBox="-2 -10 34 20"><path d="M0,0 H4 L6,-6 L10,6 L14,-6 L18,6 L22,-6 L26,6 L28,0 H32" fill="none" stroke-linejoin="round" stroke-linecap="round"></path></svg>
+          <button class="tool-btn dropdown-trigger" title="Passive Components">
+            <svg viewBox="-2 -10 34 20">
+              <path
+                d="M0,0 H4 L6,-6 L10,6 L14,-6 L18,6 L22,-6 L26,6 L28,0 H32"
+                fill="none"
+                stroke-linejoin="round"
+                stroke-linecap="round"
+              ></path>
+            </svg>
+          </button>
+          <div class="dropdown-content">
+            <button class="tool-btn" id="tool-resistor" title="Resistor">
+              <svg viewBox="-2 -10 34 20">
+                <path
+                  d="M0,0 H4 L6,-6 L10,6 L14,-6 L18,6 L22,-6 L26,6 L28,0 H32"
+                  fill="none"
+                  stroke-linejoin="round"
+                  stroke-linecap="round"
+                ></path>
+              </svg>
             </button>
-            <div class="dropdown-content">
-                <button class="tool-btn" id="tool-resistor" title="Resistor">
-                  <svg viewBox="-2 -10 34 20"><path d="M0,0 H4 L6,-6 L10,6 L14,-6 L18,6 L22,-6 L26,6 L28,0 H32" fill="none" stroke-linejoin="round" stroke-linecap="round"></path></svg>
-                </button>
-                <button class="tool-btn" id="tool-capacitor" title="Capacitor">
-                  <svg viewBox="-5 -10 30 20"><path d="M0,0 H10 M10,-8 V8 M15,-8 V8 M15,0 H25" fill="none" stroke-linecap="round"></path></svg>
-                </button>
-                <button class="tool-btn" id="tool-inductor" title="Inductor">
-                  <svg viewBox="-2 -10 34 20"><path d="M0,0 H6 C9,-13 12,-13 15,1 C18,-13 21,-13 24,0 H32" fill="none" stroke-linecap="round"></path></svg>
-                </button>
-            </div>
+            <button class="tool-btn" id="tool-capacitor" title="Capacitor">
+              <svg viewBox="-5 -10 30 20">
+                <path
+                  d="M0,0 H10 M10,-8 V8 M15,-8 V8 M15,0 H25"
+                  fill="none"
+                  stroke-linecap="round"
+                ></path>
+              </svg>
+            </button>
+            <button class="tool-btn" id="tool-inductor" title="Inductor">
+              <svg viewBox="-2 -10 34 20">
+                <path
+                  d="M0,0 H6 C9,-13 12,-13 15,1 C18,-13 21,-13 24,0 H32"
+                  fill="none"
+                  stroke-linecap="round"
+                ></path>
+              </svg>
+            </button>
+          </div>
         </div>
         <!-- END: RLC Dropdown -->
-        <button class="tool-btn" id="tool-switch" title="Switch (Double-click to toggle)">
-            <svg viewBox="-45 -20 50 40">
-                <path d="M-40,0 L-30,0 M-8, 0 L10,0 M-30,0 L-8,-18" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                <circle cx="-30" cy="0" r="4" stroke-width="1.5" fill="white"/>
-                <circle cx="-8" cy="0" r="4" stroke-width="1.5" fill="white"/>
-            </svg>
+        <button
+          class="tool-btn"
+          id="tool-switch"
+          title="Switch (Double-click to toggle)"
+        >
+          <svg viewBox="-45 -20 50 40">
+            <path
+              d="M-40,0 L-30,0 M-8, 0 L10,0 M-30,0 L-8,-18"
+              stroke-width="2.5"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <circle cx="-30" cy="0" r="4" stroke-width="1.5" fill="white" />
+            <circle cx="-8" cy="0" r="4" stroke-width="1.5" fill="white" />
+          </svg>
         </button>
       </div>
       <div class="divider"></div>
       <div class="tool-group">
         <div class="tool-dropdown">
-            <button class="tool-btn dropdown-trigger" title="Diodes">
-                <svg viewBox="-2 -10 24 20">
-                    <path d="M-4,0 H12 M16,0 H22" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
-                    <path fill="#495057" d="M5,-6 V6 L16,0 Z" />
-                    <path d="M16,-6 V6" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
-                </svg>
+          <button class="tool-btn dropdown-trigger" title="Diodes">
+            <svg viewBox="-2 -10 24 20">
+              <path
+                d="M-4,0 H12 M16,0 H22"
+                fill="none"
+                stroke-linejoin="round"
+                stroke-linecap="round"
+              />
+              <path fill="#495057" d="M5,-6 V6 L16,0 Z" />
+              <path
+                d="M16,-6 V6"
+                fill="none"
+                stroke-linejoin="round"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+          <div class="dropdown-content">
+            <button class="tool-btn" id="tool-diode" title="Diode">
+              <svg viewBox="-2 -10 24 20">
+                <path
+                  d="M-4,0 H12 M16,0 H22"
+                  fill="none"
+                  stroke-linejoin="round"
+                  stroke-linecap="round"
+                />
+                <path fill="#495057" d="M5,-6 V6 L16,0 Z" />
+                <path
+                  d="M16,-6 V6"
+                  fill="none"
+                  stroke-linejoin="round"
+                  stroke-linecap="round"
+                />
+              </svg>
             </button>
-            <div class="dropdown-content">
-                <button class="tool-btn" id="tool-diode" title="Diode">
-                    <svg viewBox="-2 -10 24 20">
-                        <path d="M-4,0 H12 M16,0 H22" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
-                        <path fill="#495057" d="M5,-6 V6 L16,0 Z" />
-                        <path d="M16,-6 V6" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
-                    </svg>
-                </button>
-                <button class="tool-btn" id="tool-zener" title="Zener Diode">
-                    <svg viewBox="-2 -12 24 24">
-                        <path d="M-4,0 H12 M16,0 H22" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
-                        <path fill="#495057" d="M5,-6 V6 L16,0 Z" />
-                        <path d="M16,-6 V6" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
-                        <path d="M16,-6 L13,-8 M16,6 L19,8" stroke-linecap="round"/>
-                    </svg>
-                </button>
-                <button class="tool-btn" id="tool-led" title="LED">
-                    <svg viewBox="-2 -16 26 26">
-                        <path d="M-4,0 H12 M16,0 H22" fill="none"/>
-                        <path d="M5,-6 V6 L16,0 Z" fill="#495057"/>
-                        <path d="M16,-6 V6" fill="none"/>
-                        <path d="M10,-10 L15,-15 M13,-15 H15 V-13" fill="none" stroke-linecap="round"/>
-                        <path d="M14,-8 L19,-13 M17,-13 H19 V-11" fill="none" stroke-linecap="round"/>
-                    </svg>
-                </button>
-            </div>
+            <button class="tool-btn" id="tool-zener" title="Zener Diode">
+              <svg viewBox="-2 -12 24 24">
+                <path
+                  d="M-4,0 H12 M16,0 H22"
+                  fill="none"
+                  stroke-linejoin="round"
+                  stroke-linecap="round"
+                />
+                <path fill="#495057" d="M5,-6 V6 L16,0 Z" />
+                <path
+                  d="M16,-6 V6"
+                  fill="none"
+                  stroke-linejoin="round"
+                  stroke-linecap="round"
+                />
+                <path d="M16,-6 L13,-8 M16,6 L19,8" stroke-linecap="round" />
+              </svg>
+            </button>
+            <button class="tool-btn" id="tool-led" title="LED">
+              <svg viewBox="-2 -16 26 26">
+                <path d="M-4,0 H12 M16,0 H22" fill="none" />
+                <path d="M5,-6 V6 L16,0 Z" fill="#495057" />
+                <path d="M16,-6 V6" fill="none" />
+                <path
+                  d="M10,-10 L15,-15 M13,-15 H15 V-13"
+                  fill="none"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M14,-8 L19,-13 M17,-13 H19 V-11"
+                  fill="none"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
         <div class="tool-dropdown">
           <button class="tool-btn dropdown-trigger" title="Voltage Sources">
@@ -515,7 +605,11 @@
             >
               <svg viewBox="-12 -12 24 24">
                 <circle cx="0" cy="0" r="10" fill="none"></circle>
-                <path d="M0,7 L0,-7 M-4,-2 L0,-7 L4,-2" fill="none" stroke-linecap="round"></path>
+                <path
+                  d="M0,7 L0,-7 M-4,-2 L0,-7 L4,-2"
+                  fill="none"
+                  stroke-linecap="round"
+                ></path>
               </svg>
             </button>
           </div>
@@ -564,41 +658,56 @@
       <div class="divider"></div>
       <!-- START: Bulk Operations (Moved) -->
       <div class="tool-group">
-            <button class="action-btn" id="bulkAddBtn" title="Bulk Add Components">
-                <i class="material-icons">playlist_add</i>
-            </button>
-            <button class="action-btn" id="bulkTextBtn" title="Bulk Add Text Labels">
-                <i class="material-icons">format_list_bulleted_add</i>
-            </button>
-        </div>
+        <button class="action-btn" id="bulkAddBtn" title="Bulk Add Components">
+          <i class="material-icons">playlist_add</i>
+        </button>
+        <button
+          class="action-btn"
+          id="bulkTextBtn"
+          title="Bulk Add Text Labels"
+        >
+          <i class="material-icons">format_list_bulleted_add</i>
+        </button>
+      </div>
       <!-- END: Bulk Operations -->
       <div class="divider"></div>
       <!-- START: File Operations Dropdown (Moved) -->
       <div class="tool-dropdown">
-          <button id="fileOpsBtn" class="action-btn dropdown-trigger" title="File Operations">
-              <i class="material-icons">save</i>
+        <button
+          id="fileOpsBtn"
+          class="action-btn dropdown-trigger"
+          title="File Operations"
+        >
+          <i class="material-icons">save</i>
+        </button>
+        <div class="dropdown-content">
+          <button
+            class="action-btn"
+            id="saveExportBtn"
+            title="Save or Export... (Ctrl+S)"
+          >
+            <i class="material-icons">save_alt</i>
           </button>
-          <div class="dropdown-content">
-              <button class="action-btn" id="saveExportBtn" title="Save or Export... (Ctrl+S)">
-                  <i class="material-icons">save_alt</i>
-              </button>
-              <button class="action-btn" id="loadBtn" title="Load File (Ctrl+O)">
-                  <i class="material-symbols-outlined">folder_open</i>
-              </button>
-          </div>
+          <button class="action-btn" id="loadBtn" title="Load File (Ctrl+O)">
+            <i class="material-symbols-outlined">folder_open</i>
+          </button>
+        </div>
       </div>
       <!-- END: File Operations Dropdown -->
     </div>
 
     <canvas id="circuitCanvas" width="1000" height="700"></canvas>
-    <input type="file" id="fileInput" accept=".json" style="display: none;" />
+    <input type="file" id="fileInput" accept=".json" style="display: none" />
 
     <!-- START: Bulk Add Components Modal -->
     <div id="bulkAddModal" class="modal-overlay">
       <div class="modal-content">
         <span class="modal-close" id="bulkAddModalClose">&times;</span>
         <h3>Bulk Add Components</h3>
-        <p>Enter one component type per row. Valid names: R, L, C, D, ZD, LED, SW, Vdc, Vac, Idc, GND, Batt.</p>
+        <p>
+          Enter one component type per row. Valid names: R, L, C, D, ZD, LED,
+          SW, Vdc, Vac, Idc, GND, Batt.
+        </p>
         <div class="modal-table-container">
           <table id="bulk-input-table">
             <thead>
@@ -616,23 +725,34 @@
         </div>
         <button id="add-row-btn" class="modal-button">Add Another Row</button>
         <div class="modal-actions">
-          <button id="bulk-cancel-btn" class="modal-button secondary">Cancel</button>
-          <button id="bulk-place-btn" class="modal-button primary">Place Components</button>
+          <button id="bulk-cancel-btn" class="modal-button secondary">
+            Cancel
+          </button>
+          <button id="bulk-place-btn" class="modal-button primary">
+            Place Components
+          </button>
         </div>
       </div>
     </div>
     <!-- END: Bulk Add Components Modal -->
-    
+
     <!-- START: Bulk Add Text Modal -->
     <div id="bulkTextModal" class="modal-overlay">
       <div class="modal-content">
         <span class="modal-close" id="bulkTextModalClose">&times;</span>
         <h3>Bulk Add Text</h3>
         <p>Enter each text label separated by a semicolon (;).</p>
-        <textarea id="bulk-text-input" placeholder="Label 1; Label 2; V_in = 5V; ..."></textarea>
+        <textarea
+          id="bulk-text-input"
+          placeholder="Label 1; Label 2; V_in = 5V; ..."
+        ></textarea>
         <div class="modal-actions">
-          <button id="bulk-text-cancel-btn" class="modal-button secondary">Cancel</button>
-          <button id="bulk-text-place-btn" class="modal-button primary">Place Text</button>
+          <button id="bulk-text-cancel-btn" class="modal-button secondary">
+            Cancel
+          </button>
+          <button id="bulk-text-place-btn" class="modal-button primary">
+            Place Text
+          </button>
         </div>
       </div>
     </div>
@@ -657,412 +777,734 @@
       document.addEventListener("DOMContentLoaded", () => {
         let canvas = document.getElementById("circuitCanvas");
         let ctx = canvas.getContext("2d");
-        const fileInput = document.getElementById('fileInput');
-        
+        const fileInput = document.getElementById("fileInput");
+
         // START: Bulk Components Modal Variables
-        const bulkAddBtn = document.getElementById('bulkAddBtn');
-        const bulkAddModal = document.getElementById('bulkAddModal');
-        const bulkAddModalClose = document.getElementById('bulkAddModalClose');
-        const addRowBtn = document.getElementById('add-row-btn');
-        const bulkPlaceBtn = document.getElementById('bulk-place-btn');
-        const bulkCancelBtn = document.getElementById('bulk-cancel-btn');
-        const bulkInputTableBody = document.querySelector('#bulk-input-table tbody');
-        
+        const bulkAddBtn = document.getElementById("bulkAddBtn");
+        const bulkAddModal = document.getElementById("bulkAddModal");
+        const bulkAddModalClose = document.getElementById("bulkAddModalClose");
+        const addRowBtn = document.getElementById("add-row-btn");
+        const bulkPlaceBtn = document.getElementById("bulk-place-btn");
+        const bulkCancelBtn = document.getElementById("bulk-cancel-btn");
+        const bulkInputTableBody = document.querySelector(
+          "#bulk-input-table tbody"
+        );
+
         // START: Bulk Text Modal Variables
-        const bulkTextBtn = document.getElementById('bulkTextBtn');
-        const bulkTextModal = document.getElementById('bulkTextModal');
-        const bulkTextModalClose = document.getElementById('bulkTextModalClose');
-        const bulkTextInput = document.getElementById('bulk-text-input');
-        const bulkTextPlaceBtn = document.getElementById('bulk-text-place-btn');
-        const bulkTextCancelBtn = document.getElementById('bulk-text-cancel-btn');
+        const bulkTextBtn = document.getElementById("bulkTextBtn");
+        const bulkTextModal = document.getElementById("bulkTextModal");
+        const bulkTextModalClose =
+          document.getElementById("bulkTextModalClose");
+        const bulkTextInput = document.getElementById("bulk-text-input");
+        const bulkTextPlaceBtn = document.getElementById("bulk-text-place-btn");
+        const bulkTextCancelBtn = document.getElementById(
+          "bulk-text-cancel-btn"
+        );
 
         let autoLabelCounters = {};
         const shortNameToType = {
-            'R': 'resistor', 'L': 'inductor', 'C': 'capacitor',
-            'D': 'diode', 'ZD': 'zener', 'LED': 'led',
-            'SW': 'switch', 'VDC': 'voltage', 'VAC': 'acvoltage',
-            'IDC': 'currentsource', 'GND': 'gnd', 'BATT': 'battery'
+          R: "resistor",
+          L: "inductor",
+          C: "capacitor",
+          D: "diode",
+          ZD: "zener",
+          LED: "led",
+          SW: "switch",
+          VDC: "voltage",
+          VAC: "acvoltage",
+          IDC: "currentsource",
+          GND: "gnd",
+          BATT: "battery",
         };
-        const shortNameToTypeCI = Object.keys(shortNameToType).reduce((acc, key) => {
+        const shortNameToTypeCI = Object.keys(shortNameToType).reduce(
+          (acc, key) => {
             acc[key.toUpperCase()] = shortNameToType[key];
             return acc;
-        }, {});
+          },
+          {}
+        );
 
         let selectedTool = "select";
-        let isDrawingWire = false, isDragging = false, isShiftDown = false;
-        let wireStartPoint = null, currentMousePos = { x: 0, y: 0 }, dragStartPoint = null;
+        let isDrawingWire = false,
+          isDragging = false,
+          isShiftDown = false;
+        let wireStartPoint = null,
+          currentMousePos = { x: 0, y: 0 },
+          dragStartPoint = null;
         let circuitElements = [];
         let nextId = 0;
-        const gridSize = 20, snapTolerance = 12, textFontSize = 16;
-        let history = [], historyIndex = -1;
+        const gridSize = 20,
+          snapTolerance = 12,
+          textFontSize = 16;
+        let history = [],
+          historyIndex = -1;
 
         let selectedElements = [];
         let isMarqueeSelecting = false;
         let marqueeStartPoint = null;
-        let hoveredWireSegment = null; 
+        let hoveredWireSegment = null;
 
         const componentData = {
-          resistor: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] }, capacitor: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] },
-          inductor: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] },
-          diode: { width: 60, height: 30, terminals: [{ x: -30, y: 0 }, { x: 30, y: 0 }] },
-          zener: { width: 60, height: 34, terminals: [{ x: -30, y: 0 }, { x: 30, y: 0 }] },
-          led: { width: 60, height: 50, terminals: [{ x: -30, y: 0 }, { x: 30, y: 0 }] },
-          switch: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] },
-          voltage: { width: 60, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] }, acvoltage: { width: 60, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] },
-          currentsource: { width: 60, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] }, battery: { width: 40, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] },
+          resistor: {
+            width: 80,
+            height: 30,
+            terminals: [
+              { x: -40, y: 0 },
+              { x: 40, y: 0 },
+            ],
+          },
+          capacitor: {
+            width: 80,
+            height: 30,
+            terminals: [
+              { x: -40, y: 0 },
+              { x: 40, y: 0 },
+            ],
+          },
+          inductor: {
+            width: 80,
+            height: 30,
+            terminals: [
+              { x: -40, y: 0 },
+              { x: 40, y: 0 },
+            ],
+          },
+          diode: {
+            width: 60,
+            height: 30,
+            terminals: [
+              { x: -30, y: 0 },
+              { x: 30, y: 0 },
+            ],
+          },
+          zener: {
+            width: 60,
+            height: 34,
+            terminals: [
+              { x: -30, y: 0 },
+              { x: 30, y: 0 },
+            ],
+          },
+          led: {
+            width: 60,
+            height: 50,
+            terminals: [
+              { x: -30, y: 0 },
+              { x: 30, y: 0 },
+            ],
+          },
+          switch: {
+            width: 80,
+            height: 30,
+            terminals: [
+              { x: -40, y: 0 },
+              { x: 40, y: 0 },
+            ],
+          },
+          voltage: {
+            width: 60,
+            height: 60,
+            terminals: [
+              { x: 0, y: -30 },
+              { x: 0, y: 30 },
+            ],
+          },
+          acvoltage: {
+            width: 60,
+            height: 60,
+            terminals: [
+              { x: 0, y: -30 },
+              { x: 0, y: 30 },
+            ],
+          },
+          currentsource: {
+            width: 60,
+            height: 60,
+            terminals: [
+              { x: 0, y: -30 },
+              { x: 0, y: 30 },
+            ],
+          },
+          battery: {
+            width: 40,
+            height: 60,
+            terminals: [
+              { x: 0, y: -30 },
+              { x: 0, y: 30 },
+            ],
+          },
           gnd: { width: 30, height: 30, terminals: [{ x: 0, y: -10 }] },
         };
 
         const actionButtons = {
-          undo: document.getElementById("undoBtn"), redo: document.getElementById("redoBtn"), copy: document.getElementById("copyBtn"),
-          rotate: document.getElementById("rotateBtn"), delete: document.getElementById("deleteBtn"),
+          undo: document.getElementById("undoBtn"),
+          redo: document.getElementById("redoBtn"),
+          copy: document.getElementById("copyBtn"),
+          rotate: document.getElementById("rotateBtn"),
+          delete: document.getElementById("deleteBtn"),
         };
 
         function updateToolbar() {
-          document.querySelectorAll(".tool-btn, .action-btn").forEach((btn) => btn.classList.remove("selected"));
-          const currentToolButton = document.getElementById(`tool-${selectedTool}`);
+          document
+            .querySelectorAll(".tool-btn, .action-btn")
+            .forEach((btn) => btn.classList.remove("selected"));
+          const currentToolButton = document.getElementById(
+            `tool-${selectedTool}`
+          );
           if (currentToolButton) {
-              currentToolButton.classList.add("selected");
-              const parentDropdown = currentToolButton.closest('.tool-dropdown');
-              if (parentDropdown) parentDropdown.querySelector('.dropdown-trigger').classList.add('selected');
+            currentToolButton.classList.add("selected");
+            const parentDropdown = currentToolButton.closest(".tool-dropdown");
+            if (parentDropdown)
+              parentDropdown
+                .querySelector(".dropdown-trigger")
+                .classList.add("selected");
           }
           actionButtons.undo.disabled = historyIndex <= 0;
           actionButtons.redo.disabled = historyIndex >= history.length - 1;
-          const isComponentSelected = selectedElements.some(el => el.type !== "wire" && el.type !== "text" && el.type !== 'junction' && el.type !== 'open_terminal');
+          const isComponentSelected = selectedElements.some(
+            (el) =>
+              el.type !== "wire" &&
+              el.type !== "text" &&
+              el.type !== "junction" &&
+              el.type !== "open_terminal"
+          );
           actionButtons.rotate.disabled = !isComponentSelected;
           actionButtons.copy.disabled = selectedElements.length === 0;
           actionButtons.delete.disabled = selectedElements.length === 0;
-          canvas.style.cursor = selectedTool === "select" ? "default" : "crosshair";
+          canvas.style.cursor =
+            selectedTool === "select" ? "default" : "crosshair";
         }
 
         document.getElementById("toolbar").addEventListener("click", (e) => {
           const target = e.target.closest("button");
           if (!target || target.disabled) return;
-          if (target.classList.contains("tool-btn") && !target.classList.contains("dropdown-trigger")) {
+          if (
+            target.classList.contains("tool-btn") &&
+            !target.classList.contains("dropdown-trigger")
+          ) {
             selectedTool = target.id.replace("tool-", "");
             if (selectedTool !== "select") selectedElements = [];
-          } else if (target.id === "undoBtn") undo(); else if (target.id === "redoBtn") redo();
-          else if (target.id === "copyBtn") copySelected(); else if (target.id === "rotateBtn") rotateSelected();
+          } else if (target.id === "undoBtn") undo();
+          else if (target.id === "redoBtn") redo();
+          else if (target.id === "copyBtn") copySelected();
+          else if (target.id === "rotateBtn") rotateSelected();
           else if (target.id === "deleteBtn") deleteSelected();
           else if (target.id === "saveExportBtn") handleSaveExport();
-          else if (target.id === 'loadBtn') fileInput.click();
+          else if (target.id === "loadBtn") fileInput.click();
           redrawCanvas();
         });
 
         window.addEventListener("keydown", (e) => {
-          if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") return;
+          if (
+            document.activeElement.tagName === "INPUT" ||
+            document.activeElement.tagName === "TEXTAREA"
+          )
+            return;
           if (e.key === "Shift") isShiftDown = true;
-          
+
           if (e.ctrlKey || e.metaKey) {
             e.preventDefault();
             switch (e.key.toLowerCase()) {
-              case 'z': undo(); break;
-              case 'y': redo(); break;
-              case 'd': copySelected(); break;
-              case 's': handleSaveExport(); break;
-              case 'o': fileInput.click(); break;
+              case "z":
+                undo();
+                break;
+              case "y":
+                redo();
+                break;
+              case "d":
+                copySelected();
+                break;
+              case "s":
+                handleSaveExport();
+                break;
+              case "o":
+                fileInput.click();
+                break;
             }
-          } 
-          else {
+          } else {
             switch (e.key.toLowerCase()) {
-              case 'r': if (selectedElements.length > 0) { e.preventDefault(); rotateSelected(); } break;
-              case 'delete': case 'backspace': if (selectedElements.length > 0) { e.preventDefault(); deleteSelected(); } break;
-              case 'w': selectedTool = "wire"; break;
-              case 's': selectedTool = "select"; break;
-              case 't': selectedTool = "text"; break;
+              case "r":
+                if (selectedElements.length > 0) {
+                  e.preventDefault();
+                  rotateSelected();
+                }
+                break;
+              case "delete":
+              case "backspace":
+                if (selectedElements.length > 0) {
+                  e.preventDefault();
+                  deleteSelected();
+                }
+                break;
+              case "w":
+                selectedTool = "wire";
+                break;
+              case "s":
+                selectedTool = "select";
+                break;
+              case "t":
+                selectedTool = "text";
+                break;
             }
           }
           redrawCanvas();
         });
 
-        window.addEventListener("keyup", (e) => { if (e.key === "Shift") { isShiftDown = false; redrawCanvas(); } });
-        window.addEventListener("blur", () => { isShiftDown = false; });
-        fileInput.addEventListener('change', handleFileLoad);
+        window.addEventListener("keyup", (e) => {
+          if (e.key === "Shift") {
+            isShiftDown = false;
+            redrawCanvas();
+          }
+        });
+        window.addEventListener("blur", () => {
+          isShiftDown = false;
+        });
+        fileInput.addEventListener("change", handleFileLoad);
 
         // START: Modal Event Listeners
-        bulkAddBtn.addEventListener('click', openBulkAddModal);
-        bulkAddModalClose.addEventListener('click', closeBulkAddModal);
-        bulkCancelBtn.addEventListener('click', closeBulkAddModal);
-        addRowBtn.addEventListener('click', () => addBulkRow());
-        bulkPlaceBtn.addEventListener('click', handleBulkPlace);
-        bulkInputTableBody.addEventListener('click', (e) => {
-            if (e.target.classList.contains('delete-row-btn')) {
-                e.target.closest('tr').remove();
-            }
+        bulkAddBtn.addEventListener("click", openBulkAddModal);
+        bulkAddModalClose.addEventListener("click", closeBulkAddModal);
+        bulkCancelBtn.addEventListener("click", closeBulkAddModal);
+        addRowBtn.addEventListener("click", () => addBulkRow());
+        bulkPlaceBtn.addEventListener("click", handleBulkPlace);
+        bulkInputTableBody.addEventListener("click", (e) => {
+          if (e.target.classList.contains("delete-row-btn")) {
+            e.target.closest("tr").remove();
+          }
         });
 
-        bulkTextBtn.addEventListener('click', openBulkTextModal);
-        bulkTextModalClose.addEventListener('click', closeBulkTextModal);
-        bulkTextCancelBtn.addEventListener('click', closeBulkTextModal);
-        bulkTextPlaceBtn.addEventListener('click', handleBulkTextPlace);
+        bulkTextBtn.addEventListener("click", openBulkTextModal);
+        bulkTextModalClose.addEventListener("click", closeBulkTextModal);
+        bulkTextCancelBtn.addEventListener("click", closeBulkTextModal);
+        bulkTextPlaceBtn.addEventListener("click", handleBulkTextPlace);
 
-        window.addEventListener('click', (event) => {
-            if (event.target == bulkAddModal) { closeBulkAddModal(); }
-            if (event.target == bulkTextModal) { closeBulkTextModal(); }
+        window.addEventListener("click", (event) => {
+          if (event.target == bulkAddModal) {
+            closeBulkAddModal();
+          }
+          if (event.target == bulkTextModal) {
+            closeBulkTextModal();
+          }
         });
         // END: Modal Event Listeners
 
         function saveState() {
           history = history.slice(0, historyIndex + 1);
-          const cleanState = JSON.parse(JSON.stringify(circuitElements, (key, value) => key === 'dragInitialState' ? undefined : value));
+          const cleanState = JSON.parse(
+            JSON.stringify(circuitElements, (key, value) =>
+              key === "dragInitialState" ? undefined : value
+            )
+          );
           history.push(cleanState);
           historyIndex++;
           updateToolbar();
         }
-        function undo() { if (historyIndex > 0) { historyIndex--; setState(); } }
-        function redo() { if (historyIndex < history.length - 1) { historyIndex++; setState(); } }
-        function setState() { circuitElements = JSON.parse(JSON.stringify(history[historyIndex])); selectedElements = []; redrawCanvas(); }
+        function undo() {
+          if (historyIndex > 0) {
+            historyIndex--;
+            setState();
+          }
+        }
+        function redo() {
+          if (historyIndex < history.length - 1) {
+            historyIndex++;
+            setState();
+          }
+        }
+        function setState() {
+          circuitElements = JSON.parse(JSON.stringify(history[historyIndex]));
+          selectedElements = [];
+          redrawCanvas();
+        }
         function copySelected() {
           if (selectedElements.length === 0) return;
           const newSelection = [];
-          selectedElements.forEach(el => {
-              const newEl = JSON.parse(JSON.stringify(el)); newEl.id = nextId++;
-              if (newEl.type === 'wire') {
-                  newEl.start.x += gridSize; newEl.start.y += gridSize;
-                  newEl.end.x += gridSize; newEl.end.y += gridSize;
-              } else {
-                  newEl.x += gridSize; newEl.y += gridSize;
-              }
-              circuitElements.push(newEl); newSelection.push(newEl);
+          selectedElements.forEach((el) => {
+            const newEl = JSON.parse(JSON.stringify(el));
+            newEl.id = nextId++;
+            if (newEl.type === "wire") {
+              newEl.start.x += gridSize;
+              newEl.start.y += gridSize;
+              newEl.end.x += gridSize;
+              newEl.end.y += gridSize;
+            } else {
+              newEl.x += gridSize;
+              newEl.y += gridSize;
+            }
+            circuitElements.push(newEl);
+            newSelection.push(newEl);
           });
-          selectedElements = newSelection; saveState(); redrawCanvas();
+          selectedElements = newSelection;
+          saveState();
+          redrawCanvas();
         }
         function rotateSelected() {
           if (selectedElements.length === 0) return;
-          selectedElements.forEach(el => {
-              if (el.type !== 'wire' && el.type !== 'text' && el.type !== 'junction' && el.type !== 'open_terminal') { el.rotation = (el.rotation + 45) % 360; }
+          selectedElements.forEach((el) => {
+            if (
+              el.type !== "wire" &&
+              el.type !== "text" &&
+              el.type !== "junction" &&
+              el.type !== "open_terminal"
+            ) {
+              el.rotation = (el.rotation + 45) % 360;
+            }
           });
-          saveState(); redrawCanvas();
+          saveState();
+          redrawCanvas();
         }
         function deleteSelected() {
           if (selectedElements.length === 0) return;
-          const selectedIds = new Set(selectedElements.map(el => el.id));
-          circuitElements = circuitElements.filter(el => !selectedIds.has(el.id));
-          selectedElements = []; saveState(); redrawCanvas();
+          const selectedIds = new Set(selectedElements.map((el) => el.id));
+          circuitElements = circuitElements.filter(
+            (el) => !selectedIds.has(el.id)
+          );
+          selectedElements = [];
+          saveState();
+          redrawCanvas();
         }
 
         function redrawCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawGrid();
-            circuitElements.forEach((el) => drawElement(el));
-            if (hoveredWireSegment) {
-                ctx.save(); ctx.strokeStyle = '#007bff'; ctx.lineWidth = 4;
-                ctx.shadowColor = 'rgba(0, 123, 255, 0.7)'; ctx.shadowBlur = 8;
-                ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(hoveredWireSegment.p1.x, hoveredWireSegment.p1.y);
-                ctx.lineTo(hoveredWireSegment.p2.x, hoveredWireSegment.p2.y); ctx.stroke(); ctx.restore();
-            }
-            drawJunctions();
-            drawSelection();
-            if (isDrawingWire && wireStartPoint) {
-                let endPoint = getSnappingPoint(currentMousePos.x, currentMousePos.y);
-                drawWirePreview(wireStartPoint, endPoint);
-                drawSnapIndicator(endPoint);
-            } else if (selectedTool === "wire") {
-                const snapPoint = getSnappingPoint(currentMousePos.x, currentMousePos.y);
-                drawSnapIndicator(snapPoint);
-            }
-            if (isMarqueeSelecting && marqueeStartPoint) { drawMarquee(marqueeStartPoint, currentMousePos); }
-            updateToolbar();
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          drawGrid();
+          circuitElements.forEach((el) => drawElement(el));
+          if (hoveredWireSegment) {
+            ctx.save();
+            ctx.strokeStyle = "#007bff";
+            ctx.lineWidth = 4;
+            ctx.shadowColor = "rgba(0, 123, 255, 0.7)";
+            ctx.shadowBlur = 8;
+            ctx.lineCap = "round";
+            ctx.beginPath();
+            ctx.moveTo(hoveredWireSegment.p1.x, hoveredWireSegment.p1.y);
+            ctx.lineTo(hoveredWireSegment.p2.x, hoveredWireSegment.p2.y);
+            ctx.stroke();
+            ctx.restore();
+          }
+          drawJunctions();
+          drawSelection();
+          if (isDrawingWire && wireStartPoint) {
+            let endPoint = getSnappingPoint(
+              currentMousePos.x,
+              currentMousePos.y
+            );
+            drawWirePreview(wireStartPoint, endPoint);
+            drawSnapIndicator(endPoint);
+          } else if (selectedTool === "wire") {
+            const snapPoint = getSnappingPoint(
+              currentMousePos.x,
+              currentMousePos.y
+            );
+            drawSnapIndicator(snapPoint);
+          }
+          if (isMarqueeSelecting && marqueeStartPoint) {
+            drawMarquee(marqueeStartPoint, currentMousePos);
+          }
+          updateToolbar();
         }
-        
+
         // --- START: Bulk Add/Text Functions ---
 
         function resizeCanvas(newWidth, newHeight) {
-            if (canvas.width >= newWidth && canvas.height >= newHeight) return;
+          if (canvas.width >= newWidth && canvas.height >= newHeight) return;
 
-            const finalWidth = Math.max(canvas.width, newWidth);
-            const finalHeight = Math.max(canvas.height, newHeight);
+          const finalWidth = Math.max(canvas.width, newWidth);
+          const finalHeight = Math.max(canvas.height, newHeight);
 
-            canvas.width = finalWidth;
-            canvas.height = finalHeight;
-            
-            redrawCanvas();
+          canvas.width = finalWidth;
+          canvas.height = finalHeight;
+
+          redrawCanvas();
         }
 
-        function addBulkRow(name = '', qty = 1, label = 'Y') {
-            const row = document.createElement('tr');
-            row.innerHTML = `
+        function addBulkRow(name = "", qty = 1, label = "Y") {
+          const row = document.createElement("tr");
+          row.innerHTML = `
                 <td><input type="text" class="comp-name" placeholder="e.g., R, C, Vdc" value="${name}"></td>
                 <td><input type="number" class="comp-qty" min="1" value="${qty}"></td>
                 <td><input type="text" class="comp-label" placeholder="Y or N" value="${label}" maxlength="1"></td>
                 <td><button class="delete-row-btn">&times;</button></td>
             `;
-            bulkInputTableBody.appendChild(row);
+          bulkInputTableBody.appendChild(row);
         }
 
         function openBulkAddModal() {
-            bulkInputTableBody.innerHTML = ''; 
-            addBulkRow();
-            bulkAddModal.style.display = 'flex';
+          bulkInputTableBody.innerHTML = "";
+          addBulkRow();
+          bulkAddModal.style.display = "flex";
         }
 
         function closeBulkAddModal() {
-            bulkAddModal.style.display = 'none';
+          bulkAddModal.style.display = "none";
         }
-        
+
         function openBulkTextModal() {
-            bulkTextInput.value = '';
-            bulkTextModal.style.display = 'flex';
+          bulkTextInput.value = "";
+          bulkTextModal.style.display = "flex";
         }
 
         function closeBulkTextModal() {
-            bulkTextModal.style.display = 'none';
+          bulkTextModal.style.display = "none";
         }
-        
-        function recalculateAutoLabelCounters() {
-            autoLabelCounters = {};
-            const labelRegex = /^([A-Z_a-z]+)(\d+)$/i;
 
-            circuitElements.forEach(el => {
-                if (el.type === 'text' && el.text) {
-                    const match = el.text.match(labelRegex);
-                    if (match) {
-                        const prefix = match[1].toUpperCase();
-                        const num = parseInt(match[2], 10);
-                        if (!autoLabelCounters[prefix] || num >= autoLabelCounters[prefix]) {
-                            autoLabelCounters[prefix] = num + 1;
-                        }
-                    }
+        function recalculateAutoLabelCounters() {
+          autoLabelCounters = {};
+          // Updated regex to handle both "R1" and "R_{1}" formats
+          const labelRegex = /^([A-Z_a-z]+)(?:_\{)?(\d+)\}?$/i;
+
+          circuitElements.forEach((el) => {
+            if (el.type === "text" && el.text) {
+              const match = el.text.match(labelRegex);
+              if (match) {
+                const prefix = match[1].toUpperCase();
+                const num = parseInt(match[2], 10);
+                if (
+                  !autoLabelCounters[prefix] ||
+                  num >= autoLabelCounters[prefix]
+                ) {
+                  autoLabelCounters[prefix] = num + 1;
                 }
-            });
+              }
+            }
+          });
         }
 
         function handleBulkPlace() {
-            recalculateAutoLabelCounters();
-            const rows = bulkInputTableBody.querySelectorAll('tr');
-            const placeStepX = 150;
-            const placeStepY = 120;
-            const placementMargin = 100;
-            const requests = [];
-            let totalComponentCount = 0;
+          recalculateAutoLabelCounters();
+          const rows = bulkInputTableBody.querySelectorAll("tr");
+          const placeStepX = 150;
+          const placeStepY = 120;
+          const placementMargin = 100;
+          const requests = [];
+          let totalComponentCount = 0;
 
-            for (const row of rows) {
-                const nameInput = row.querySelector('.comp-name');
-                const qtyInput = row.querySelector('.comp-qty');
-                const labelInput = row.querySelector('.comp-label');
-                const shortNameRaw = nameInput.value.trim();
-                if (!shortNameRaw) continue;
+          for (const row of rows) {
+            const nameInput = row.querySelector(".comp-name");
+            const qtyInput = row.querySelector(".comp-qty");
+            const labelInput = row.querySelector(".comp-label");
+            const shortNameRaw = nameInput.value.trim();
+            if (!shortNameRaw) continue;
 
-                const shortName = shortNameRaw.toUpperCase();
-                const quantity = parseInt(qtyInput.value, 10);
-                const autoLabel = labelInput.value.trim().toUpperCase();
-                const componentType = shortNameToTypeCI[shortName];
+            const shortName = shortNameRaw.toUpperCase();
+            const quantity = parseInt(qtyInput.value, 10);
+            const autoLabel = labelInput.value.trim().toUpperCase();
+            const componentType = shortNameToTypeCI[shortName];
 
-                if (!componentType) { alert(`Invalid component name: "${nameInput.value}".`); nameInput.focus(); return; }
-                if (isNaN(quantity) || quantity < 1) { alert(`Invalid quantity: "${qtyInput.value}".`); qtyInput.focus(); return; }
-                requests.push({ shortNameRaw, shortName, quantity, autoLabel, componentType });
-                totalComponentCount += quantity;
+            if (!componentType) {
+              alert(`Invalid component name: "${nameInput.value}".`);
+              nameInput.focus();
+              return;
             }
-
-            if (totalComponentCount === 0) { closeBulkAddModal(); return; }
-
-            const bounds = calculateBoundingBox();
-            const placementStart = { 
-                x: placementMargin, 
-                y: bounds ? Math.floor((bounds.maxY + placementMargin) / gridSize) * gridSize : placementMargin 
-            };
-            
-            const componentsPerRow = Math.max(1, Math.floor((canvas.width - placementMargin * 2) / placeStepX));
-            const requiredRows = Math.ceil(totalComponentCount / componentsPerRow);
-            
-            const requiredWidth = placementStart.x + (Math.min(totalComponentCount, componentsPerRow) * placeStepX);
-            const requiredHeight = placementStart.y + (requiredRows * placeStepY);
-            
-            resizeCanvas(requiredWidth, requiredHeight);
-            
-            let placeX = placementStart.x;
-            let placeY = placementStart.y;
-            const componentsToAdd = [];
-
-            for (const req of requests) {
-                for (let i = 0; i < req.quantity; i++) {
-                    const newComp = { id: nextId++, type: req.componentType, x: placeX, y: placeY, rotation: 0 };
-                    if (newComp.type === 'switch') { newComp.state = 'open'; }
-                    componentsToAdd.push(newComp);
-
-                    if (req.autoLabel === 'Y') {
-                        if (!autoLabelCounters[req.shortName]) autoLabelCounters[req.shortName] = 1;
-                        const labelText = req.shortName + autoLabelCounters[req.shortName]++;
-                        const newLabel = { id: nextId++, type: 'text', text: labelText, x: placeX, y: placeY + 45, rotation: 0 };
-                        componentsToAdd.push(newLabel);
-                    }
-                    
-                    placeX += placeStepX;
-                    if (placeX > canvas.width - placementMargin) {
-                        placeX = placementStart.x;
-                        placeY += placeStepY;
-                    }
-                }
+            if (isNaN(quantity) || quantity < 1) {
+              alert(`Invalid quantity: "${qtyInput.value}".`);
+              qtyInput.focus();
+              return;
             }
-            
-            if (componentsToAdd.length > 0) {
-                circuitElements.push(...componentsToAdd);
-                saveState();
-                redrawCanvas();
-            }
-            
+            requests.push({
+              shortNameRaw,
+              shortName,
+              quantity,
+              autoLabel,
+              componentType,
+            });
+            totalComponentCount += quantity;
+          }
+
+          if (totalComponentCount === 0) {
             closeBulkAddModal();
+            return;
+          }
+
+          const bounds = calculateBoundingBox();
+          const placementStart = {
+            x: placementMargin,
+            y: bounds
+              ? Math.floor((bounds.maxY + placementMargin) / gridSize) *
+                gridSize
+              : placementMargin,
+          };
+
+          const componentsPerRow = Math.max(
+            1,
+            Math.floor((canvas.width - placementMargin * 2) / placeStepX)
+          );
+          const requiredRows = Math.ceil(
+            totalComponentCount / componentsPerRow
+          );
+
+          const requiredWidth =
+            placementStart.x +
+            Math.min(totalComponentCount, componentsPerRow) * placeStepX;
+          const requiredHeight = placementStart.y + requiredRows * placeStepY;
+
+          resizeCanvas(requiredWidth, requiredHeight);
+
+          let placeX = placementStart.x;
+          let placeY = placementStart.y;
+          const componentsToAdd = [];
+
+          for (const req of requests) {
+            for (let i = 0; i < req.quantity; i++) {
+              const newComp = {
+                id: nextId++,
+                type: req.componentType,
+                x: placeX,
+                y: placeY,
+                rotation: 0,
+              };
+              if (newComp.type === "switch") {
+                newComp.state = "open";
+              }
+              componentsToAdd.push(newComp);
+
+              if (req.autoLabel === "Y") {
+                if (!autoLabelCounters[req.shortName])
+                  autoLabelCounters[req.shortName] = 1;
+                // Use LaTeX-style subscript for the auto-generated number
+                const labelText =
+                  req.shortName +
+                  "_{" +
+                  autoLabelCounters[req.shortName]++ +
+                  "}";
+                const newLabel = {
+                  id: nextId++,
+                  type: "text",
+                  text: labelText,
+                  x: placeX,
+                  y: placeY + 45,
+                  rotation: 0,
+                };
+                componentsToAdd.push(newLabel);
+              }
+
+              placeX += placeStepX;
+              if (placeX > canvas.width - placementMargin) {
+                placeX = placementStart.x;
+                placeY += placeStepY;
+              }
+            }
+          }
+
+          if (componentsToAdd.length > 0) {
+            circuitElements.push(...componentsToAdd);
+            saveState();
+            redrawCanvas();
+          }
+
+          closeBulkAddModal();
         }
 
         function handleBulkTextPlace() {
-            const rawText = bulkTextInput.value.trim();
-            if (!rawText) {
-                closeBulkTextModal();
-                return;
-            }
-            
-            const textItems = rawText.split(';').map(item => item.trim()).filter(item => item.length > 0);
-            if (textItems.length === 0) {
-                closeBulkTextModal();
-                return;
-            }
-            
-            const verticalSpacing = 40;
-            const placementMargin = 100;
-            const bounds = calculateBoundingBox();
-            
-            const placementStart = { 
-                x: placementMargin, 
-                y: bounds ? Math.floor((bounds.maxY + 80) / gridSize) * gridSize : 80 
-            };
-            
-            const requiredHeight = placementStart.y + (textItems.length * verticalSpacing);
-            resizeCanvas(canvas.width, requiredHeight);
-
-            let placeY = placementStart.y;
-            const textsToAdd = [];
-
-            textItems.forEach(item => {
-                const newText = { id: nextId++, type: 'text', text: item, x: placementStart.x, y: placeY, rotation: 0 };
-                textsToAdd.push(newText);
-                placeY += verticalSpacing;
-            });
-
-            if (textsToAdd.length > 0) {
-                circuitElements.push(...textsToAdd);
-                saveState();
-                redrawCanvas();
-            }
-
+          const rawText = bulkTextInput.value.trim();
+          if (!rawText) {
             closeBulkTextModal();
+            return;
+          }
+
+          const textItems = rawText
+            .split(";")
+            .map((item) => item.trim())
+            .filter((item) => item.length > 0);
+          if (textItems.length === 0) {
+            closeBulkTextModal();
+            return;
+          }
+
+          const verticalSpacing = 40;
+          const placementMargin = 100;
+          const bounds = calculateBoundingBox();
+
+          const placementStart = {
+            x: placementMargin,
+            y: bounds
+              ? Math.floor((bounds.maxY + 80) / gridSize) * gridSize
+              : 80,
+          };
+
+          const requiredHeight =
+            placementStart.y + textItems.length * verticalSpacing;
+          resizeCanvas(canvas.width, requiredHeight);
+
+          let placeY = placementStart.y;
+          const textsToAdd = [];
+
+          textItems.forEach((item) => {
+            const newText = {
+              id: nextId++,
+              type: "text",
+              text: item,
+              x: placementStart.x,
+              y: placeY,
+              rotation: 0,
+            };
+            textsToAdd.push(newText);
+            placeY += verticalSpacing;
+          });
+
+          if (textsToAdd.length > 0) {
+            circuitElements.push(...textsToAdd);
+            saveState();
+            redrawCanvas();
+          }
+
+          closeBulkTextModal();
         }
         // --- END: Bulk Add/Text Functions ---
 
         function drawElement(el, isSelected = false) {
           ctx.save();
           setDrawingStyle(isSelected);
-          if (el.type === "wire") { drawWire(el, isSelected); }
-          else if (el.type === "text") { drawText(el, isSelected); } // NOTE: Removed translate for text, handled in drawText
+          if (el.type === "wire") {
+            drawWire(el, isSelected);
+          } else if (el.type === "text") {
+            drawText(el, isSelected);
+          } // NOTE: Removed translate for text, handled in drawText
           else {
-            ctx.translate(el.x, el.y); ctx.rotate((el.rotation * Math.PI) / 180);
+            ctx.translate(el.x, el.y);
+            ctx.rotate((el.rotation * Math.PI) / 180);
             switch (el.type) {
-              case "resistor": drawResistor(); break; case "capacitor": drawCapacitor(); break;
-              case "inductor": drawInductor(); break; case "diode": drawDiode(); break;
-              case "zener": drawZenerDiode(); break; case "led": drawLED(); break;
-              case "switch": drawSwitch(el); break; case "voltage": drawVoltageSource(); break;
-              case "acvoltage": drawACVoltageSource(); break; case "currentsource": drawCurrentSource(); break;
-              case "battery": drawBattery(); break; case "gnd": drawGround(); break; 
-              case "junction": drawManualJunction(); break; case "open_terminal": drawOpenTerminal(); break;
+              case "resistor":
+                drawResistor();
+                break;
+              case "capacitor":
+                drawCapacitor();
+                break;
+              case "inductor":
+                drawInductor();
+                break;
+              case "diode":
+                drawDiode();
+                break;
+              case "zener":
+                drawZenerDiode();
+                break;
+              case "led":
+                drawLED();
+                break;
+              case "switch":
+                drawSwitch(el);
+                break;
+              case "voltage":
+                drawVoltageSource();
+                break;
+              case "acvoltage":
+                drawACVoltageSource();
+                break;
+              case "currentsource":
+                drawCurrentSource();
+                break;
+              case "battery":
+                drawBattery();
+                break;
+              case "gnd":
+                drawGround();
+                break;
+              case "junction":
+                drawManualJunction();
+                break;
+              case "open_terminal":
+                drawOpenTerminal();
+                break;
             }
           }
           ctx.restore();
@@ -1075,111 +1517,223 @@
         }
 
         function handleMouseDown(e) {
-            const mousePos = getMousePos(e);
-            if (e.ctrlKey && !e.metaKey) {
-                e.preventDefault();
-                const newJunction = { id: nextId++, type: 'junction', x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
-                circuitElements.push(newJunction);
-                saveState(); redrawCanvas(); return;
-            }
-
-            let needsStateSave = false;
-            if (selectedTool === "select") {
-                const clickedElement = getElementAtPos(mousePos.x, mousePos.y);
-                if (clickedElement) {
-                    isMarqueeSelecting = false; isDragging = true; dragStartPoint = mousePos;
-                    if (!selectedElements.some(el => el.id === clickedElement.id)) { selectedElements = [clickedElement]; }
-                    selectedElements.forEach(el => { el.dragInitialState = { x: el.x, y: el.y, start: el.start ? { ...el.start } : undefined, end: el.end ? { ...el.end } : undefined }; });
-                } else {
-                    isMarqueeSelecting = true; isDragging = false; marqueeStartPoint = mousePos; selectedElements = [];
-                }
-            } else if (selectedTool === "wire") {
-                isDrawingWire = true;
-                wireStartPoint = getSnappingPoint(mousePos.x, mousePos.y);
-            } else if (selectedTool === "text") {
-                const textContent = prompt(`Use LaTeX style: _ and ^ for scripts (e.g., V_{in}), \\frac{}{} for fractions, and \\ for Greek (e.g., \\mu).`, "V_{out} = V_{in} \\frac{R_2}{R_1+R_2}");
-                if (textContent) {
-                    const newEl = { id: nextId++, type: "text", text: textContent, x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
-                    circuitElements.push(newEl); selectedTool = "select"; selectedElements = [newEl]; needsStateSave = true;
-                }
-            } else {
-                const newEl = { id: nextId++, type: selectedTool, x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
-                if (newEl.type === 'switch') { newEl.state = 'open'; }
-                circuitElements.push(newEl); selectedTool = "select"; selectedElements = [newEl]; needsStateSave = true;
-            }
-            if (needsStateSave) saveState();
+          const mousePos = getMousePos(e);
+          if (e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            const newJunction = {
+              id: nextId++,
+              type: "junction",
+              x: snapToGrid(mousePos.x),
+              y: snapToGrid(mousePos.y),
+              rotation: 0,
+            };
+            circuitElements.push(newJunction);
+            saveState();
             redrawCanvas();
-        }
-        
-        function updateHoveredWireSegment() {
-            if (selectedTool !== 'wire') { hoveredWireSegment = null; return; }
-            hoveredWireSegment = null;
-            for (const wire of circuitElements) {
-                if (wire.type !== 'wire') continue;
-                const path = getWirePath(wire);
-                for (let i = 0; i < path.length - 1; i++) {
-                    const p1 = path[i]; const p2 = path[i + 1];
-                    if (distToSegment(currentMousePos, p1, p2) < snapTolerance) { hoveredWireSegment = { p1, p2 }; return; }
-                }
+            return;
+          }
+
+          let needsStateSave = false;
+          if (selectedTool === "select") {
+            const clickedElement = getElementAtPos(mousePos.x, mousePos.y);
+            if (clickedElement) {
+              isMarqueeSelecting = false;
+              isDragging = true;
+              dragStartPoint = mousePos;
+              if (!selectedElements.some((el) => el.id === clickedElement.id)) {
+                selectedElements = [clickedElement];
+              }
+              selectedElements.forEach((el) => {
+                el.dragInitialState = {
+                  x: el.x,
+                  y: el.y,
+                  start: el.start ? { ...el.start } : undefined,
+                  end: el.end ? { ...el.end } : undefined,
+                };
+              });
+            } else {
+              isMarqueeSelecting = true;
+              isDragging = false;
+              marqueeStartPoint = mousePos;
+              selectedElements = [];
             }
+          } else if (selectedTool === "wire") {
+            isDrawingWire = true;
+            wireStartPoint = getSnappingPoint(mousePos.x, mousePos.y);
+          } else if (selectedTool === "text") {
+            const textContent = prompt(
+              `Use LaTeX style: _ and ^ for scripts (e.g., V_{in}), \\frac{}{} for fractions, and \\ for Greek (e.g., \\mu).`,
+              "V_{out} = V_{in} \\frac{R_2}{R_1+R_2}"
+            );
+            if (textContent) {
+              const newEl = {
+                id: nextId++,
+                type: "text",
+                text: textContent,
+                x: snapToGrid(mousePos.x),
+                y: snapToGrid(mousePos.y),
+                rotation: 0,
+              };
+              circuitElements.push(newEl);
+              selectedTool = "select";
+              selectedElements = [newEl];
+              needsStateSave = true;
+            }
+          } else {
+            const newEl = {
+              id: nextId++,
+              type: selectedTool,
+              x: snapToGrid(mousePos.x),
+              y: snapToGrid(mousePos.y),
+              rotation: 0,
+            };
+            if (newEl.type === "switch") {
+              newEl.state = "open";
+            }
+            circuitElements.push(newEl);
+            selectedTool = "select";
+            selectedElements = [newEl];
+            needsStateSave = true;
+          }
+          if (needsStateSave) saveState();
+          redrawCanvas();
+        }
+
+        function updateHoveredWireSegment() {
+          if (selectedTool !== "wire") {
+            hoveredWireSegment = null;
+            return;
+          }
+          hoveredWireSegment = null;
+          for (const wire of circuitElements) {
+            if (wire.type !== "wire") continue;
+            const path = getWirePath(wire);
+            for (let i = 0; i < path.length - 1; i++) {
+              const p1 = path[i];
+              const p2 = path[i + 1];
+              if (distToSegment(currentMousePos, p1, p2) < snapTolerance) {
+                hoveredWireSegment = { p1, p2 };
+                return;
+              }
+            }
+          }
         }
 
         function handleMouseMove(e) {
-            currentMousePos = getMousePos(e);
-            if (isDragging && selectedElements.length > 0 && dragStartPoint) {
-                const dx = currentMousePos.x - dragStartPoint.x, dy = currentMousePos.y - dragStartPoint.y;
-                selectedElements.forEach(el => {
-                    const initialState = el.dragInitialState; if (!initialState) return;
-                    if (el.type === 'wire') {
-                        if (initialState.start && initialState.end) {
-                            el.start.x = snapToGrid(initialState.start.x + dx); el.start.y = snapToGrid(initialState.start.y + dy);
-                            el.end.x = snapToGrid(initialState.end.x + dx); el.end.y = snapToGrid(initialState.end.y + dy);
-                        }
-                    } else {
-                        if (initialState.x !== undefined && initialState.y !== undefined) {
-                           el.x = snapToGrid(initialState.x + dx); el.y = snapToGrid(initialState.y + dy);
-                        }
-                    }
-                });
-            }
-            updateHoveredWireSegment(); redrawCanvas();
+          currentMousePos = getMousePos(e);
+          if (isDragging && selectedElements.length > 0 && dragStartPoint) {
+            const dx = currentMousePos.x - dragStartPoint.x,
+              dy = currentMousePos.y - dragStartPoint.y;
+            selectedElements.forEach((el) => {
+              const initialState = el.dragInitialState;
+              if (!initialState) return;
+              if (el.type === "wire") {
+                if (initialState.start && initialState.end) {
+                  el.start.x = snapToGrid(initialState.start.x + dx);
+                  el.start.y = snapToGrid(initialState.start.y + dy);
+                  el.end.x = snapToGrid(initialState.end.x + dx);
+                  el.end.y = snapToGrid(initialState.end.y + dy);
+                }
+              } else {
+                if (
+                  initialState.x !== undefined &&
+                  initialState.y !== undefined
+                ) {
+                  el.x = snapToGrid(initialState.x + dx);
+                  el.y = snapToGrid(initialState.y + dy);
+                }
+              }
+            });
+          }
+          updateHoveredWireSegment();
+          redrawCanvas();
         }
 
         function handleMouseUp(e) {
           let needsStateSave = false;
           if (isMarqueeSelecting) {
-            const rect = { x1: Math.min(marqueeStartPoint.x, currentMousePos.x), y1: Math.min(marqueeStartPoint.y, currentMousePos.y), x2: Math.max(marqueeStartPoint.x, currentMousePos.x), y2: Math.max(marqueeStartPoint.y, currentMousePos.y) };
-            selectedElements = circuitElements.filter(el => isElementInRect(el, rect));
+            const rect = {
+              x1: Math.min(marqueeStartPoint.x, currentMousePos.x),
+              y1: Math.min(marqueeStartPoint.y, currentMousePos.y),
+              x2: Math.max(marqueeStartPoint.x, currentMousePos.x),
+              y2: Math.max(marqueeStartPoint.y, currentMousePos.y),
+            };
+            selectedElements = circuitElements.filter((el) =>
+              isElementInRect(el, rect)
+            );
           }
           if (isDrawingWire) {
-            const endPoint = getSnappingPoint(currentMousePos.x, currentMousePos.y);
-            if (Math.hypot(endPoint.x - wireStartPoint.x, endPoint.y - wireStartPoint.y) > 0) {
-              circuitElements.push({ id: nextId++, type: "wire", start: wireStartPoint, end: endPoint, routing: isShiftDown ? "direct" : "manhattan"});
+            const endPoint = getSnappingPoint(
+              currentMousePos.x,
+              currentMousePos.y
+            );
+            if (
+              Math.hypot(
+                endPoint.x - wireStartPoint.x,
+                endPoint.y - wireStartPoint.y
+              ) > 0
+            ) {
+              circuitElements.push({
+                id: nextId++,
+                type: "wire",
+                start: wireStartPoint,
+                end: endPoint,
+                routing: isShiftDown ? "direct" : "manhattan",
+              });
               needsStateSave = true;
             }
           }
-          if (isDragging) { needsStateSave = true; }
-          isDrawingWire = false; isDragging = false; isMarqueeSelecting = false; marqueeStartPoint = null; dragStartPoint = null;
-          circuitElements.forEach(el => delete el.dragInitialState);
+          if (isDragging) {
+            needsStateSave = true;
+          }
+          isDrawingWire = false;
+          isDragging = false;
+          isMarqueeSelecting = false;
+          marqueeStartPoint = null;
+          dragStartPoint = null;
+          circuitElements.forEach((el) => delete el.dragInitialState);
           if (needsStateSave) saveState();
           redrawCanvas();
         }
 
         function handleDoubleClick(e) {
-            e.preventDefault();
-            const mousePos = getMousePos(e);
-            const clickedElement = getElementAtPos(mousePos.x, mousePos.y);
+          e.preventDefault();
+          const mousePos = getMousePos(e);
+          const clickedElement = getElementAtPos(mousePos.x, mousePos.y);
 
-            if (clickedElement && clickedElement.type === 'switch') {
-                clickedElement.state = (clickedElement.state === 'closed') ? 'open' : 'closed';
-                saveState();
-                redrawCanvas();
-                return;
+          // Priority 1: Toggle a switch
+          if (clickedElement && clickedElement.type === "switch") {
+            clickedElement.state =
+              clickedElement.state === "closed" ? "open" : "closed";
+            saveState();
+            redrawCanvas();
+            return;
+          }
+
+          // Priority 2: Edit a text element
+          if (clickedElement && clickedElement.type === "text") {
+            const newText = prompt("Edit text:", clickedElement.text);
+            // The prompt returns null if the user clicks Cancel.
+            // We proceed only if the user clicks OK (even with an empty string).
+            if (newText !== null) {
+              clickedElement.text = newText;
+              saveState();
+              redrawCanvas();
             }
-            
-            const newTerminal = { id: nextId++, type: 'open_terminal', x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
-            circuitElements.push(newTerminal);
-            saveState(); redrawCanvas();
+            return; // Stop further execution
+          }
+
+          // Default action: Create an open terminal if nothing else was hit
+          const newTerminal = {
+            id: nextId++,
+            type: "open_terminal",
+            x: snapToGrid(mousePos.x),
+            y: snapToGrid(mousePos.y),
+            rotation: 0,
+          };
+          circuitElements.push(newTerminal);
+          saveState();
+          redrawCanvas();
         }
 
         canvas.addEventListener("mousedown", handleMouseDown);
@@ -1187,69 +1741,124 @@
         canvas.addEventListener("mouseup", handleMouseUp);
         canvas.addEventListener("dblclick", handleDoubleClick);
         canvas.addEventListener("mouseout", () => {
-          isDrawingWire = false; isDragging = false; isMarqueeSelecting = false; marqueeStartPoint = null; isShiftDown = false;
-          hoveredWireSegment = null; redrawCanvas();
+          isDrawingWire = false;
+          isDragging = false;
+          isMarqueeSelecting = false;
+          marqueeStartPoint = null;
+          isShiftDown = false;
+          hoveredWireSegment = null;
+          redrawCanvas();
         });
-        
-        function getMousePos(e) { return { x: e.clientX - canvas.getBoundingClientRect().left, y: e.clientY - canvas.getBoundingClientRect().top }; }
-        function snapToGrid(val) { return Math.round(val / (gridSize / 2)) * (gridSize / 2); }
+
+        function getMousePos(e) {
+          return {
+            x: e.clientX - canvas.getBoundingClientRect().left,
+            y: e.clientY - canvas.getBoundingClientRect().top,
+          };
+        }
+        function snapToGrid(val) {
+          return Math.round(val / (gridSize / 2)) * (gridSize / 2);
+        }
 
         function getWireSegmentSnapPoint(pos) {
-            for (const wire of circuitElements) {
-                if (wire.type !== 'wire') continue;
-                const path = getWirePath(wire);
-                for (let i = 0; i < path.length - 1; i++) {
-                    const p1 = path[i]; const p2 = path[i + 1];
-                    if (distToSegment(pos, p1, p2) < snapTolerance) { return projectPointOnSegment(pos, p1, p2); }
-                }
+          for (const wire of circuitElements) {
+            if (wire.type !== "wire") continue;
+            const path = getWirePath(wire);
+            for (let i = 0; i < path.length - 1; i++) {
+              const p1 = path[i];
+              const p2 = path[i + 1];
+              if (distToSegment(pos, p1, p2) < snapTolerance) {
+                return projectPointOnSegment(pos, p1, p2);
+              }
             }
-            return null;
+          }
+          return null;
         }
 
         function getSnappingPoint(x, y) {
-            if (selectedTool === 'wire') { const segmentSnap = getWireSegmentSnapPoint({ x, y }); if (segmentSnap) return segmentSnap; }
-            for (const el of circuitElements) {
-                if (el.type === "wire" || el.type === "text" || el.type === "junction" || el.type === 'open_terminal') continue;
-                const terminals = getAbsoluteTerminals(el);
-                for (const term of terminals) { if (Math.hypot(x - term.x, y - term.y) < snapTolerance) return { x: term.x, y: term.y, ownerId: el.id }; }
+          if (selectedTool === "wire") {
+            const segmentSnap = getWireSegmentSnapPoint({ x, y });
+            if (segmentSnap) return segmentSnap;
+          }
+          for (const el of circuitElements) {
+            if (
+              el.type === "wire" ||
+              el.type === "text" ||
+              el.type === "junction" ||
+              el.type === "open_terminal"
+            )
+              continue;
+            const terminals = getAbsoluteTerminals(el);
+            for (const term of terminals) {
+              if (Math.hypot(x - term.x, y - term.y) < snapTolerance)
+                return { x: term.x, y: term.y, ownerId: el.id };
             }
-            for (const el of circuitElements) {
-                if (el.type === 'junction' || el.type === 'open_terminal') { if (Math.hypot(x - el.x, y - el.y) < snapTolerance) return { x: el.x, y: el.y, ownerId: el.id }; }
+          }
+          for (const el of circuitElements) {
+            if (el.type === "junction" || el.type === "open_terminal") {
+              if (Math.hypot(x - el.x, y - el.y) < snapTolerance)
+                return { x: el.x, y: el.y, ownerId: el.id };
             }
-            for (const el of circuitElements) {
-                if (el.type !== "wire") continue;
-                if (Math.hypot(x - el.start.x, y - el.start.y) < snapTolerance) return { x: el.start.x, y: el.start.y };
-                if (Math.hypot(x - el.end.x, y - el.end.y) < snapTolerance) return { x: el.end.x, y: el.end.y };
-            }
-            return { x: snapToGrid(x), y: snapToGrid(y), ownerId: null };
+          }
+          for (const el of circuitElements) {
+            if (el.type !== "wire") continue;
+            if (Math.hypot(x - el.start.x, y - el.start.y) < snapTolerance)
+              return { x: el.start.x, y: el.start.y };
+            if (Math.hypot(x - el.end.x, y - el.end.y) < snapTolerance)
+              return { x: el.end.x, y: el.end.y };
+          }
+          return { x: snapToGrid(x), y: snapToGrid(y), ownerId: null };
         }
 
         function getAbsoluteTerminals(el) {
           const data = componentData[el.type];
           if (!data || !data.terminals) return [];
-          const angle = (el.rotation * Math.PI) / 180, cos = Math.cos(angle), sin = Math.sin(angle);
-          return data.terminals.map((t) => ({ x: el.x + (t.x * cos - t.y * sin), y: el.y + (t.x * sin + t.y * cos) }));
+          const angle = (el.rotation * Math.PI) / 180,
+            cos = Math.cos(angle),
+            sin = Math.sin(angle);
+          return data.terminals.map((t) => ({
+            x: el.x + (t.x * cos - t.y * sin),
+            y: el.y + (t.x * sin + t.y * cos),
+          }));
         }
         function getElementAtPos(x, y) {
           for (let i = circuitElements.length - 1; i >= 0; i--) {
             const el = circuitElements[i];
-            if (el.type === 'junction' || el.type === 'open_terminal') { if (Math.hypot(x - el.x, y - el.y) < snapTolerance) return el;  }
+            if (el.type === "junction" || el.type === "open_terminal") {
+              if (Math.hypot(x - el.x, y - el.y) < snapTolerance) return el;
+            }
           }
           for (let i = circuitElements.length - 1; i >= 0; i--) {
             const el = circuitElements[i];
-            if (el.type === "wire" || el.type === "junction" || el.type === 'open_terminal') continue;
+            if (
+              el.type === "wire" ||
+              el.type === "junction" ||
+              el.type === "open_terminal"
+            )
+              continue;
             if (el.type === "text") {
               const { width, height } = measureParsedText(el.text);
               const padding = 4;
-              if (x > el.x - width / 2 - padding && x < el.x + width / 2 + padding && 
-                  y > el.y - height / 2 - padding && y < el.y + height / 2 + padding) {
+              if (
+                x > el.x - width / 2 - padding &&
+                x < el.x + width / 2 + padding &&
+                y > el.y - height / 2 - padding &&
+                y < el.y + height / 2 + padding
+              ) {
                 return el;
               }
             } else {
               const data = componentData[el.type];
-              const dx = x - el.x, dy = y - el.y, angle = (-el.rotation * Math.PI) / 180;
-              const rX = dx * Math.cos(angle) - dy * Math.sin(angle), rY = dx * Math.sin(angle) + dy * Math.cos(angle);
-              if (Math.abs(rX) < data.width / 2 && Math.abs(rY) < data.height / 2) return el;
+              const dx = x - el.x,
+                dy = y - el.y,
+                angle = (-el.rotation * Math.PI) / 180;
+              const rX = dx * Math.cos(angle) - dy * Math.sin(angle),
+                rY = dx * Math.sin(angle) + dy * Math.cos(angle);
+              if (
+                Math.abs(rX) < data.width / 2 &&
+                Math.abs(rY) < data.height / 2
+              )
+                return el;
             }
           }
           for (let i = circuitElements.length - 1; i >= 0; i--) {
@@ -1260,83 +1869,184 @@
           return null;
         }
         function distToSegment(p, v, w) {
-          const l2 = (v.x - w.x) ** 2 + (v.y - w.y) ** 2; if (l2 === 0) return Math.hypot(p.x - v.x, p.y - v.y);
-          let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2; t = Math.max(0, Math.min(1, t));
-          return Math.hypot( p.x - (v.x + t * (w.x - v.x)), p.y - (v.y + t * (w.y - v.y)) );
+          const l2 = (v.x - w.x) ** 2 + (v.y - w.y) ** 2;
+          if (l2 === 0) return Math.hypot(p.x - v.x, p.y - v.y);
+          let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+          t = Math.max(0, Math.min(1, t));
+          return Math.hypot(
+            p.x - (v.x + t * (w.x - v.x)),
+            p.y - (v.y + t * (w.y - v.y))
+          );
         }
 
         function projectPointOnSegment(p, v, w) {
-            const l2 = (v.x - w.x) ** 2 + (v.y - w.y) ** 2;
-            if (l2 === 0) return { x: v.x, y: v.y };
-            let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
-            t = Math.max(0, Math.min(1, t));
-            return { x: v.x + t * (w.x - v.x), y: v.y + t * (w.y - v.y) };
+          const l2 = (v.x - w.x) ** 2 + (v.y - w.y) ** 2;
+          if (l2 === 0) return { x: v.x, y: v.y };
+          let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+          t = Math.max(0, Math.min(1, t));
+          return { x: v.x + t * (w.x - v.x), y: v.y + t * (w.y - v.y) };
         }
 
         function isPointOnWire(point, wire) {
           const path = getWirePath(wire);
-          for (let i = 0; i < path.length - 1; i++) { if (distToSegment(point, path[i], path[i + 1]) < snapTolerance) return true; }
+          for (let i = 0; i < path.length - 1; i++) {
+            if (distToSegment(point, path[i], path[i + 1]) < snapTolerance)
+              return true;
+          }
           return false;
         }
         function isElementInRect(el, rect) {
-          if (el.type !== 'wire') { return el.x >= rect.x1 && el.x <= rect.x2 && el.y >= rect.y1 && el.y <= rect.y2; }
-          if (el.type === 'wire') {
-            const startIn = el.start.x >= rect.x1 && el.start.x <= rect.x2 && el.start.y >= rect.y1 && el.start.y <= rect.y2;
-            const endIn = el.end.x >= rect.x1 && el.end.x <= rect.x2 && el.end.y >= rect.y1 && el.end.y <= rect.y2;
+          if (el.type !== "wire") {
+            return (
+              el.x >= rect.x1 &&
+              el.x <= rect.x2 &&
+              el.y >= rect.y1 &&
+              el.y <= rect.y2
+            );
+          }
+          if (el.type === "wire") {
+            const startIn =
+              el.start.x >= rect.x1 &&
+              el.start.x <= rect.x2 &&
+              el.start.y >= rect.y1 &&
+              el.start.y <= rect.y2;
+            const endIn =
+              el.end.x >= rect.x1 &&
+              el.end.x <= rect.x2 &&
+              el.end.y >= rect.y1 &&
+              el.end.y <= rect.y2;
             return startIn && endIn;
           }
           return false;
         }
 
         function drawGrid() {
-          ctx.strokeStyle = "#e9ecef"; ctx.lineWidth = 1; ctx.beginPath();
-          for (let x = 0; x <= canvas.width; x += gridSize) { ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); }
-          for (let y = 0; y <= canvas.height; y += gridSize) { ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); }
+          ctx.strokeStyle = "#e9ecef";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          for (let x = 0; x <= canvas.width; x += gridSize) {
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, canvas.height);
+          }
+          for (let y = 0; y <= canvas.height; y += gridSize) {
+            ctx.moveTo(0, y);
+            ctx.lineTo(canvas.width, y);
+          }
           ctx.stroke();
         }
         function drawSelection() {
           if (selectedElements.length === 0) return;
-          selectedElements.forEach(el => {
-              ctx.save();
-              ctx.strokeStyle = "#007bff"; ctx.lineWidth = 1; ctx.setLineDash([4, 2]);
-              if (el.type === "wire") { drawWire(el, true); }
-              else if (el.type === "text") {
-                  const { width, height } = measureParsedText(el.text);
-                  const padding = 4;
-                  ctx.strokeRect(el.x - width / 2 - padding, el.y - height / 2 - padding, width + padding * 2, height + padding * 2);
-              } else if (el.type === "junction" || el.type === "open_terminal") {
-                  ctx.translate(el.x, el.y); ctx.beginPath(); ctx.arc(0, 0, 8, 0, 2 * Math.PI); ctx.stroke();
-              } else {
-                  const data = componentData[el.type]; ctx.translate(el.x, el.y); ctx.rotate((el.rotation * Math.PI) / 180);
-                  ctx.strokeRect(-data.width / 2, -data.height / 2, data.width, data.height);
-              }
-              ctx.restore();
+          selectedElements.forEach((el) => {
+            ctx.save();
+            ctx.strokeStyle = "#007bff";
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 2]);
+            if (el.type === "wire") {
+              drawWire(el, true);
+            } else if (el.type === "text") {
+              const { width, height } = measureParsedText(el.text);
+              const padding = 4;
+              ctx.strokeRect(
+                el.x - width / 2 - padding,
+                el.y - height / 2 - padding,
+                width + padding * 2,
+                height + padding * 2
+              );
+            } else if (el.type === "junction" || el.type === "open_terminal") {
+              ctx.translate(el.x, el.y);
+              ctx.beginPath();
+              ctx.arc(0, 0, 8, 0, 2 * Math.PI);
+              ctx.stroke();
+            } else {
+              const data = componentData[el.type];
+              ctx.translate(el.x, el.y);
+              ctx.rotate((el.rotation * Math.PI) / 180);
+              ctx.strokeRect(
+                -data.width / 2,
+                -data.height / 2,
+                data.width,
+                data.height
+              );
+            }
+            ctx.restore();
           });
         }
         function drawMarquee(start, end) {
-            ctx.save();
-            ctx.fillStyle = "rgba(0, 123, 255, 0.1)"; ctx.strokeStyle = "rgba(0, 123, 255, 0.5)"; ctx.lineWidth = 1; ctx.setLineDash([6, 3]);
-            const width = end.x - start.x, height = end.y - start.y;
-            ctx.beginPath(); ctx.rect(start.x, start.y, width, height); ctx.fill(); ctx.stroke();
-            ctx.restore();
+          ctx.save();
+          ctx.fillStyle = "rgba(0, 123, 255, 0.1)";
+          ctx.strokeStyle = "rgba(0, 123, 255, 0.5)";
+          ctx.lineWidth = 1;
+          ctx.setLineDash([6, 3]);
+          const width = end.x - start.x,
+            height = end.y - start.y;
+          ctx.beginPath();
+          ctx.rect(start.x, start.y, width, height);
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
         }
-        function drawSnapIndicator(point) { ctx.beginPath(); ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI); ctx.fillStyle = "rgba(255, 0, 0, 0.5)"; ctx.fill(); }
-        function getWirePath(wire) { return wire.routing === "direct" ? [wire.start, wire.end] : [wire.start, { x: wire.start.x, y: wire.end.y }, wire.end]; }
-        function drawWireFromPath(path) { ctx.beginPath(); ctx.moveTo(path[0].x, path[0].y); for (let i = 1; i < path.length; i++) { ctx.lineTo(path[i].x, path[i].y); } ctx.stroke(); }
-        function drawWire(el, isSelected) { setDrawingStyle(isSelected); drawWireFromPath(getWirePath(el)); }
-        function drawWirePreview(start, end) { ctx.save(); setDrawingStyle(true); ctx.setLineDash([4, 4]); drawWireFromPath(getWirePath({ start, end, routing: isShiftDown ? "direct" : "manhattan" })); ctx.restore(); }
-        
+        function drawSnapIndicator(point) {
+          ctx.beginPath();
+          ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+          ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
+          ctx.fill();
+        }
+        function getWirePath(wire) {
+          return wire.routing === "direct"
+            ? [wire.start, wire.end]
+            : [wire.start, { x: wire.start.x, y: wire.end.y }, wire.end];
+        }
+        function drawWireFromPath(path) {
+          ctx.beginPath();
+          ctx.moveTo(path[0].x, path[0].y);
+          for (let i = 1; i < path.length; i++) {
+            ctx.lineTo(path[i].x, path[i].y);
+          }
+          ctx.stroke();
+        }
+        function drawWire(el, isSelected) {
+          setDrawingStyle(isSelected);
+          drawWireFromPath(getWirePath(el));
+        }
+        function drawWirePreview(start, end) {
+          ctx.save();
+          setDrawingStyle(true);
+          ctx.setLineDash([4, 4]);
+          drawWireFromPath(
+            getWirePath({
+              start,
+              end,
+              routing: isShiftDown ? "direct" : "manhattan",
+            })
+          );
+          ctx.restore();
+        }
+
         function drawJunctions() {
           const connectionPoints = new Map();
-          const addPoint = (p) => { const key = `${p.x},${p.y}`; connectionPoints.set(key, (connectionPoints.get(key) || 0) + 1); };
+          const addPoint = (p) => {
+            const key = `${p.x},${p.y}`;
+            connectionPoints.set(key, (connectionPoints.get(key) || 0) + 1);
+          };
           circuitElements.forEach((el) => {
-            if (el.type === "wire") { addPoint(el.start); addPoint(el.end); }
-            else if (el.type === 'junction' || el.type === 'open_terminal') { addPoint(el); }
-            else if (el.type !== "text") { getAbsoluteTerminals(el).forEach((term) => addPoint(term)); }
+            if (el.type === "wire") {
+              addPoint(el.start);
+              addPoint(el.end);
+            } else if (el.type === "junction" || el.type === "open_terminal") {
+              addPoint(el);
+            } else if (el.type !== "text") {
+              getAbsoluteTerminals(el).forEach((term) => addPoint(term));
+            }
           });
-          ctx.save(); ctx.fillStyle = "#000";
+          ctx.save();
+          ctx.fillStyle = "#000";
           for (const [key, count] of connectionPoints.entries()) {
-            if (count > 2) { const [x, y] = key.split(",").map(Number); ctx.beginPath(); ctx.arc(x, y, 4, 0, 2 * Math.PI); ctx.fill(); }
+            if (count > 2) {
+              const [x, y] = key.split(",").map(Number);
+              ctx.beginPath();
+              ctx.arc(x, y, 4, 0, 2 * Math.PI);
+              ctx.fill();
+            }
           }
           ctx.restore();
         }
@@ -1346,9 +2056,25 @@
         // ***************************************************************
 
         const greekSymbolMap = {
-            alpha: "α", beta: "β", gamma: "γ", Delta: "Δ", delta: "δ", epsilon: "ε",
-            eta: "η", theta: "θ", lambda: "λ", mu: "μ", pi: "π", rho: "ρ",
-            Sigma: "Σ", sigma: "σ", tau: "τ", Phi: "Φ", phi: "φ", Omega: "Ω", omega: "ω",
+          alpha: "α",
+          beta: "β",
+          gamma: "γ",
+          Delta: "Δ",
+          delta: "δ",
+          epsilon: "ε",
+          eta: "η",
+          theta: "θ",
+          lambda: "λ",
+          mu: "μ",
+          pi: "π",
+          rho: "ρ",
+          Sigma: "Σ",
+          sigma: "σ",
+          tau: "τ",
+          Phi: "Φ",
+          phi: "φ",
+          Omega: "Ω",
+          omega: "ω",
         };
 
         /**
@@ -1359,118 +2085,124 @@
          * @returns {number} - The index of the matching closing brace, or -1 if not found.
          */
         function findMatchingBrace(text, startIndex) {
-            let braceLevel = 1;
-            for (let i = startIndex; i < text.length; i++) {
-                if (text[i] === '{') {
-                    braceLevel++;
-                } else if (text[i] === '}') {
-                    braceLevel--;
-                    if (braceLevel === 0) {
-                        return i;
-                    }
-                }
+          let braceLevel = 1;
+          for (let i = startIndex; i < text.length; i++) {
+            if (text[i] === "{") {
+              braceLevel++;
+            } else if (text[i] === "}") {
+              braceLevel--;
+              if (braceLevel === 0) {
+                return i;
+              }
             }
-            return -1; // Not found
+          }
+          return -1; // Not found
         }
-        
+
         /**
          * The main recursive parsing function.
          * @param {string} text - The segment of text to parse.
          * @returns {Array} - An array of parsed chunks.
          */
         function _parseInternal(text) {
-            const chunks = [];
-            let currentText = "";
+          const chunks = [];
+          let currentText = "";
 
-            for (let i = 0; i < text.length; i++) {
-                const char = text[i];
-                let specialHandled = false;
+          for (let i = 0; i < text.length; i++) {
+            const char = text[i];
+            let specialHandled = false;
 
-                // Handle Subscript and Superscript
-                if (char === '_' || char === '^') {
-                    if (currentText) {
-                        chunks.push({ type: 'normal', text: currentText });
-                        currentText = "";
-                    }
-                    const type = (char === '_') ? 'subscript' : 'superscript';
-                    let content = '';
-                    let jump = 0;
-                    
-                    if (text[i + 1] === '{') {
-                        const endBrace = findMatchingBrace(text, i + 2);
-                        if (endBrace !== -1) {
-                            content = text.substring(i + 2, endBrace);
-                            jump = endBrace - i;
-                        }
-                    } else if (i + 1 < text.length) {
-                        content = text[i + 1];
-                        jump = 1;
-                    }
-                    
-                    if (content) {
-                        chunks.push({ type: type, content: _parseInternal(content) });
-                        i += jump;
-                    } else {
-                        currentText += char; // Incomplete, treat as literal
-                    }
-                    specialHandled = true;
+            // Handle Subscript and Superscript
+            if (char === "_" || char === "^") {
+              if (currentText) {
+                chunks.push({ type: "normal", text: currentText });
+                currentText = "";
+              }
+              const type = char === "_" ? "subscript" : "superscript";
+              let content = "";
+              let jump = 0;
+
+              if (text[i + 1] === "{") {
+                const endBrace = findMatchingBrace(text, i + 2);
+                if (endBrace !== -1) {
+                  content = text.substring(i + 2, endBrace);
+                  jump = endBrace - i;
                 }
-                // Handle Commands like \frac or \mu
-                else if (char === '\\') {
-                     if (currentText) {
-                        chunks.push({ type: 'normal', text: currentText });
-                        currentText = "";
-                    }
-                    
-                    // Check for \frac{num}{den}
-                    if (text.substring(i, i + 5) === '\\frac' && text[i + 5] === '{') {
-                        const numEnd = findMatchingBrace(text, i + 6);
-                        if (numEnd !== -1 && text[numEnd + 1] === '{') {
-                            const denEnd = findMatchingBrace(text, numEnd + 2);
-                            if (denEnd !== -1) {
-                                const numerator = text.substring(i + 6, numEnd);
-                                const denominator = text.substring(numEnd + 2, denEnd);
-                                chunks.push({
-                                    type: 'fraction',
-                                    numerator: _parseInternal(numerator),
-                                    denominator: _parseInternal(denominator)
-                                });
-                                i = denEnd;
-                                specialHandled = true;
-                            }
-                        }
-                    } 
-                    // Check for Greek letters
-                    else {
-                        let symbolCandidate = "";
-                        let bestMatch = "";
-                        for (let j = i + 1; j < text.length; j++) {
-                            if (!text[j].match(/[a-zA-Z]/)) break;
-                            symbolCandidate += text[j];
-                            if (greekSymbolMap.hasOwnProperty(symbolCandidate)) {
-                                bestMatch = symbolCandidate;
-                            }
-                        }
-                        if (bestMatch) {
-                            chunks.push({ type: 'normal', text: greekSymbolMap[bestMatch] });
-                            i += bestMatch.length;
-                            specialHandled = true;
-                        }
-                    }
-                }
-                
-                if (!specialHandled) {
-                    currentText += char;
-                }
+              } else if (i + 1 < text.length) {
+                content = text[i + 1];
+                jump = 1;
+              }
+
+              if (content) {
+                chunks.push({ type: type, content: _parseInternal(content) });
+                i += jump;
+              } else {
+                currentText += char; // Incomplete, treat as literal
+              }
+              specialHandled = true;
             }
-            if (currentText) chunks.push({ type: 'normal', text: currentText });
-            return chunks;
+            // Handle Commands like \frac or \mu
+            else if (char === "\\") {
+              if (currentText) {
+                chunks.push({ type: "normal", text: currentText });
+                currentText = "";
+              }
+
+              // Check for \frac{num}{den}
+              if (
+                text.substring(i, i + 5) === "\\frac" &&
+                text[i + 5] === "{"
+              ) {
+                const numEnd = findMatchingBrace(text, i + 6);
+                if (numEnd !== -1 && text[numEnd + 1] === "{") {
+                  const denEnd = findMatchingBrace(text, numEnd + 2);
+                  if (denEnd !== -1) {
+                    const numerator = text.substring(i + 6, numEnd);
+                    const denominator = text.substring(numEnd + 2, denEnd);
+                    chunks.push({
+                      type: "fraction",
+                      numerator: _parseInternal(numerator),
+                      denominator: _parseInternal(denominator),
+                    });
+                    i = denEnd;
+                    specialHandled = true;
+                  }
+                }
+              }
+              // Check for Greek letters
+              else {
+                let symbolCandidate = "";
+                let bestMatch = "";
+                for (let j = i + 1; j < text.length; j++) {
+                  if (!text[j].match(/[a-zA-Z]/)) break;
+                  symbolCandidate += text[j];
+                  if (greekSymbolMap.hasOwnProperty(symbolCandidate)) {
+                    bestMatch = symbolCandidate;
+                  }
+                }
+                if (bestMatch) {
+                  chunks.push({
+                    type: "normal",
+                    text: greekSymbolMap[bestMatch],
+                  });
+                  i += bestMatch.length;
+                  specialHandled = true;
+                }
+              }
+            }
+
+            if (!specialHandled) {
+              currentText += char;
+            }
+          }
+          if (currentText) chunks.push({ type: "normal", text: currentText });
+          return chunks;
         }
-        
+
         // Public entry point for parsing
         function parseText(rawText) {
-            if (!rawText) return [];
-            return _parseInternal(rawText);
+          if (!rawText) return [];
+          return _parseInternal(rawText);
         }
 
         /**
@@ -1480,53 +2212,81 @@
          * @returns {object} - An object with {width, height, ascent, descent}.
          */
         function measureRecursive(chunks, currentFontSize) {
-            let totalWidth = 0;
-            let maxAscent = 0;
-            let maxDescent = 0;
-            const subSuperScale = 0.7;
-            const fractionLinePadding = 4; // Increased padding slightly
+          let totalWidth = 0;
+          let maxAscent = 0;
+          let maxDescent = 0;
+          const subSuperScale = 0.85;
+          const fractionLinePadding = 4; // Increased padding slightly
 
-            ctx.font = `italic ${currentFontSize}px Georgia`;
-            const baselineHeight = ctx.measureText('M').width * 0.8; // Approx ascent for a normal char
+          ctx.font = `italic ${currentFontSize}px Georgia`;
+          const baselineHeight = ctx.measureText("M").width * 0.8; // Approx ascent for a normal char
 
-            chunks.forEach(chunk => {
-                if (chunk.type === 'normal') {
-                    ctx.font = `italic ${currentFontSize}px Georgia`;
-                    const metrics = ctx.measureText(chunk.text);
-                    totalWidth += metrics.width;
-                    maxAscent = Math.max(maxAscent, baselineHeight);
-                    maxDescent = Math.max(maxDescent, 0);
-                } else if (chunk.type === 'subscript' || chunk.type === 'superscript') {
-                    const subMetrics = measureRecursive(chunk.content, currentFontSize * subSuperScale);
-                    totalWidth += subMetrics.width;
-                    if (chunk.type === 'superscript') {
-                        maxAscent = Math.max(maxAscent, subMetrics.height + baselineHeight * 0.4);
-                    } else { // subscript
-                        maxDescent = Math.max(maxDescent, subMetrics.height - baselineHeight * 0.4);
-                    }
-                } else if (chunk.type === 'fraction') {
-                    const numMetrics = measureRecursive(chunk.numerator, currentFontSize);
-                    const denMetrics = measureRecursive(chunk.denominator, currentFontSize);
-                    const fracWidth = Math.max(numMetrics.width, denMetrics.width) + 4;
-                    totalWidth += fracWidth;
+          chunks.forEach((chunk) => {
+            if (chunk.type === "normal") {
+              ctx.font = `italic ${currentFontSize}px Georgia`;
+              const metrics = ctx.measureText(chunk.text);
+              totalWidth += metrics.width;
+              maxAscent = Math.max(maxAscent, baselineHeight);
+              maxDescent = Math.max(maxDescent, 0);
+            } else if (
+              chunk.type === "subscript" ||
+              chunk.type === "superscript"
+            ) {
+              const subMetrics = measureRecursive(
+                chunk.content,
+                currentFontSize * subSuperScale
+              );
+              totalWidth += subMetrics.width;
+              if (chunk.type === "superscript") {
+                maxAscent = Math.max(
+                  maxAscent,
+                  subMetrics.height + baselineHeight * 0.4
+                );
+              } else {
+                // subscript
+                maxDescent = Math.max(
+                  maxDescent,
+                  subMetrics.height - baselineHeight * 0.4
+                );
+              }
+            } else if (chunk.type === "fraction") {
+              const numMetrics = measureRecursive(
+                chunk.numerator,
+                currentFontSize
+              );
+              const denMetrics = measureRecursive(
+                chunk.denominator,
+                currentFontSize
+              );
+              const fracWidth =
+                Math.max(numMetrics.width, denMetrics.width) + 4;
+              totalWidth += fracWidth;
 
-                    // UPDATED: Calculate ascent/descent based on full heights of num/den
-                    // to correctly reserve space around the main text baseline.
-                    const fractionAscent = numMetrics.height + fractionLinePadding;
-                    const fractionDescent = denMetrics.height + fractionLinePadding;
+              // UPDATED: Calculate ascent/descent based on full heights of num/den
+              // to correctly reserve space around the main text baseline.
+              const fractionAscent = numMetrics.height + fractionLinePadding;
+              const fractionDescent = denMetrics.height + fractionLinePadding;
 
-                    maxAscent = Math.max(maxAscent, fractionAscent);
-                    maxDescent = Math.max(maxDescent, fractionDescent);
-                }
-            });
-            return { width: totalWidth, height: maxAscent + maxDescent, ascent: maxAscent, descent: maxDescent };
+              maxAscent = Math.max(maxAscent, fractionAscent);
+              maxDescent = Math.max(maxDescent, fractionDescent);
+            }
+          });
+          return {
+            width: totalWidth,
+            height: maxAscent + maxDescent,
+            ascent: maxAscent,
+            descent: maxDescent,
+          };
         }
 
         function measureParsedText(rawText) {
-             if (!rawText) return { width: 0, height: textFontSize };
-             const chunks = parseText(rawText);
-             const metrics = measureRecursive(chunks, textFontSize);
-             return { width: metrics.width, height: Math.max(textFontSize, metrics.height) };
+          if (!rawText) return { width: 0, height: textFontSize };
+          const chunks = parseText(rawText);
+          const metrics = measureRecursive(chunks, textFontSize);
+          return {
+            width: metrics.width,
+            height: Math.max(textFontSize, metrics.height),
+          };
         }
 
         /**
@@ -1538,283 +2298,507 @@
          * @returns {number} - The new X coordinate after drawing.
          */
         function drawRecursive(chunks, x, y, currentFontSize) {
-            let currentX = x;
-            const subSuperScale = 0.7;
-            const subSuperYOffsetFactor = 0.4;
-            const fractionLinePadding = 4; // Increased padding slightly
+          let currentX = x;
+          const subSuperScale = 0.85;
+          const subSuperYOffsetFactor = 0.4;
+          const fractionLinePadding = 4; // Increased padding slightly
 
-            ctx.font = `italic ${currentFontSize}px Georgia`;
-            
-            chunks.forEach(chunk => {
-                if (chunk.type === 'normal') {
-                    ctx.font = `italic ${currentFontSize}px Georgia`;
-                    ctx.fillText(chunk.text, currentX, y);
-                    currentX += ctx.measureText(chunk.text).width;
-                } else if (chunk.type === 'subscript' || chunk.type === 'superscript') {
-                    const newFontSize = currentFontSize * subSuperScale;
-                    const yOffset = (chunk.type === 'subscript' ? 1 : -1) * currentFontSize * subSuperYOffsetFactor;
-                    currentX = drawRecursive(chunk.content, currentX, y + yOffset, newFontSize);
-                } else if (chunk.type === 'fraction') {
-                    const numMetrics = measureRecursive(chunk.numerator, currentFontSize);
-                    const denMetrics = measureRecursive(chunk.denominator, currentFontSize);
-                    const fracWidth = Math.max(numMetrics.width, denMetrics.width);
-                    
-                    const numX = currentX + (fracWidth - numMetrics.width) / 2;
-                    const denX = currentX + (fracWidth - denMetrics.width) / 2;
-                    
-                    // UPDATED: Dynamic Y positions based on measured metrics
-                    const dividerY = y + 2; // Position divider slightly below the main baseline
-                    
-                    // Position numerator baseline so its descenders are above the divider
-                    const numY = dividerY - numMetrics.descent - fractionLinePadding;
-                    
-                    // Position denominator baseline so its ascenders are below the divider
-                    const denY = dividerY + denMetrics.ascent + fractionLinePadding;
+          ctx.font = `italic ${currentFontSize}px Georgia`;
 
-                    drawRecursive(chunk.numerator, numX, numY, currentFontSize);
-                    drawRecursive(chunk.denominator, denX, denY, currentFontSize);
-                    
-                    // Draw fraction line at the dynamically calculated dividerY
-                    ctx.beginPath();
-                    ctx.moveTo(currentX - 2, dividerY+4);
-                    ctx.lineTo(currentX + fracWidth + 2, dividerY+4);
-                    ctx.stroke();
-                    
-                    currentX += fracWidth + 4;
-                }
-            });
-            return currentX;
+          chunks.forEach((chunk) => {
+            if (chunk.type === "normal") {
+              ctx.font = `italic ${currentFontSize}px Georgia`;
+              ctx.fillText(chunk.text, currentX, y);
+              currentX += ctx.measureText(chunk.text).width;
+            } else if (
+              chunk.type === "subscript" ||
+              chunk.type === "superscript"
+            ) {
+              const newFontSize = currentFontSize * subSuperScale;
+              const yOffset =
+                (chunk.type === "subscript" ? 1 : -1) *
+                currentFontSize *
+                subSuperYOffsetFactor;
+              currentX = drawRecursive(
+                chunk.content,
+                currentX,
+                y + yOffset,
+                newFontSize
+              );
+            } else if (chunk.type === "fraction") {
+              const numMetrics = measureRecursive(
+                chunk.numerator,
+                currentFontSize
+              );
+              const denMetrics = measureRecursive(
+                chunk.denominator,
+                currentFontSize
+              );
+              const fracWidth = Math.max(numMetrics.width, denMetrics.width);
+
+              const numX = currentX + (fracWidth - numMetrics.width) / 2;
+              const denX = currentX + (fracWidth - denMetrics.width) / 2;
+
+              // UPDATED: Dynamic Y positions based on measured metrics
+              const dividerY = y + 2; // Position divider slightly below the main baseline
+
+              // Position numerator baseline so its descenders are above the divider
+              const numY = dividerY - numMetrics.descent - fractionLinePadding;
+
+              // Position denominator baseline so its ascenders are below the divider
+              const denY = dividerY + denMetrics.ascent + fractionLinePadding;
+
+              drawRecursive(chunk.numerator, numX, numY, currentFontSize);
+              drawRecursive(chunk.denominator, denX, denY, currentFontSize);
+
+              // Draw fraction line at the dynamically calculated dividerY
+              ctx.beginPath();
+              ctx.moveTo(currentX - 2, dividerY + 4);
+              ctx.lineTo(currentX + fracWidth + 2, dividerY + 4);
+              ctx.stroke();
+
+              currentX += fracWidth + 4;
+            }
+          });
+          return currentX;
         }
 
         function drawText(el, isSelected) {
-            ctx.fillStyle = isSelected ? "#007bff" : "#000";
-            ctx.strokeStyle = ctx.fillStyle; // For fraction line
-            ctx.textBaseline = "middle";
-            ctx.textAlign = "left";
+          ctx.fillStyle = isSelected ? "#007bff" : "#000";
+          ctx.strokeStyle = ctx.fillStyle; // For fraction line
+          ctx.textBaseline = "middle";
+          ctx.textAlign = "left";
 
-            const chunks = parseText(el.text);
-            const { width: totalWidth, ascent, descent } = measureRecursive(chunks, textFontSize);
-            const totalHeight = ascent + descent;
+          const chunks = parseText(el.text);
+          const {
+            width: totalWidth,
+            ascent,
+            descent,
+          } = measureRecursive(chunks, textFontSize);
+          const totalHeight = ascent + descent;
 
-            // Center the entire block vertically
-            const startY = el.y - (totalHeight / 2) + ascent;
-            const startX = el.x - totalWidth / 2;
-            
-            drawRecursive(chunks, startX, startY, textFontSize);
+          // Center the entire block vertically
+          const startY = el.y - totalHeight / 2 + ascent;
+          const startX = el.x - totalWidth / 2;
+
+          drawRecursive(chunks, startX, startY, textFontSize);
         }
 
         // ***************************************************************
         // END: NEW RECURSIVE TEXT PARSING, MEASURING, AND DRAWING ENGINE
         // ***************************************************************
-        
-        function drawManualJunction() { ctx.beginPath(); ctx.arc(0, 0, 4, 0, 2 * Math.PI); ctx.fillStyle = ctx.strokeStyle; ctx.fill(); }
-        function drawOpenTerminal() { ctx.beginPath(); ctx.arc(0, 0, 4, 0, 2 * Math.PI); ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = '#000'; ctx.stroke(); }
+
+        function drawManualJunction() {
+          ctx.beginPath();
+          ctx.arc(0, 0, 4, 0, 2 * Math.PI);
+          ctx.fillStyle = ctx.strokeStyle;
+          ctx.fill();
+        }
+        function drawOpenTerminal() {
+          ctx.beginPath();
+          ctx.arc(0, 0, 4, 0, 2 * Math.PI);
+          ctx.fillStyle = "#fff";
+          ctx.fill();
+          ctx.strokeStyle = "#000";
+          ctx.stroke();
+        }
 
         function drawResistor() {
-          const w = 18, h = 9;
-          ctx.beginPath(); ctx.moveTo(-40, 0); ctx.lineTo(-w, 0);
+          const w = 18,
+            h = 9;
+          ctx.beginPath();
+          ctx.moveTo(-40, 0);
+          ctx.lineTo(-w, 0);
           ctx.moveTo(-w, 0);
-          for (let i = 0; i < 6; i++) { ctx.lineTo(-w + (i * 2 + 1) * (w / 6), i % 2 === 0 ? -h : h); }
-          ctx.lineTo(w, 0); ctx.lineTo(40, 0); ctx.stroke();
+          for (let i = 0; i < 6; i++) {
+            ctx.lineTo(-w + (i * 2 + 1) * (w / 6), i % 2 === 0 ? -h : h);
+          }
+          ctx.lineTo(w, 0);
+          ctx.lineTo(40, 0);
+          ctx.stroke();
         }
         function drawCapacitor() {
-          const plateDist = 10, plateLen = 28;
-          ctx.beginPath(); ctx.moveTo(-40, 0); ctx.lineTo(-plateDist / 2, 0);
-          ctx.moveTo(-plateDist / 2, -plateLen / 2); ctx.lineTo(-plateDist / 2, plateLen / 2);
-          ctx.moveTo(plateDist / 2, -plateLen / 2); ctx.lineTo(plateDist / 2, plateLen / 2);
-          ctx.moveTo(plateDist / 2, 0); ctx.lineTo(40, 0); ctx.stroke();
+          const plateDist = 10,
+            plateLen = 28;
+          ctx.beginPath();
+          ctx.moveTo(-40, 0);
+          ctx.lineTo(-plateDist / 2, 0);
+          ctx.moveTo(-plateDist / 2, -plateLen / 2);
+          ctx.lineTo(-plateDist / 2, plateLen / 2);
+          ctx.moveTo(plateDist / 2, -plateLen / 2);
+          ctx.lineTo(plateDist / 2, plateLen / 2);
+          ctx.moveTo(plateDist / 2, 0);
+          ctx.lineTo(40, 0);
+          ctx.stroke();
         }
         function drawInductor() {
-          const radiusX = 6, radiusY = 12, startX = -21;
-          ctx.beginPath(); ctx.lineJoin = "round"; ctx.moveTo(-40, 0); ctx.lineTo(startX, 0);
+          const radiusX = 6,
+            radiusY = 12,
+            startX = -21;
+          ctx.beginPath();
+          ctx.lineJoin = "round";
+          ctx.moveTo(-40, 0);
+          ctx.lineTo(startX, 0);
           ctx.ellipse(-11, 0, radiusX, radiusY, 0, Math.PI, Math.PI / 8, false);
-          ctx.ellipse(0, 0, radiusX, radiusY, 0, (Math.PI * 7) / 8, Math.PI / 8, false);
+          ctx.ellipse(
+            0,
+            0,
+            radiusX,
+            radiusY,
+            0,
+            (Math.PI * 7) / 8,
+            Math.PI / 8,
+            false
+          );
           ctx.ellipse(11, 0, radiusX, radiusY, 0, (Math.PI * 7) / 8, 0, false);
-          ctx.lineTo(40, 0); ctx.stroke();
+          ctx.lineTo(40, 0);
+          ctx.stroke();
         }
         function drawSwitch(el) {
-            const circleRadius = 4, leftContactX = -15, rightContactX = 15;
-            ctx.beginPath();
-            ctx.moveTo(-40, 0); ctx.lineTo(leftContactX, 0);
-            ctx.moveTo(40, 0); ctx.lineTo(rightContactX, 0);
-            if (el.state === 'closed') {
-                ctx.moveTo(leftContactX, -5);
-                ctx.lineTo(rightContactX, -5);
-            } else {
-                const bladeLength = 30, bladeAngle = -30 * Math.PI / 180;
-                ctx.moveTo(leftContactX, 0);
-                ctx.lineTo(leftContactX + bladeLength * Math.cos(bladeAngle), bladeLength * Math.sin(bladeAngle));
-            }
-            ctx.stroke();
-            ctx.save(); ctx.fillStyle = "white";
-            ctx.beginPath(); ctx.arc(leftContactX, 0, circleRadius, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
-            ctx.beginPath(); ctx.arc(rightContactX, 0, circleRadius, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
-            ctx.restore();
+          const circleRadius = 4,
+            leftContactX = -15,
+            rightContactX = 15;
+          ctx.beginPath();
+          ctx.moveTo(-40, 0);
+          ctx.lineTo(leftContactX, 0);
+          ctx.moveTo(40, 0);
+          ctx.lineTo(rightContactX, 0);
+          if (el.state === "closed") {
+            ctx.moveTo(leftContactX, -5);
+            ctx.lineTo(rightContactX, -5);
+          } else {
+            const bladeLength = 30,
+              bladeAngle = (-30 * Math.PI) / 180;
+            ctx.moveTo(leftContactX, 0);
+            ctx.lineTo(
+              leftContactX + bladeLength * Math.cos(bladeAngle),
+              bladeLength * Math.sin(bladeAngle)
+            );
+          }
+          ctx.stroke();
+          ctx.save();
+          ctx.fillStyle = "white";
+          ctx.beginPath();
+          ctx.arc(leftContactX, 0, circleRadius, 0, 2 * Math.PI);
+          ctx.fill();
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(rightContactX, 0, circleRadius, 0, 2 * Math.PI);
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
         }
         function drawDiode() {
-          const triHeight = 22, baseX = -10, tipX = 10;
-          ctx.beginPath(); ctx.lineJoin = "round"; ctx.moveTo(-30, 0); ctx.lineTo(baseX, 0);
-          ctx.moveTo(tipX, 0); ctx.lineTo(30, 0); ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(baseX, -triHeight / 2); ctx.lineTo(tipX, 0); ctx.lineTo(baseX, triHeight / 2); ctx.closePath(); ctx.fill();
-          ctx.beginPath(); ctx.moveTo(tipX, -triHeight / 2); ctx.lineTo(tipX, triHeight / 2); ctx.stroke();
+          const triHeight = 22,
+            baseX = -10,
+            tipX = 10;
+          ctx.beginPath();
+          ctx.lineJoin = "round";
+          ctx.moveTo(-30, 0);
+          ctx.lineTo(baseX, 0);
+          ctx.moveTo(tipX, 0);
+          ctx.lineTo(30, 0);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(baseX, -triHeight / 2);
+          ctx.lineTo(tipX, 0);
+          ctx.lineTo(baseX, triHeight / 2);
+          ctx.closePath();
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(tipX, -triHeight / 2);
+          ctx.lineTo(tipX, triHeight / 2);
+          ctx.stroke();
         }
         function drawZenerDiode() {
-            drawDiode();
-            const tipX = 10, h = 11, tick = 5;
-            ctx.beginPath(); ctx.moveTo(tipX, -h); ctx.lineTo(tipX - tick, -h - tick); ctx.moveTo(tipX, h); ctx.lineTo(tipX + tick, h + tick); ctx.stroke();
+          drawDiode();
+          const tipX = 10,
+            h = 11,
+            tick = 5;
+          ctx.beginPath();
+          ctx.moveTo(tipX, -h);
+          ctx.lineTo(tipX - tick, -h - tick);
+          ctx.moveTo(tipX, h);
+          ctx.lineTo(tipX + tick, h + tick);
+          ctx.stroke();
         }
         function drawLED() {
-            drawDiode();
-            ctx.save(); ctx.lineCap = "round";
-            ctx.lineWidth = ctx.lineWidth * 0.6; 
-            ctx.beginPath(); ctx.moveTo(-3, -12); ctx.lineTo(8, -24); ctx.moveTo(4, -22); ctx.lineTo(8, -24); ctx.lineTo(6, -20); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(2, -9); ctx.lineTo(13, -21); ctx.moveTo(9, -19); ctx.lineTo(13, -21); ctx.lineTo(11, -17); ctx.stroke();
-            ctx.restore();
+          drawDiode();
+          ctx.save();
+          ctx.lineCap = "round";
+          ctx.lineWidth = ctx.lineWidth * 0.6;
+          ctx.beginPath();
+          ctx.moveTo(-3, -12);
+          ctx.lineTo(8, -24);
+          ctx.moveTo(4, -22);
+          ctx.lineTo(8, -24);
+          ctx.lineTo(6, -20);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(2, -9);
+          ctx.lineTo(13, -21);
+          ctx.moveTo(9, -19);
+          ctx.lineTo(13, -21);
+          ctx.lineTo(11, -17);
+          ctx.stroke();
+          ctx.restore();
         }
         function drawVoltageSource() {
           const r = 16;
-          ctx.beginPath(); ctx.arc(0, 0, r, 0, 2 * Math.PI); ctx.moveTo(0, -30); ctx.lineTo(0, -r);
-          ctx.moveTo(0, r); ctx.lineTo(0, 30); ctx.moveTo(-r / 4, -r / 2); ctx.lineTo(r / 4, -r / 2);
-          ctx.moveTo(0, -r / 2 - 5); ctx.lineTo(0, -r / 2 + 5); ctx.moveTo(-r / 4, r / 2); ctx.lineTo(r / 4, r / 2); ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(0, 0, r, 0, 2 * Math.PI);
+          ctx.moveTo(0, -30);
+          ctx.lineTo(0, -r);
+          ctx.moveTo(0, r);
+          ctx.lineTo(0, 30);
+          ctx.moveTo(-r / 4, -r / 2);
+          ctx.lineTo(r / 4, -r / 2);
+          ctx.moveTo(0, -r / 2 - 5);
+          ctx.lineTo(0, -r / 2 + 5);
+          ctx.moveTo(-r / 4, r / 2);
+          ctx.lineTo(r / 4, r / 2);
+          ctx.stroke();
         }
         function drawACVoltageSource() {
           const r = 16;
-          ctx.beginPath(); ctx.arc(0, 0, r, 0, 2 * Math.PI); ctx.moveTo(0, -30); ctx.lineTo(0, -r);
-          ctx.moveTo(0, r); ctx.lineTo(0, 30); const waveStartX = -10, waveEndX = 10, waveAmplitude = 8;
-          ctx.moveTo(waveStartX, 0); ctx.quadraticCurveTo(waveStartX / 2, -waveAmplitude, 0, 0);
-          ctx.quadraticCurveTo(waveEndX / 2, waveAmplitude, waveEndX, 0); ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(0, 0, r, 0, 2 * Math.PI);
+          ctx.moveTo(0, -30);
+          ctx.lineTo(0, -r);
+          ctx.moveTo(0, r);
+          ctx.lineTo(0, 30);
+          const waveStartX = -10,
+            waveEndX = 10,
+            waveAmplitude = 8;
+          ctx.moveTo(waveStartX, 0);
+          ctx.quadraticCurveTo(waveStartX / 2, -waveAmplitude, 0, 0);
+          ctx.quadraticCurveTo(waveEndX / 2, waveAmplitude, waveEndX, 0);
+          ctx.stroke();
         }
         function drawBattery() {
-          const longPlateW = 34, shortPlateW = 14, plateY1 = -5, plateY2 = 5;
-          const plusSignX = 10, plusSignY = -16, plusSignSize = 4;
-          ctx.beginPath(); ctx.moveTo(0, -30); ctx.lineTo(0, plateY1); ctx.moveTo(0, plateY2); ctx.lineTo(0, 30);
-          ctx.moveTo(-longPlateW / 2, plateY1); ctx.lineTo(longPlateW / 2, plateY1);
-          ctx.moveTo(plusSignX - plusSignSize, plusSignY); ctx.lineTo(plusSignX + plusSignSize, plusSignY);
-          ctx.moveTo(plusSignX, plusSignY - plusSignSize); ctx.lineTo(plusSignX, plusSignY + plusSignSize);
-          ctx.stroke(); ctx.save(); ctx.lineWidth = ctx.lineWidth * 2; ctx.beginPath();
-          ctx.moveTo(-shortPlateW / 2, plateY2); ctx.lineTo(shortPlateW / 2, plateY2); ctx.stroke(); ctx.restore();
+          const longPlateW = 34,
+            shortPlateW = 14,
+            plateY1 = -5,
+            plateY2 = 5;
+          const plusSignX = 10,
+            plusSignY = -16,
+            plusSignSize = 4;
+          ctx.beginPath();
+          ctx.moveTo(0, -30);
+          ctx.lineTo(0, plateY1);
+          ctx.moveTo(0, plateY2);
+          ctx.lineTo(0, 30);
+          ctx.moveTo(-longPlateW / 2, plateY1);
+          ctx.lineTo(longPlateW / 2, plateY1);
+          ctx.moveTo(plusSignX - plusSignSize, plusSignY);
+          ctx.lineTo(plusSignX + plusSignSize, plusSignY);
+          ctx.moveTo(plusSignX, plusSignY - plusSignSize);
+          ctx.lineTo(plusSignX, plusSignY + plusSignSize);
+          ctx.stroke();
+          ctx.save();
+          ctx.lineWidth = ctx.lineWidth * 2;
+          ctx.beginPath();
+          ctx.moveTo(-shortPlateW / 2, plateY2);
+          ctx.lineTo(shortPlateW / 2, plateY2);
+          ctx.stroke();
+          ctx.restore();
         }
         function drawGround() {
-          ctx.beginPath(); ctx.moveTo(0, -10); ctx.lineTo(0, 0); ctx.moveTo(-15, 0); ctx.lineTo(15, 0);
-          ctx.moveTo(-10, 6); ctx.lineTo(10, 6); ctx.moveTo(-5, 12); ctx.lineTo(5, 12); ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(0, -10);
+          ctx.lineTo(0, 0);
+          ctx.moveTo(-15, 0);
+          ctx.lineTo(15, 0);
+          ctx.moveTo(-10, 6);
+          ctx.lineTo(10, 6);
+          ctx.moveTo(-5, 12);
+          ctx.lineTo(5, 12);
+          ctx.stroke();
         }
         function drawCurrentSource() {
-          const r = 16, arrowY_start = -10, arrowY_end = 10, arrowHeadSize = 6;
-          ctx.beginPath(); ctx.arc(0, 0, r, 0, 2 * Math.PI); ctx.moveTo(0, -30); ctx.lineTo(0, -r);
-          ctx.moveTo(0, r); ctx.lineTo(0, 30); ctx.moveTo(-arrowHeadSize / 2, arrowY_start + arrowHeadSize);
-          ctx.lineTo(0, arrowY_start); ctx.lineTo(arrowHeadSize / 2, arrowY_start + arrowHeadSize);
-          ctx.moveTo(0, arrowY_end); ctx.lineTo(0, 0); ctx.lineTo(0, -5); ctx.stroke();
+          const r = 16,
+            arrowY_start = -10,
+            arrowY_end = 10,
+            arrowHeadSize = 6;
+          ctx.beginPath();
+          ctx.arc(0, 0, r, 0, 2 * Math.PI);
+          ctx.moveTo(0, -30);
+          ctx.lineTo(0, -r);
+          ctx.moveTo(0, r);
+          ctx.lineTo(0, 30);
+          ctx.moveTo(-arrowHeadSize / 2, arrowY_start + arrowHeadSize);
+          ctx.lineTo(0, arrowY_start);
+          ctx.lineTo(arrowHeadSize / 2, arrowY_start + arrowHeadSize);
+          ctx.moveTo(0, arrowY_end);
+          ctx.lineTo(0, 0);
+          ctx.lineTo(0, -5);
+          ctx.stroke();
         }
         function calculateBoundingBox() {
-            if (circuitElements.length === 0) return null;
-            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-            circuitElements.forEach((el) => {
-                if (el.type === "wire") {
-                    const path = getWirePath(el); path.forEach((p) => { minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x); minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y); });
-                } else if (el.type === "text") {
-                    const { width, height } = measureParsedText(el.text);
-                    minX = Math.min(minX, el.x - width / 2); maxX = Math.max(maxX, el.x + width / 2); minY = Math.min(minY, el.y - height / 2); maxY = Math.max(maxY, el.y + height / 2);
-                } else if (el.type === 'junction' || el.type === 'open_terminal') {
-                    minX = Math.min(minX, el.x); maxX = Math.max(maxX, el.x); minY = Math.min(minY, el.y); maxY = Math.max(maxY, el.y);
-                } else {
-                    const data = componentData[el.type]; const w = data.width, h = data.height; const angle = (el.rotation * Math.PI) / 180;
-                    const cos = Math.cos(angle), sin = Math.sin(angle);
-                    const corners = [{ x: -w / 2, y: -h / 2 }, { x: w / 2, y: -h / 2 }, { x: w / 2, y: h / 2 }, { x: -w / 2, y: h / 2 }];
-                    corners.forEach((c) => {
-                        const rx = el.x + c.x * cos - c.y * sin; const ry = el.y + c.x * sin + c.y * cos;
-                        minX = Math.min(minX, rx); maxX = Math.max(maxX, rx); minY = Math.min(minY, ry); maxY = Math.max(maxY, ry);
-                    });
-                }
-            });
-            return { minX, minY, maxX, maxY };
+          if (circuitElements.length === 0) return null;
+          let minX = Infinity,
+            minY = Infinity,
+            maxX = -Infinity,
+            maxY = -Infinity;
+          circuitElements.forEach((el) => {
+            if (el.type === "wire") {
+              const path = getWirePath(el);
+              path.forEach((p) => {
+                minX = Math.min(minX, p.x);
+                maxX = Math.max(maxX, p.x);
+                minY = Math.min(minY, p.y);
+                maxY = Math.max(maxY, p.y);
+              });
+            } else if (el.type === "text") {
+              const { width, height } = measureParsedText(el.text);
+              minX = Math.min(minX, el.x - width / 2);
+              maxX = Math.max(maxX, el.x + width / 2);
+              minY = Math.min(minY, el.y - height / 2);
+              maxY = Math.max(maxY, el.y + height / 2);
+            } else if (el.type === "junction" || el.type === "open_terminal") {
+              minX = Math.min(minX, el.x);
+              maxX = Math.max(maxX, el.x);
+              minY = Math.min(minY, el.y);
+              maxY = Math.max(maxY, el.y);
+            } else {
+              const data = componentData[el.type];
+              const w = data.width,
+                h = data.height;
+              const angle = (el.rotation * Math.PI) / 180;
+              const cos = Math.cos(angle),
+                sin = Math.sin(angle);
+              const corners = [
+                { x: -w / 2, y: -h / 2 },
+                { x: w / 2, y: -h / 2 },
+                { x: w / 2, y: h / 2 },
+                { x: -w / 2, y: h / 2 },
+              ];
+              corners.forEach((c) => {
+                const rx = el.x + c.x * cos - c.y * sin;
+                const ry = el.y + c.x * sin + c.y * cos;
+                minX = Math.min(minX, rx);
+                maxX = Math.max(maxX, rx);
+                minY = Math.min(minY, ry);
+                maxY = Math.max(maxY, ry);
+              });
+            }
+          });
+          return { minX, minY, maxX, maxY };
         }
 
         function handleSaveExport() {
-            const choiceRaw = prompt("Save as project file (json) or export as image (png)?", "json");
-            if (!choiceRaw) return;
-            const choice = choiceRaw.toLowerCase().trim();
+          const choiceRaw = prompt(
+            "Save as project file (json) or export as image (png)?",
+            "json"
+          );
+          if (!choiceRaw) return;
+          const choice = choiceRaw.toLowerCase().trim();
 
-            if (choice === 'json' || choice === 'j') {
-                saveCircuit();
-            } else if (choice === 'png' || choice === 'p') {
-                exportCircuit();
-            } else {
-                alert("Invalid choice. Please enter 'json' or 'png'.");
-            }
+          if (choice === "json" || choice === "j") {
+            saveCircuit();
+          } else if (choice === "png" || choice === "p") {
+            exportCircuit();
+          } else {
+            alert("Invalid choice. Please enter 'json' or 'png'.");
+          }
         }
 
         function saveCircuit() {
-            const filename = prompt("Enter filename for project file:", "circuit.json");
-            if (!filename) return;
-            const dataToSave = { version: "0.32b", elements: circuitElements, nextId: nextId };
-            const dataStr = JSON.stringify(dataToSave, null, 2);
-            const blob = new Blob([dataStr], { type: "application/json" });
-            const link = document.createElement("a");
-            link.download = filename.endsWith('.json') ? filename : filename + '.json';
-            link.href = URL.createObjectURL(blob);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(link.href);
+          const filename = prompt(
+            "Enter filename for project file:",
+            "circuit.json"
+          );
+          if (!filename) return;
+          const dataToSave = {
+            version: "0.32b",
+            elements: circuitElements,
+            nextId: nextId,
+          };
+          const dataStr = JSON.stringify(dataToSave, null, 2);
+          const blob = new Blob([dataStr], { type: "application/json" });
+          const link = document.createElement("a");
+          link.download = filename.endsWith(".json")
+            ? filename
+            : filename + ".json";
+          link.href = URL.createObjectURL(blob);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(link.href);
         }
 
         function handleFileLoad(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if (data && data.elements && data.nextId !== undefined) {
-                        circuitElements = data.elements;
-                        nextId = data.nextId;
-                        history = [];
-                        historyIndex = -1;
-                        selectedElements = [];
-                        autoLabelCounters = {}; // Reset counters for new file
-                        saveState(); 
-                        redrawCanvas();
-                        alert('Circuit loaded successfully!');
-                    } else {
-                        alert('Invalid or corrupted circuit file.');
-                    }
-                } catch (error) {
-                    console.error("Error parsing JSON file:", error);
-                    alert('Error reading file. Make sure it is a valid JSON circuit file.');
-                }
-                fileInput.value = '';
-            };
-            reader.readAsText(file);
+          const file = event.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            try {
+              const data = JSON.parse(e.target.result);
+              if (data && data.elements && data.nextId !== undefined) {
+                circuitElements = data.elements;
+                nextId = data.nextId;
+                history = [];
+                historyIndex = -1;
+                selectedElements = [];
+                autoLabelCounters = {}; // Reset counters for new file
+                saveState();
+                redrawCanvas();
+                alert("Circuit loaded successfully!");
+              } else {
+                alert("Invalid or corrupted circuit file.");
+              }
+            } catch (error) {
+              console.error("Error parsing JSON file:", error);
+              alert(
+                "Error reading file. Make sure it is a valid JSON circuit file."
+              );
+            }
+            fileInput.value = "";
+          };
+          reader.readAsText(file);
         }
 
         function exportCircuit() {
-            selectedElements = []; redrawCanvas();
-            const scaleFactorStr = prompt("Enter resolution scale factor for PNG (e.g., 2 for 2x resolution):", "2");
-            const scaleFactor = parseFloat(scaleFactorStr);
-            if (isNaN(scaleFactor) || scaleFactor <= 0) { alert("Invalid scale factor."); return; }
-            const bounds = calculateBoundingBox(); if (!bounds) { alert("Canvas is empty!"); return; }
-            const padding = 30;
-            const exportCanvas = document.createElement("canvas");
-            const exportCtx = exportCanvas.getContext("2d");
-            exportCanvas.width = (bounds.maxX - bounds.minX + padding * 2) * scaleFactor;
-            exportCanvas.height = (bounds.maxY - bounds.minY + padding * 2) * scaleFactor;
-            
-            const originalCtx = ctx;
-            ctx = exportCtx;
-            
-            ctx.save();
-            ctx.scale(scaleFactor, scaleFactor);
-            ctx.translate(-bounds.minX + padding, -bounds.minY + padding);
-            circuitElements.forEach((el) => drawElement(el));
-            drawJunctions();
-            ctx.restore();
-            
-            ctx = originalCtx;
-            
-            const link = document.createElement("a");
-            link.download = "circuit-diagram.png";
-            link.href = exportCanvas.toDataURL("image/png");
-            link.click();
+          selectedElements = [];
+          redrawCanvas();
+          const scaleFactorStr = prompt(
+            "Enter resolution scale factor for PNG (e.g., 2 for 2x resolution):",
+            "2"
+          );
+          const scaleFactor = parseFloat(scaleFactorStr);
+          if (isNaN(scaleFactor) || scaleFactor <= 0) {
+            alert("Invalid scale factor.");
+            return;
+          }
+          const bounds = calculateBoundingBox();
+          if (!bounds) {
+            alert("Canvas is empty!");
+            return;
+          }
+          const padding = 30;
+          const exportCanvas = document.createElement("canvas");
+          const exportCtx = exportCanvas.getContext("2d");
+          exportCanvas.width =
+            (bounds.maxX - bounds.minX + padding * 2) * scaleFactor;
+          exportCanvas.height =
+            (bounds.maxY - bounds.minY + padding * 2) * scaleFactor;
+
+          const originalCtx = ctx;
+          ctx = exportCtx;
+
+          ctx.save();
+          ctx.scale(scaleFactor, scaleFactor);
+          ctx.translate(-bounds.minX + padding, -bounds.minY + padding);
+          circuitElements.forEach((el) => drawElement(el));
+          drawJunctions();
+          ctx.restore();
+
+          ctx = originalCtx;
+
+          const link = document.createElement("a");
+          link.download = "circuit-diagram.png";
+          link.href = exportCanvas.toDataURL("image/png");
+          link.click();
         }
 
         saveState();
