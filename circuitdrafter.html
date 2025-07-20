@@ -741,7 +741,10 @@
       <div class="modal-content">
         <span class="modal-close" id="bulkTextModalClose">&times;</span>
         <h3>Bulk Add Text</h3>
-        <p>Enter each text label separated by a semicolon (;).</p>
+        <p>
+          Enter text labels separated by a semicolon (;), OR paste a full
+          circuit JSON to append it below the current drawing.
+        </p>
         <textarea
           id="bulk-text-input"
           placeholder="Label 1; Label 2; V_in = 5V; ..."
@@ -773,7 +776,33 @@
        * - Text Engine Upgrade: Added support for LaTeX-style grouped
        *   subscripts/superscripts (e.g., V_{in}) and fractions (\frac{}{}).
        *   Fixed fraction rendering with subscripts in the numerator.
+       * - Able to append json circuit file to the current drawing via Bulk text input.
        ****************************************************************************/
+      /**
+       * Handles the placement of elements from the "Bulk Add Text" modal.
+       * This function serves a dual purpose based on the user's input:
+       *
+       * 1.  **JSON Append Mode:** If the input text appears to be a valid Circuit Drafter
+       *     JSON object, this function will append the entire circuit from the JSON to
+       *     the canvas below the currently existing drawing. It intelligently recalculates
+       *     all coordinates and assigns new IDs to prevent conflicts.
+       *
+       * 2.  **Text Label Mode:** If the input is not a valid circuit JSON, it falls
+       *     back to its original behavior of treating the input as a list of text
+       *     labels separated by semicolons, placing each one on the canvas.
+       *
+       * The JSON Append logic follows these steps:
+       *   1.  Calculate the vertical offset required by finding the bottom-most point
+       *       (maxY) of the current circuit and adding a padding.
+       *   2.  Iterate through each element in the pasted JSON data. For each element:
+       *       a. Assign a new, unique ID from the current project's `nextId` counter.
+       *       b. Recalculate its Y-coordinate(s) by adding the vertical offset.
+       *   3.  Push the newly processed and re-coordinated elements into the main
+       *       `circuitElements` array.
+       *   4.  Resize the canvas to ensure it is large enough to fit the entire combined
+       *       drawing.
+       *   5.  Save the new state to the history and redraw the canvas.
+       */
       document.addEventListener("DOMContentLoaded", () => {
         let canvas = document.getElementById("circuitCanvas");
         let ctx = canvas.getContext("2d");
@@ -1401,6 +1430,71 @@
             return;
           }
 
+          // --- START: New JSON Append Logic ---
+          if (rawText.startsWith("{") && rawText.endsWith("}")) {
+            try {
+              const data = JSON.parse(rawText);
+              // Check if it's a valid circuit drafter file structure
+              if (data && data.elements && data.nextId !== undefined) {
+                // It's a valid circuit! Let's APPEND it.
+
+                // 1. Calculate the vertical offset to place the new circuit below the existing one.
+                const currentBounds = calculateBoundingBox();
+                const yOffset = currentBounds ? currentBounds.maxY + 100 : 0; // Add 100px padding, or start at top if canvas is empty.
+
+                // 2. Process and remap the new elements.
+                const elementsToAppend = [];
+                data.elements.forEach((el) => {
+                  const newEl = JSON.parse(JSON.stringify(el)); // Deep copy to avoid modifying original data
+                  newEl.id = nextId++; // Assign a new, unique ID from the current project's counter.
+
+                  // Apply the vertical offset to the new element's coordinates
+                  if (newEl.type === "wire") {
+                    newEl.start.y += yOffset;
+                    newEl.end.y += yOffset;
+                  } else {
+                    // This covers components, text, junctions, etc.
+                    if (newEl.y !== undefined) {
+                      newEl.y += yOffset;
+                    }
+                  }
+                  elementsToAppend.push(newEl);
+                });
+
+                // 3. Add the new, re-coordinated elements to the main array.
+                if (elementsToAppend.length > 0) {
+                  circuitElements.push(...elementsToAppend);
+                }
+
+                // 4. Resize canvas to fit the newly combined circuit.
+                const finalBounds = calculateBoundingBox();
+                if (finalBounds) {
+                  const padding = 50;
+                  resizeCanvas(
+                    finalBounds.maxX + padding,
+                    finalBounds.maxY + padding
+                  );
+                }
+
+                // 5. Finalize state
+                saveState();
+                redrawCanvas();
+                closeBulkTextModal();
+                alert("Circuit appended successfully from text!");
+                return; // IMPORTANT: Stop execution here
+              }
+            } catch (e) {
+              // It looked like JSON but failed to parse.
+              // We'll ignore the error and let it be treated as regular text.
+              console.warn(
+                "Could not parse input as circuit JSON. Treating as regular text.",
+                e
+              );
+            }
+          }
+          // --- END: New JSON Append Logic ---
+
+          // If the input was not a valid circuit JSON, proceed with original text-adding logic.
           const textItems = rawText
             .split(";")
             .map((item) => item.trim())
@@ -1448,8 +1542,7 @@
           }
 
           closeBulkTextModal();
-        }
-        // --- END: Bulk Add/Text Functions ---
+        } // --- END: Bulk Add/Text Functions ---
 
         function drawElement(el, isSelected = false) {
           ctx.save();
@@ -2735,12 +2828,25 @@
             try {
               const data = JSON.parse(e.target.result);
               if (data && data.elements && data.nextId !== undefined) {
+                // Load the new elements from the file
                 circuitElements = data.elements;
                 nextId = data.nextId;
+
+                // --- START: New auto-resize logic for loaded files ---
+                const bounds = calculateBoundingBox();
+                if (bounds) {
+                  const padding = 50; // Add some visual space around the loaded circuit
+                  const requiredWidth = bounds.maxX + padding;
+                  const requiredHeight = bounds.maxY + padding;
+                  resizeCanvas(requiredWidth, requiredHeight);
+                }
+                // --- END: New auto-resize logic for loaded files ---
+
+                // Reset the application state for the newly loaded circuit
                 history = [];
                 historyIndex = -1;
                 selectedElements = [];
-                autoLabelCounters = {}; // Reset counters for new file
+                recalculateAutoLabelCounters(); // Recalculate counters based on loaded text elements
                 saveState();
                 redrawCanvas();
                 alert("Circuit loaded successfully!");
@@ -2753,7 +2859,7 @@
                 "Error reading file. Make sure it is a valid JSON circuit file."
               );
             }
-            fileInput.value = "";
+            fileInput.value = ""; // Clear the input to allow reloading the same file
           };
           reader.readAsText(file);
         }
