@@ -224,13 +224,144 @@
         font-weight: 400;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       }
+
+      /* --- START: Modal Styles --- */
+      .modal-overlay {
+        display: none; /* Hidden by default */
+        position: fixed;
+        z-index: 1001;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.5);
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px 30px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 600px;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        position: relative;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      }
+      .modal-close {
+        color: #aaa;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .modal-close:hover,
+      .modal-close:focus {
+        color: black;
+        text-decoration: none;
+      }
+      .modal-content h3 {
+          margin-top: 0;
+          color: #343a40;
+      }
+      .modal-table-container {
+          max-height: 40vh;
+          overflow-y: auto;
+          margin: 20px 0;
+          border: 1px solid #dee2e6;
+          border-radius: 8px;
+      }
+      #bulk-input-table {
+          width: 100%;
+          border-collapse: collapse;
+      }
+      #bulk-input-table th, #bulk-input-table td {
+          border-bottom: 1px solid #dee2e6;
+          padding: 12px;
+          text-align: left;
+      }
+      #bulk-input-table th {
+          background-color: #f8f9fa;
+          position: sticky;
+          top: 0;
+      }
+      #bulk-input-table td input {
+          width: 95%;
+          padding: 8px;
+          border: 1px solid #ced4da;
+          border-radius: 4px;
+          font-size: 14px;
+      }
+      #bulk-input-table .delete-row-btn {
+          background: none;
+          border: none;
+          color: #dc3545;
+          cursor: pointer;
+          font-size: 24px;
+          line-height: 1;
+          padding: 0 5px;
+      }
+      .modal-actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: 10px;
+          margin-top: 20px;
+      }
+      .modal-button {
+          padding: 10px 20px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-weight: 500;
+          transition: background-color 0.2s;
+          font-size: 1rem;
+      }
+      .modal-button.primary {
+          background-color: #007bff;
+          color: white;
+      }
+      .modal-button.primary:hover {
+          background-color: #0056b3;
+      }
+      .modal-button.secondary {
+          background-color: #6c757d;
+          color: white;
+      }
+      .modal-button.secondary:hover {
+          background-color: #5a6268;
+      }
+      #add-row-btn {
+          background-color: #28a745;
+          color: white;
+      }
+      #add-row-btn:hover {
+          background-color: #218838;
+      }
+      /* Style for the bulk text textarea */
+      #bulk-text-input {
+          width: 98%;
+          min-height: 150px;
+          margin-top: 10px;
+          padding: 10px;
+          border: 1px solid #ced4da;
+          border-radius: 8px;
+          font-size: 1rem;
+          font-family: inherit;
+          resize: vertical;
+      }
+      /* --- END: Modal Styles --- */
     </style>
   </head>
   <body>
     <div class="title-container">
       <img src="https://github.com/user-attachments/assets/29b49b83-8617-48fc-aabf-a31d292b27f1" alt="Circuit Drafter Logo" class="logo">
       <div>
-        <h1>Circuit Drafter (V0.28a)</h1>
+        <h1>Circuit Drafter (V0.32b)</h1>
         <p id="tagline">Effortless circuit schematics.</p>
       </div>
     </div>
@@ -282,34 +413,24 @@
       </div>
       <div class="divider"></div>
       <div class="tool-group">
-        <button class="tool-btn" id="tool-resistor" title="Resistor">
-          <svg viewBox="-2 -10 34 20">
-            <path
-              d="M0,0 H4 L6,-6 L10,6 L14,-6 L18,6 L22,-6 L26,6 L28,0 H32"
-              fill="none"
-              stroke-linejoin="round"
-              stroke-linecap="round"
-            ></path>
-          </svg>
-        </button>
-        <button class="tool-btn" id="tool-capacitor" title="Capacitor">
-          <svg viewBox="-5 -10 30 20">
-            <path
-              d="M0,0 H10 M10,-8 V8 M15,-8 V8 M15,0 H25"
-              fill="none"
-              stroke-linecap="round"
-            ></path>
-          </svg>
-        </button>
-        <button class="tool-btn" id="tool-inductor" title="Inductor">
-          <svg viewBox="-2 -10 34 20">
-            <path
-              d="M0,0 H6 C9,-13 12,-13 15,1 C18,-13 21,-13 24,0 H32"
-              fill="none"
-              stroke-linecap="round"
-            ></path>
-          </svg>
-        </button>
+        <!-- START: RLC Dropdown -->
+        <div class="tool-dropdown">
+            <button class="tool-btn dropdown-trigger" title="Passive Components">
+                <svg viewBox="-2 -10 34 20"><path d="M0,0 H4 L6,-6 L10,6 L14,-6 L18,6 L22,-6 L26,6 L28,0 H32" fill="none" stroke-linejoin="round" stroke-linecap="round"></path></svg>
+            </button>
+            <div class="dropdown-content">
+                <button class="tool-btn" id="tool-resistor" title="Resistor">
+                  <svg viewBox="-2 -10 34 20"><path d="M0,0 H4 L6,-6 L10,6 L14,-6 L18,6 L22,-6 L26,6 L28,0 H32" fill="none" stroke-linejoin="round" stroke-linecap="round"></path></svg>
+                </button>
+                <button class="tool-btn" id="tool-capacitor" title="Capacitor">
+                  <svg viewBox="-5 -10 30 20"><path d="M0,0 H10 M10,-8 V8 M15,-8 V8 M15,0 H25" fill="none" stroke-linecap="round"></path></svg>
+                </button>
+                <button class="tool-btn" id="tool-inductor" title="Inductor">
+                  <svg viewBox="-2 -10 34 20"><path d="M0,0 H6 C9,-13 12,-13 15,1 C18,-13 21,-13 24,0 H32" fill="none" stroke-linecap="round"></path></svg>
+                </button>
+            </div>
+        </div>
+        <!-- END: RLC Dropdown -->
         <button class="tool-btn" id="tool-switch" title="Switch (Double-click to toggle)">
             <svg viewBox="-45 -20 50 40">
                 <path d="M-40,0 L-30,0 M-8, 0 L10,0 M-30,0 L-8,-18" stroke-width="2.5" fill="none" stroke-linecap="round"/>
@@ -441,7 +562,18 @@
         </button>
       </div>
       <div class="divider"></div>
-      <!-- START: File Operations Dropdown -->
+      <!-- START: Bulk Operations (Moved) -->
+      <div class="tool-group">
+            <button class="action-btn" id="bulkAddBtn" title="Bulk Add Components">
+                <i class="material-icons">playlist_add</i>
+            </button>
+            <button class="action-btn" id="bulkTextBtn" title="Bulk Add Text Labels">
+                <i class="material-icons">format_list_bulleted_add</i>
+            </button>
+        </div>
+      <!-- END: Bulk Operations -->
+      <div class="divider"></div>
+      <!-- START: File Operations Dropdown (Moved) -->
       <div class="tool-dropdown">
           <button id="fileOpsBtn" class="action-btn dropdown-trigger" title="File Operations">
               <i class="material-icons">save</i>
@@ -451,9 +583,7 @@
                   <i class="material-icons">save_alt</i>
               </button>
               <button class="action-btn" id="loadBtn" title="Load File (Ctrl+O)">
-                  <i class="material-symbols-outlined">
-folder_open
-</i>
+                  <i class="material-symbols-outlined">folder_open</i>
               </button>
           </div>
       </div>
@@ -463,21 +593,101 @@ folder_open
     <canvas id="circuitCanvas" width="1000" height="700"></canvas>
     <input type="file" id="fileInput" accept=".json" style="display: none;" />
 
+    <!-- START: Bulk Add Components Modal -->
+    <div id="bulkAddModal" class="modal-overlay">
+      <div class="modal-content">
+        <span class="modal-close" id="bulkAddModalClose">&times;</span>
+        <h3>Bulk Add Components</h3>
+        <p>Enter one component type per row. Valid names: R, L, C, D, ZD, LED, SW, Vdc, Vac, Idc, GND, Batt.</p>
+        <div class="modal-table-container">
+          <table id="bulk-input-table">
+            <thead>
+              <tr>
+                <th>Component Name</th>
+                <th>Quantity</th>
+                <th>Auto-Label? (Y/N)</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Rows will be added here by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+        <button id="add-row-btn" class="modal-button">Add Another Row</button>
+        <div class="modal-actions">
+          <button id="bulk-cancel-btn" class="modal-button secondary">Cancel</button>
+          <button id="bulk-place-btn" class="modal-button primary">Place Components</button>
+        </div>
+      </div>
+    </div>
+    <!-- END: Bulk Add Components Modal -->
+    
+    <!-- START: Bulk Add Text Modal -->
+    <div id="bulkTextModal" class="modal-overlay">
+      <div class="modal-content">
+        <span class="modal-close" id="bulkTextModalClose">&times;</span>
+        <h3>Bulk Add Text</h3>
+        <p>Enter each text label separated by a semicolon (;).</p>
+        <textarea id="bulk-text-input" placeholder="Label 1; Label 2; V_in = 5V; ..."></textarea>
+        <div class="modal-actions">
+          <button id="bulk-text-cancel-btn" class="modal-button secondary">Cancel</button>
+          <button id="bulk-text-place-btn" class="modal-button primary">Place Text</button>
+        </div>
+      </div>
+    </div>
+    <!-- END: Bulk Add Text Modal -->
+
     <script>
       /****************************************************************************
-       * Circuit Drafter - V0.28a (Date: 2024-05-22)
+       * Circuit Drafter - V0.32b (Date: 2024-05-22)
        *
-       * SUMMARY OF CHANGES:
-       * - Bug Fix (PNG Export): Corrected the drawing context handling,
-       *   which was preventing the PNG export from functioning properly.
-       * - UI Enhancement (Green Button): The main file operations button
-       *   is now styled in green for better visibility.
+       * SUMMARY OF CHANGES FROM V0.28a:
+       * - UI Overhaul: Grouped R/L/C components and reorganized the toolbar.
+       * - Bulk Placement: Added "Bulk Add Components" via a table modal.
+       * - Bulk Text: Added "Bulk Add Text" via a semicolon-delimited input.
+       * - Smart Canvas: Implemented dynamic canvas resizing to prevent
+       *   off-screen placement of bulk-added elements.
+       * - Bug Fixes: Corrected diode/zener/led selection boxes and ensured
+       *   auto-labels are always capitalized.
+       * - Text Engine Upgrade: Added support for LaTeX-style grouped
+       *   subscripts/superscripts (e.g., V_{in}) and fractions (\frac{}{}).
+       *   Fixed fraction rendering with subscripts in the numerator.
        ****************************************************************************/
       document.addEventListener("DOMContentLoaded", () => {
         let canvas = document.getElementById("circuitCanvas");
         let ctx = canvas.getContext("2d");
         const fileInput = document.getElementById('fileInput');
         
+        // START: Bulk Components Modal Variables
+        const bulkAddBtn = document.getElementById('bulkAddBtn');
+        const bulkAddModal = document.getElementById('bulkAddModal');
+        const bulkAddModalClose = document.getElementById('bulkAddModalClose');
+        const addRowBtn = document.getElementById('add-row-btn');
+        const bulkPlaceBtn = document.getElementById('bulk-place-btn');
+        const bulkCancelBtn = document.getElementById('bulk-cancel-btn');
+        const bulkInputTableBody = document.querySelector('#bulk-input-table tbody');
+        
+        // START: Bulk Text Modal Variables
+        const bulkTextBtn = document.getElementById('bulkTextBtn');
+        const bulkTextModal = document.getElementById('bulkTextModal');
+        const bulkTextModalClose = document.getElementById('bulkTextModalClose');
+        const bulkTextInput = document.getElementById('bulk-text-input');
+        const bulkTextPlaceBtn = document.getElementById('bulk-text-place-btn');
+        const bulkTextCancelBtn = document.getElementById('bulk-text-cancel-btn');
+
+        let autoLabelCounters = {};
+        const shortNameToType = {
+            'R': 'resistor', 'L': 'inductor', 'C': 'capacitor',
+            'D': 'diode', 'ZD': 'zener', 'LED': 'led',
+            'SW': 'switch', 'VDC': 'voltage', 'VAC': 'acvoltage',
+            'IDC': 'currentsource', 'GND': 'gnd', 'BATT': 'battery'
+        };
+        const shortNameToTypeCI = Object.keys(shortNameToType).reduce((acc, key) => {
+            acc[key.toUpperCase()] = shortNameToType[key];
+            return acc;
+        }, {});
+
         let selectedTool = "select";
         let isDrawingWire = false, isDragging = false, isShiftDown = false;
         let wireStartPoint = null, currentMousePos = { x: 0, y: 0 }, dragStartPoint = null;
@@ -493,8 +703,10 @@ folder_open
 
         const componentData = {
           resistor: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] }, capacitor: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] },
-          inductor: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] }, diode: { width: 50, height: 30, terminals: [{ x: -25, y: 0 }, { x: 25, y: 0 }] },
-          zener: { width: 50, height: 30, terminals: [{ x: -25, y: 0 }, { x: 25, y: 0 }] }, led: { width: 50, height: 30, terminals: [{ x: -25, y: 0 }, { x: 25, y: 0 }] },
+          inductor: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] },
+          diode: { width: 60, height: 30, terminals: [{ x: -30, y: 0 }, { x: 30, y: 0 }] },
+          zener: { width: 60, height: 34, terminals: [{ x: -30, y: 0 }, { x: 30, y: 0 }] },
+          led: { width: 60, height: 50, terminals: [{ x: -30, y: 0 }, { x: 30, y: 0 }] },
           switch: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] },
           voltage: { width: 60, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] }, acvoltage: { width: 60, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] },
           currentsource: { width: 60, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] }, battery: { width: 40, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] },
@@ -538,7 +750,7 @@ folder_open
         });
 
         window.addEventListener("keydown", (e) => {
-          if (document.activeElement.tagName === "INPUT") return;
+          if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") return;
           if (e.key === "Shift") isShiftDown = true;
           
           if (e.ctrlKey || e.metaKey) {
@@ -566,6 +778,29 @@ folder_open
         window.addEventListener("keyup", (e) => { if (e.key === "Shift") { isShiftDown = false; redrawCanvas(); } });
         window.addEventListener("blur", () => { isShiftDown = false; });
         fileInput.addEventListener('change', handleFileLoad);
+
+        // START: Modal Event Listeners
+        bulkAddBtn.addEventListener('click', openBulkAddModal);
+        bulkAddModalClose.addEventListener('click', closeBulkAddModal);
+        bulkCancelBtn.addEventListener('click', closeBulkAddModal);
+        addRowBtn.addEventListener('click', () => addBulkRow());
+        bulkPlaceBtn.addEventListener('click', handleBulkPlace);
+        bulkInputTableBody.addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-row-btn')) {
+                e.target.closest('tr').remove();
+            }
+        });
+
+        bulkTextBtn.addEventListener('click', openBulkTextModal);
+        bulkTextModalClose.addEventListener('click', closeBulkTextModal);
+        bulkTextCancelBtn.addEventListener('click', closeBulkTextModal);
+        bulkTextPlaceBtn.addEventListener('click', handleBulkTextPlace);
+
+        window.addEventListener('click', (event) => {
+            if (event.target == bulkAddModal) { closeBulkAddModal(); }
+            if (event.target == bulkTextModal) { closeBulkTextModal(); }
+        });
+        // END: Modal Event Listeners
 
         function saveState() {
           history = history.slice(0, historyIndex + 1);
@@ -629,12 +864,195 @@ folder_open
             if (isMarqueeSelecting && marqueeStartPoint) { drawMarquee(marqueeStartPoint, currentMousePos); }
             updateToolbar();
         }
+        
+        // --- START: Bulk Add/Text Functions ---
+
+        function resizeCanvas(newWidth, newHeight) {
+            if (canvas.width >= newWidth && canvas.height >= newHeight) return;
+
+            const finalWidth = Math.max(canvas.width, newWidth);
+            const finalHeight = Math.max(canvas.height, newHeight);
+
+            canvas.width = finalWidth;
+            canvas.height = finalHeight;
+            
+            redrawCanvas();
+        }
+
+        function addBulkRow(name = '', qty = 1, label = 'Y') {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><input type="text" class="comp-name" placeholder="e.g., R, C, Vdc" value="${name}"></td>
+                <td><input type="number" class="comp-qty" min="1" value="${qty}"></td>
+                <td><input type="text" class="comp-label" placeholder="Y or N" value="${label}" maxlength="1"></td>
+                <td><button class="delete-row-btn">&times;</button></td>
+            `;
+            bulkInputTableBody.appendChild(row);
+        }
+
+        function openBulkAddModal() {
+            bulkInputTableBody.innerHTML = ''; 
+            addBulkRow();
+            bulkAddModal.style.display = 'flex';
+        }
+
+        function closeBulkAddModal() {
+            bulkAddModal.style.display = 'none';
+        }
+        
+        function openBulkTextModal() {
+            bulkTextInput.value = '';
+            bulkTextModal.style.display = 'flex';
+        }
+
+        function closeBulkTextModal() {
+            bulkTextModal.style.display = 'none';
+        }
+        
+        function recalculateAutoLabelCounters() {
+            autoLabelCounters = {};
+            const labelRegex = /^([A-Z_a-z]+)(\d+)$/i;
+
+            circuitElements.forEach(el => {
+                if (el.type === 'text' && el.text) {
+                    const match = el.text.match(labelRegex);
+                    if (match) {
+                        const prefix = match[1].toUpperCase();
+                        const num = parseInt(match[2], 10);
+                        if (!autoLabelCounters[prefix] || num >= autoLabelCounters[prefix]) {
+                            autoLabelCounters[prefix] = num + 1;
+                        }
+                    }
+                }
+            });
+        }
+
+        function handleBulkPlace() {
+            recalculateAutoLabelCounters();
+            const rows = bulkInputTableBody.querySelectorAll('tr');
+            const placeStepX = 150;
+            const placeStepY = 120;
+            const placementMargin = 100;
+            const requests = [];
+            let totalComponentCount = 0;
+
+            for (const row of rows) {
+                const nameInput = row.querySelector('.comp-name');
+                const qtyInput = row.querySelector('.comp-qty');
+                const labelInput = row.querySelector('.comp-label');
+                const shortNameRaw = nameInput.value.trim();
+                if (!shortNameRaw) continue;
+
+                const shortName = shortNameRaw.toUpperCase();
+                const quantity = parseInt(qtyInput.value, 10);
+                const autoLabel = labelInput.value.trim().toUpperCase();
+                const componentType = shortNameToTypeCI[shortName];
+
+                if (!componentType) { alert(`Invalid component name: "${nameInput.value}".`); nameInput.focus(); return; }
+                if (isNaN(quantity) || quantity < 1) { alert(`Invalid quantity: "${qtyInput.value}".`); qtyInput.focus(); return; }
+                requests.push({ shortNameRaw, shortName, quantity, autoLabel, componentType });
+                totalComponentCount += quantity;
+            }
+
+            if (totalComponentCount === 0) { closeBulkAddModal(); return; }
+
+            const bounds = calculateBoundingBox();
+            const placementStart = { 
+                x: placementMargin, 
+                y: bounds ? Math.floor((bounds.maxY + placementMargin) / gridSize) * gridSize : placementMargin 
+            };
+            
+            const componentsPerRow = Math.max(1, Math.floor((canvas.width - placementMargin * 2) / placeStepX));
+            const requiredRows = Math.ceil(totalComponentCount / componentsPerRow);
+            
+            const requiredWidth = placementStart.x + (Math.min(totalComponentCount, componentsPerRow) * placeStepX);
+            const requiredHeight = placementStart.y + (requiredRows * placeStepY);
+            
+            resizeCanvas(requiredWidth, requiredHeight);
+            
+            let placeX = placementStart.x;
+            let placeY = placementStart.y;
+            const componentsToAdd = [];
+
+            for (const req of requests) {
+                for (let i = 0; i < req.quantity; i++) {
+                    const newComp = { id: nextId++, type: req.componentType, x: placeX, y: placeY, rotation: 0 };
+                    if (newComp.type === 'switch') { newComp.state = 'open'; }
+                    componentsToAdd.push(newComp);
+
+                    if (req.autoLabel === 'Y') {
+                        if (!autoLabelCounters[req.shortName]) autoLabelCounters[req.shortName] = 1;
+                        const labelText = req.shortName + autoLabelCounters[req.shortName]++;
+                        const newLabel = { id: nextId++, type: 'text', text: labelText, x: placeX, y: placeY + 45, rotation: 0 };
+                        componentsToAdd.push(newLabel);
+                    }
+                    
+                    placeX += placeStepX;
+                    if (placeX > canvas.width - placementMargin) {
+                        placeX = placementStart.x;
+                        placeY += placeStepY;
+                    }
+                }
+            }
+            
+            if (componentsToAdd.length > 0) {
+                circuitElements.push(...componentsToAdd);
+                saveState();
+                redrawCanvas();
+            }
+            
+            closeBulkAddModal();
+        }
+
+        function handleBulkTextPlace() {
+            const rawText = bulkTextInput.value.trim();
+            if (!rawText) {
+                closeBulkTextModal();
+                return;
+            }
+            
+            const textItems = rawText.split(';').map(item => item.trim()).filter(item => item.length > 0);
+            if (textItems.length === 0) {
+                closeBulkTextModal();
+                return;
+            }
+            
+            const verticalSpacing = 40;
+            const placementMargin = 100;
+            const bounds = calculateBoundingBox();
+            
+            const placementStart = { 
+                x: placementMargin, 
+                y: bounds ? Math.floor((bounds.maxY + 80) / gridSize) * gridSize : 80 
+            };
+            
+            const requiredHeight = placementStart.y + (textItems.length * verticalSpacing);
+            resizeCanvas(canvas.width, requiredHeight);
+
+            let placeY = placementStart.y;
+            const textsToAdd = [];
+
+            textItems.forEach(item => {
+                const newText = { id: nextId++, type: 'text', text: item, x: placementStart.x, y: placeY, rotation: 0 };
+                textsToAdd.push(newText);
+                placeY += verticalSpacing;
+            });
+
+            if (textsToAdd.length > 0) {
+                circuitElements.push(...textsToAdd);
+                saveState();
+                redrawCanvas();
+            }
+
+            closeBulkTextModal();
+        }
+        // --- END: Bulk Add/Text Functions ---
 
         function drawElement(el, isSelected = false) {
           ctx.save();
           setDrawingStyle(isSelected);
           if (el.type === "wire") { drawWire(el, isSelected); }
-          else if (el.type === "text") { ctx.translate(el.x, el.y); drawText(el, isSelected); }
+          else if (el.type === "text") { drawText(el, isSelected); } // NOTE: Removed translate for text, handled in drawText
           else {
             ctx.translate(el.x, el.y); ctx.rotate((el.rotation * Math.PI) / 180);
             switch (el.type) {
@@ -679,7 +1097,7 @@ folder_open
                 isDrawingWire = true;
                 wireStartPoint = getSnappingPoint(mousePos.x, mousePos.y);
             } else if (selectedTool === "text") {
-                const textContent = prompt(`Support _ for subscript, ^ for superscript, and \\ for Greek (e.g., \\alpha, \\pi, \\Omega).`, "R_1 = 5 k\\Omega");
+                const textContent = prompt(`Use LaTeX style: _ and ^ for scripts (e.g., V_{in}), \\frac{}{} for fractions, and \\ for Greek (e.g., \\mu).`, "V_{out} = V_{in} \\frac{R_2}{R_1+R_2}");
                 if (textContent) {
                     const newEl = { id: nextId++, type: "text", text: textContent, x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
                     circuitElements.push(newEl); selectedTool = "select"; selectedElements = [newEl]; needsStateSave = true;
@@ -822,7 +1240,11 @@ folder_open
             if (el.type === "wire" || el.type === "junction" || el.type === 'open_terminal') continue;
             if (el.type === "text") {
               const { width, height } = measureParsedText(el.text);
-              if (x > el.x - width / 2 && x < el.x + width / 2 && y > el.y - height / 2 && y < el.y + height / 2) return el;
+              const padding = 4;
+              if (x > el.x - width / 2 - padding && x < el.x + width / 2 + padding && 
+                  y > el.y - height / 2 - padding && y < el.y + height / 2 + padding) {
+                return el;
+              }
             } else {
               const data = componentData[el.type];
               const dx = x - el.x, dy = y - el.y, angle = (-el.rotation * Math.PI) / 180;
@@ -919,55 +1341,271 @@ folder_open
           ctx.restore();
         }
 
+        // ***************************************************************
+        // START: NEW RECURSIVE TEXT PARSING, MEASURING, AND DRAWING ENGINE
+        // ***************************************************************
+
         const greekSymbolMap = {
             alpha: "α", beta: "β", gamma: "γ", Delta: "Δ", delta: "δ", epsilon: "ε",
             eta: "η", theta: "θ", lambda: "λ", mu: "μ", pi: "π", rho: "ρ",
             Sigma: "Σ", sigma: "σ", tau: "τ", Phi: "Φ", phi: "φ", Omega: "Ω", omega: "ω",
         };
-        function parseText(rawText) {
-            const chunks = []; let currentText = ""; let currentType = "normal";
-            for (let i = 0; i < rawText.length; i++) {
-                const char = rawText[i];
-                if (char === "_" || char === "^" || char === " " || char === "\\") {
-                    if (currentText.length > 0) { chunks.push({ text: currentText, type: currentType }); }
-                    currentText = "";
-                    if (char === " ") { currentType = "normal"; currentText = " "; }
-                    else if (char === "_") { currentType = "subscript"; }
-                    else if (char === "^") { currentType = "superscript"; }
-                    else if (char === "\\") {
-                        let symbol = "";
-                        for (let j = i + 1; j < rawText.length; j++) {
-                            const nextChar = rawText[j]; if (nextChar.match(/[a-zA-Z]/)) { symbol += nextChar; } else { break; }
-                        }
-                        if (greekSymbolMap[symbol]) { chunks.push({ text: greekSymbolMap[symbol], type: "normal" }); i += symbol.length; } else { currentText = "\\"; }
+
+        /**
+         * Finds the index of the matching closing brace '}' for a given opening brace '{'.
+         * Handles nested braces correctly.
+         * @param {string} text - The full string to search within.
+         * @param {number} startIndex - The index right after the opening brace.
+         * @returns {number} - The index of the matching closing brace, or -1 if not found.
+         */
+        function findMatchingBrace(text, startIndex) {
+            let braceLevel = 1;
+            for (let i = startIndex; i < text.length; i++) {
+                if (text[i] === '{') {
+                    braceLevel++;
+                } else if (text[i] === '}') {
+                    braceLevel--;
+                    if (braceLevel === 0) {
+                        return i;
                     }
-                } else { currentText += char; }
+                }
             }
-            if (currentText.length > 0) { chunks.push({ text: currentText, type: currentType }); }
+            return -1; // Not found
+        }
+        
+        /**
+         * The main recursive parsing function.
+         * @param {string} text - The segment of text to parse.
+         * @returns {Array} - An array of parsed chunks.
+         */
+        function _parseInternal(text) {
+            const chunks = [];
+            let currentText = "";
+
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                let specialHandled = false;
+
+                // Handle Subscript and Superscript
+                if (char === '_' || char === '^') {
+                    if (currentText) {
+                        chunks.push({ type: 'normal', text: currentText });
+                        currentText = "";
+                    }
+                    const type = (char === '_') ? 'subscript' : 'superscript';
+                    let content = '';
+                    let jump = 0;
+                    
+                    if (text[i + 1] === '{') {
+                        const endBrace = findMatchingBrace(text, i + 2);
+                        if (endBrace !== -1) {
+                            content = text.substring(i + 2, endBrace);
+                            jump = endBrace - i;
+                        }
+                    } else if (i + 1 < text.length) {
+                        content = text[i + 1];
+                        jump = 1;
+                    }
+                    
+                    if (content) {
+                        chunks.push({ type: type, content: _parseInternal(content) });
+                        i += jump;
+                    } else {
+                        currentText += char; // Incomplete, treat as literal
+                    }
+                    specialHandled = true;
+                }
+                // Handle Commands like \frac or \mu
+                else if (char === '\\') {
+                     if (currentText) {
+                        chunks.push({ type: 'normal', text: currentText });
+                        currentText = "";
+                    }
+                    
+                    // Check for \frac{num}{den}
+                    if (text.substring(i, i + 5) === '\\frac' && text[i + 5] === '{') {
+                        const numEnd = findMatchingBrace(text, i + 6);
+                        if (numEnd !== -1 && text[numEnd + 1] === '{') {
+                            const denEnd = findMatchingBrace(text, numEnd + 2);
+                            if (denEnd !== -1) {
+                                const numerator = text.substring(i + 6, numEnd);
+                                const denominator = text.substring(numEnd + 2, denEnd);
+                                chunks.push({
+                                    type: 'fraction',
+                                    numerator: _parseInternal(numerator),
+                                    denominator: _parseInternal(denominator)
+                                });
+                                i = denEnd;
+                                specialHandled = true;
+                            }
+                        }
+                    } 
+                    // Check for Greek letters
+                    else {
+                        let symbolCandidate = "";
+                        let bestMatch = "";
+                        for (let j = i + 1; j < text.length; j++) {
+                            if (!text[j].match(/[a-zA-Z]/)) break;
+                            symbolCandidate += text[j];
+                            if (greekSymbolMap.hasOwnProperty(symbolCandidate)) {
+                                bestMatch = symbolCandidate;
+                            }
+                        }
+                        if (bestMatch) {
+                            chunks.push({ type: 'normal', text: greekSymbolMap[bestMatch] });
+                            i += bestMatch.length;
+                            specialHandled = true;
+                        }
+                    }
+                }
+                
+                if (!specialHandled) {
+                    currentText += char;
+                }
+            }
+            if (currentText) chunks.push({ type: 'normal', text: currentText });
             return chunks;
         }
-        function measureParsedText(rawText) {
-            const chunks = parseText(rawText); const subSuperScriptScale = 0.7; let totalWidth = 0;
+        
+        // Public entry point for parsing
+        function parseText(rawText) {
+            if (!rawText) return [];
+            return _parseInternal(rawText);
+        }
+
+        /**
+         * Recursively measures the dimensions of parsed text chunks.
+         * @param {Array} chunks - The parsed chunks from parseText.
+         * @param {number} currentFontSize - The font size for this level of recursion.
+         * @returns {object} - An object with {width, height, ascent, descent}.
+         */
+        function measureRecursive(chunks, currentFontSize) {
+            let totalWidth = 0;
+            let maxAscent = 0;
+            let maxDescent = 0;
+            const subSuperScale = 0.7;
+            const fractionLinePadding = 4; // Increased padding slightly
+
+            ctx.font = `italic ${currentFontSize}px Georgia`;
+            const baselineHeight = ctx.measureText('M').width * 0.8; // Approx ascent for a normal char
+
             chunks.forEach(chunk => {
-                const fontSize = chunk.type === "normal" ? textFontSize : textFontSize * subSuperScriptScale;
-                ctx.font = `italic ${fontSize}px Georgia`;
-                totalWidth += ctx.measureText(chunk.text).width;
+                if (chunk.type === 'normal') {
+                    ctx.font = `italic ${currentFontSize}px Georgia`;
+                    const metrics = ctx.measureText(chunk.text);
+                    totalWidth += metrics.width;
+                    maxAscent = Math.max(maxAscent, baselineHeight);
+                    maxDescent = Math.max(maxDescent, 0);
+                } else if (chunk.type === 'subscript' || chunk.type === 'superscript') {
+                    const subMetrics = measureRecursive(chunk.content, currentFontSize * subSuperScale);
+                    totalWidth += subMetrics.width;
+                    if (chunk.type === 'superscript') {
+                        maxAscent = Math.max(maxAscent, subMetrics.height + baselineHeight * 0.4);
+                    } else { // subscript
+                        maxDescent = Math.max(maxDescent, subMetrics.height - baselineHeight * 0.4);
+                    }
+                } else if (chunk.type === 'fraction') {
+                    const numMetrics = measureRecursive(chunk.numerator, currentFontSize);
+                    const denMetrics = measureRecursive(chunk.denominator, currentFontSize);
+                    const fracWidth = Math.max(numMetrics.width, denMetrics.width) + 4;
+                    totalWidth += fracWidth;
+
+                    // UPDATED: Calculate ascent/descent based on full heights of num/den
+                    // to correctly reserve space around the main text baseline.
+                    const fractionAscent = numMetrics.height + fractionLinePadding;
+                    const fractionDescent = denMetrics.height + fractionLinePadding;
+
+                    maxAscent = Math.max(maxAscent, fractionAscent);
+                    maxDescent = Math.max(maxDescent, fractionDescent);
+                }
             });
-            return { width: totalWidth, height: textFontSize };
+            return { width: totalWidth, height: maxAscent + maxDescent, ascent: maxAscent, descent: maxDescent };
         }
+
+        function measureParsedText(rawText) {
+             if (!rawText) return { width: 0, height: textFontSize };
+             const chunks = parseText(rawText);
+             const metrics = measureRecursive(chunks, textFontSize);
+             return { width: metrics.width, height: Math.max(textFontSize, metrics.height) };
+        }
+
+        /**
+         * Recursively draws parsed text chunks.
+         * @param {Array} chunks - The parsed chunks to draw.
+         * @param {number} x - The starting X coordinate.
+         * @param {number} y - The baseline Y coordinate.
+         * @param {number} currentFontSize - The font size for this level.
+         * @returns {number} - The new X coordinate after drawing.
+         */
+        function drawRecursive(chunks, x, y, currentFontSize) {
+            let currentX = x;
+            const subSuperScale = 0.7;
+            const subSuperYOffsetFactor = 0.4;
+            const fractionLinePadding = 4; // Increased padding slightly
+
+            ctx.font = `italic ${currentFontSize}px Georgia`;
+            
+            chunks.forEach(chunk => {
+                if (chunk.type === 'normal') {
+                    ctx.font = `italic ${currentFontSize}px Georgia`;
+                    ctx.fillText(chunk.text, currentX, y);
+                    currentX += ctx.measureText(chunk.text).width;
+                } else if (chunk.type === 'subscript' || chunk.type === 'superscript') {
+                    const newFontSize = currentFontSize * subSuperScale;
+                    const yOffset = (chunk.type === 'subscript' ? 1 : -1) * currentFontSize * subSuperYOffsetFactor;
+                    currentX = drawRecursive(chunk.content, currentX, y + yOffset, newFontSize);
+                } else if (chunk.type === 'fraction') {
+                    const numMetrics = measureRecursive(chunk.numerator, currentFontSize);
+                    const denMetrics = measureRecursive(chunk.denominator, currentFontSize);
+                    const fracWidth = Math.max(numMetrics.width, denMetrics.width);
+                    
+                    const numX = currentX + (fracWidth - numMetrics.width) / 2;
+                    const denX = currentX + (fracWidth - denMetrics.width) / 2;
+                    
+                    // UPDATED: Dynamic Y positions based on measured metrics
+                    const dividerY = y + 2; // Position divider slightly below the main baseline
+                    
+                    // Position numerator baseline so its descenders are above the divider
+                    const numY = dividerY - numMetrics.descent - fractionLinePadding;
+                    
+                    // Position denominator baseline so its ascenders are below the divider
+                    const denY = dividerY + denMetrics.ascent + fractionLinePadding;
+
+                    drawRecursive(chunk.numerator, numX, numY, currentFontSize);
+                    drawRecursive(chunk.denominator, denX, denY, currentFontSize);
+                    
+                    // Draw fraction line at the dynamically calculated dividerY
+                    ctx.beginPath();
+                    ctx.moveTo(currentX - 2, dividerY+4);
+                    ctx.lineTo(currentX + fracWidth + 2, dividerY+4);
+                    ctx.stroke();
+                    
+                    currentX += fracWidth + 4;
+                }
+            });
+            return currentX;
+        }
+
         function drawText(el, isSelected) {
-          ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillStyle = isSelected ? "#007bff" : "#000";
-          const subSuperScriptScale = 0.85; const subSuperScriptYOffset = 0.35;
-          const chunks = parseText(el.text); const { width: totalWidth } = measureParsedText(el.text);
-          let currentX = -totalWidth / 2; ctx.textAlign = "left";
-          chunks.forEach(chunk => {
-            const isNormal = chunk.type === "normal";
-            const fontSize = isNormal ? textFontSize : textFontSize * subSuperScriptScale;
-            const yOffset = isNormal ? 0 : (chunk.type === "subscript" ? textFontSize * subSuperScriptYOffset : -textFontSize * subSuperScriptYOffset);
-            ctx.font = `italic ${fontSize}px Georgia`; ctx.fillText(chunk.text, currentX, yOffset);
-            currentX += ctx.measureText(chunk.text).width;
-          });
+            ctx.fillStyle = isSelected ? "#007bff" : "#000";
+            ctx.strokeStyle = ctx.fillStyle; // For fraction line
+            ctx.textBaseline = "middle";
+            ctx.textAlign = "left";
+
+            const chunks = parseText(el.text);
+            const { width: totalWidth, ascent, descent } = measureRecursive(chunks, textFontSize);
+            const totalHeight = ascent + descent;
+
+            // Center the entire block vertically
+            const startY = el.y - (totalHeight / 2) + ascent;
+            const startX = el.x - totalWidth / 2;
+            
+            drawRecursive(chunks, startX, startY, textFontSize);
         }
+
+        // ***************************************************************
+        // END: NEW RECURSIVE TEXT PARSING, MEASURING, AND DRAWING ENGINE
+        // ***************************************************************
         
         function drawManualJunction() { ctx.beginPath(); ctx.arc(0, 0, 4, 0, 2 * Math.PI); ctx.fillStyle = ctx.strokeStyle; ctx.fill(); }
         function drawOpenTerminal() { ctx.beginPath(); ctx.arc(0, 0, 4, 0, 2 * Math.PI); ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = '#000'; ctx.stroke(); }
@@ -1108,7 +1746,7 @@ folder_open
         function saveCircuit() {
             const filename = prompt("Enter filename for project file:", "circuit.json");
             if (!filename) return;
-            const dataToSave = { version: "0.28a", elements: circuitElements, nextId: nextId };
+            const dataToSave = { version: "0.32b", elements: circuitElements, nextId: nextId };
             const dataStr = JSON.stringify(dataToSave, null, 2);
             const blob = new Blob([dataStr], { type: "application/json" });
             const link = document.createElement("a");
@@ -1127,12 +1765,13 @@ folder_open
             reader.onload = (e) => {
                 try {
                     const data = JSON.parse(e.target.result);
-                    if (data && data.version && data.elements && data.nextId !== undefined) {
+                    if (data && data.elements && data.nextId !== undefined) {
                         circuitElements = data.elements;
                         nextId = data.nextId;
                         history = [];
                         historyIndex = -1;
                         selectedElements = [];
+                        autoLabelCounters = {}; // Reset counters for new file
                         saveState(); 
                         redrawCanvas();
                         alert('Circuit loaded successfully!');
@@ -1170,7 +1809,7 @@ folder_open
             drawJunctions();
             ctx.restore();
             
-            ctx = originalCtx; // BUG FIX: Restore the original context
+            ctx = originalCtx;
             
             const link = document.createElement("a");
             link.download = "circuit-diagram.png";
