@@ -355,10 +355,11 @@
       #add-row-btn:hover {
         background-color: #218838;
       }
-      /* Style for the bulk text textarea */
-      #bulk-text-input {
+      /* Style for textareas */
+      #bulk-text-input,
+      #text-input-area {
         width: 98%;
-        min-height: 150px;
+        min-height: 120px;
         margin-top: 10px;
         padding: 10px;
         border: 1px solid #ced4da;
@@ -367,6 +368,26 @@
         font-family: inherit;
         resize: vertical;
       }
+      /* --- START: Style for new Text Modal Options --- */
+      .text-modal-options {
+        margin-top: 15px;
+        display: flex;
+        align-items: center;
+      }
+      .text-modal-options label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        font-size: 0.95rem;
+        color: #495057;
+      }
+      .text-modal-options input[type="checkbox"] {
+        margin-right: 8px;
+        /* Simple styling for the checkbox */
+        width: 16px;
+        height: 16px;
+      }
+      /* --- END: Style for new Text Modal Options --- */
       /* --- END: Modal Styles --- */
     </style>
   </head>
@@ -378,7 +399,7 @@
         class="logo"
       />
       <div>
-        <h1>Circuit Drafter (V0.32b)</h1>
+        <h1>Circuit Drafter (V0.32e)</h1>
         <p id="tagline">Effortless circuit schematics.</p>
       </div>
     </div>
@@ -474,26 +495,7 @@
           </div>
         </div>
         <!-- END: RLC Dropdown -->
-        <button
-          class="tool-btn"
-          id="tool-switch"
-          title="Switch (Double-click to toggle)"
-        >
-          <svg viewBox="-45 -20 50 40">
-            <path
-              d="M-40,0 L-30,0 M-8, 0 L10,0 M-30,0 L-8,-18"
-              stroke-width="2.5"
-              fill="none"
-              stroke-linecap="round"
-            />
-            <circle cx="-30" cy="0" r="4" stroke-width="1.5" fill="white" />
-            <circle cx="-8" cy="0" r="4" stroke-width="1.5" fill="white" />
-          </svg>
-        </button>
-      </div>
-      <div class="divider"></div>
-      <div class="tool-group">
-        <div class="tool-dropdown">
+         <div class="tool-dropdown">
           <button class="tool-btn dropdown-trigger" title="Diodes">
             <svg viewBox="-2 -10 24 20">
               <path
@@ -566,6 +568,61 @@
             </button>
           </div>
         </div>
+        <!-- START: Switches Dropdown -->
+        <div class="tool-dropdown">
+          <button class="tool-btn dropdown-trigger" title="Switches">
+            <svg viewBox="-45 -20 50 40">
+              <path
+                d="M-40,0 L-30,0 M-8, 0 L10,0 M-30,0 L-8,-18"
+                stroke-width="2.5"
+                fill="none"
+                stroke-linecap="round"
+              />
+              <circle cx="-30" cy="0" r="4" stroke-width="1.5" fill="white" />
+              <circle cx="-8" cy="0" r="4" stroke-width="1.5" fill="white" />
+            </svg>
+          </button>
+          <div class="dropdown-content">
+            <button
+              class="tool-btn"
+              id="tool-switch"
+              title="Switch (SPST - Double-click to toggle)"
+            >
+              <svg viewBox="-45 -20 50 40">
+                <path
+                  d="M-40,0 L-30,0 M-8, 0 L10,0 M-30,0 L-8,-18"
+                  stroke-width="2.5"
+                  fill="none"
+                  stroke-linecap="round"
+                />
+                <circle cx="-30" cy="0" r="4" stroke-width="1.5" fill="white" />
+                <circle cx="-8" cy="0" r="4" stroke-width="1.5" fill="white" />
+              </svg>
+            </button>
+            <button
+              class="tool-btn"
+              id="tool-spdtSwitch"
+              title="2-Way Switch (SPDT - Double-click to toggle)"
+            >
+              <svg viewBox="-45 -20 50 40">
+                <path
+                  d="M-40,0 L-30,0 M-8, -12 L10,-12 M-8, 12 L10,12 M-30,0 L-8,-18"
+                  stroke-width="2.5"
+                  fill="none"
+                  stroke-linecap="round"
+                />
+                <circle cx="-30" cy="0" r="4" stroke-width="1.5" fill="white" />
+                <circle cx="-8" cy="-12" r="4" stroke-width="1.5" fill="white" />
+                <circle cx="-8" cy="12" r="4" stroke-width="1.5" fill="white" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <!-- END: Switches Dropdown -->
+      </div>
+      <div class="divider"></div>
+      <div class="tool-group">
+        
         <div class="tool-dropdown">
           <button class="tool-btn dropdown-trigger" title="Voltage Sources">
             <svg viewBox="-12 -12 24 24">
@@ -705,8 +762,7 @@
         <span class="modal-close" id="bulkAddModalClose">&times;</span>
         <h3>Bulk Add Components</h3>
         <p>
-          Enter one component type per row. Valid names: R, L, C, D, ZD, LED,
-          SW, Vdc, Vac, Idc, GND, Batt.
+          Valid names: R, L, C, D, ZD, LED, SW, SPDT, Vdc, Vac, Idc, GND, Batt.
         </p>
         <div class="modal-table-container">
           <table id="bulk-input-table">
@@ -761,10 +817,40 @@
     </div>
     <!-- END: Bulk Add Text Modal -->
 
+    <!-- START: Text Input Modal -->
+    <div id="textInputModal" class="modal-overlay">
+      <div class="modal-content">
+        <span class="modal-close" id="textInputModalClose">&times;</span>
+        <h3>Add / Edit Text Label</h3>
+        <p>Use LaTeX style: V_{in}, R^2, \frac{num}{den}, \mu, etc.</p>
+        <textarea
+          id="text-input-area"
+          placeholder="Enter text here..."
+        ></textarea>
+        <div class="text-modal-options">
+          <label>
+            <input type="checkbox" id="text-italic-checkbox" checked />
+            <span>Use Italic Font</span>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button id="text-modal-cancel-btn" class="modal-button secondary">
+            Cancel
+          </button>
+          <button id="text-modal-ok-btn" class="modal-button primary">
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- END: Text Input Modal -->
+
     <script>
       /****************************************************************************
-       * Circuit Drafter - V0.32b (Date: 2024-05-22)
-       *
+       * Circuit Drafter - V0.32e (Date: 2025-07-21)
+       *  - Add SPDT
+       *  - Text font can be italic or normal.
+       * Circuit Drafter - V0.32b (Date: 2025-07-20)
        * SUMMARY OF CHANGES FROM V0.28a:
        * - UI Overhaul: Grouped R/L/C components and reorganized the toolbar.
        * - Bulk Placement: Added "Bulk Add Components" via a table modal.
@@ -830,6 +916,20 @@
           "bulk-text-cancel-btn"
         );
 
+        // START: New Text Input Modal Variables
+        const textInputModal = document.getElementById("textInputModal");
+        const textInputModalClose = document.getElementById(
+          "textInputModalClose"
+        );
+        const textInputArea = document.getElementById("text-input-area");
+        const textItalicCheckbox = document.getElementById(
+          "text-italic-checkbox"
+        );
+        const textModalOkBtn = document.getElementById("text-modal-ok-btn");
+        const textModalCancelBtn = document.getElementById(
+          "text-modal-cancel-btn"
+        );
+
         let autoLabelCounters = {};
         const shortNameToType = {
           R: "resistor",
@@ -839,6 +939,7 @@
           ZD: "zener",
           LED: "led",
           SW: "switch",
+          SPDT: "spdtSwitch",
           VDC: "voltage",
           VAC: "acvoltage",
           IDC: "currentsource",
@@ -928,6 +1029,15 @@
             terminals: [
               { x: -40, y: 0 },
               { x: 40, y: 0 },
+            ],
+          },
+          spdtSwitch: {
+            width: 80,
+            height: 60,
+            terminals: [
+              { x: -40, y: 0 }, // common
+              { x: 40, y: -20 }, // throw 1
+              { x: 40, y: 20 }, // throw 2
             ],
           },
           voltage: {
@@ -1114,6 +1224,9 @@
           if (event.target == bulkTextModal) {
             closeBulkTextModal();
           }
+          if (event.target == textInputModal) {
+            // This is handled by the promise-based function's cancel logic
+          }
         });
         // END: Modal Event Listeners
 
@@ -1249,7 +1362,7 @@
         function addBulkRow(name = "", qty = 1, label = "Y") {
           const row = document.createElement("tr");
           row.innerHTML = `
-                <td><input type="text" class="comp-name" placeholder="e.g., R, C, Vdc" value="${name}"></td>
+                <td><input type="text" class="comp-name" placeholder="e.g., R, C, SPDT" value="${name}"></td>
                 <td><input type="number" class="comp-qty" min="1" value="${qty}"></td>
                 <td><input type="text" class="comp-label" placeholder="Y or N" value="${label}" maxlength="1"></td>
                 <td><button class="delete-row-btn">&times;</button></td>
@@ -1384,6 +1497,9 @@
               if (newComp.type === "switch") {
                 newComp.state = "open";
               }
+              if (newComp.type === "spdtSwitch") {
+                newComp.state = 1;
+              }
               componentsToAdd.push(newComp);
 
               if (req.autoLabel === "Y") {
@@ -1402,6 +1518,7 @@
                   x: placeX,
                   y: placeY + 45,
                   rotation: 0,
+                  isItalic: true,
                 };
                 componentsToAdd.push(newLabel);
               }
@@ -1530,6 +1647,7 @@
               x: placementStart.x,
               y: placeY,
               rotation: 0,
+              isItalic: true,
             };
             textsToAdd.push(newText);
             placeY += verticalSpacing;
@@ -1543,6 +1661,56 @@
 
           closeBulkTextModal();
         } // --- END: Bulk Add/Text Functions ---
+
+        // --- START: Text Input Modal Function ---
+        function showTextInputModal(initialText = "", initialItalic = true) {
+          return new Promise((resolve, reject) => {
+            textInputArea.value = initialText;
+            textItalicCheckbox.checked = initialItalic;
+            textInputModal.style.display = "flex";
+            textInputArea.focus();
+            textInputArea.select();
+
+            const onOk = () => {
+              cleanup();
+              resolve({
+                text: textInputArea.value,
+                isItalic: textItalicCheckbox.checked,
+              });
+            };
+
+            const onCancel = () => {
+              cleanup();
+              reject();
+            };
+
+            const cleanup = () => {
+              textModalOkBtn.removeEventListener("click", onOk);
+              textModalCancelBtn.removeEventListener("click", onCancel);
+              textInputModalClose.removeEventListener("click", onCancel);
+              window.removeEventListener("keydown", onKeydown);
+              textInputModal.style.display = "none";
+            };
+
+            const onKeydown = (e) => {
+              if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+                onOk();
+              } else if (e.key === "Escape") {
+                onCancel();
+              }
+            };
+
+            textModalOkBtn.addEventListener("click", onOk, { once: true });
+            textModalCancelBtn.addEventListener("click", onCancel, {
+              once: true,
+            });
+            textInputModalClose.addEventListener("click", onCancel, {
+              once: true,
+            });
+            window.addEventListener("keydown", onKeydown);
+          });
+        }
+        // --- END: Text Input Modal Function ---
 
         function drawElement(el, isSelected = false) {
           ctx.save();
@@ -1576,6 +1744,9 @@
                 break;
               case "switch":
                 drawSwitch(el);
+                break;
+              case "spdtSwitch":
+                drawSpdtSwitch(el);
                 break;
               case "voltage":
                 drawVoltageSource();
@@ -1654,24 +1825,38 @@
             isDrawingWire = true;
             wireStartPoint = getSnappingPoint(mousePos.x, mousePos.y);
           } else if (selectedTool === "text") {
-            const textContent = prompt(
-              `Use LaTeX style: _ and ^ for scripts (e.g., V_{in}), \\frac{}{} for fractions, and \\ for Greek (e.g., \\mu).`,
-              "V_{out} = V_{in} \\frac{R_2}{R_1+R_2}"
-            );
-            if (textContent) {
-              const newEl = {
-                id: nextId++,
-                type: "text",
-                text: textContent,
-                x: snapToGrid(mousePos.x),
-                y: snapToGrid(mousePos.y),
-                rotation: 0,
-              };
-              circuitElements.push(newEl);
-              selectedTool = "select";
-              selectedElements = [newEl];
-              needsStateSave = true;
-            }
+            showTextInputModal(
+              "V_{out} = V_{in} \\frac{R_2}{R_1+R_2}", // Default text
+              true // Default italic
+            )
+              .then(({ text, isItalic }) => {
+                if (text) {
+                  // only add if text is not empty
+                  const newEl = {
+                    id: nextId++,
+                    type: "text",
+                    text: text,
+                    x: snapToGrid(mousePos.x),
+                    y: snapToGrid(mousePos.y),
+                    rotation: 0,
+                    isItalic: isItalic,
+                  };
+                  circuitElements.push(newEl);
+                  selectedTool = "select";
+                  selectedElements = [newEl];
+                  saveState();
+                  redrawCanvas();
+                } else {
+                  selectedTool = "select";
+                  redrawCanvas();
+                }
+              })
+              .catch(() => {
+                // User cancelled
+                selectedTool = "select";
+                redrawCanvas();
+              });
+            return; // Return early, let the promise handle state changes
           } else {
             const newEl = {
               id: nextId++,
@@ -1682,6 +1867,9 @@
             };
             if (newEl.type === "switch") {
               newEl.state = "open";
+            }
+            if (newEl.type === "spdtSwitch") {
+              newEl.state = 1;
             }
             circuitElements.push(newEl);
             selectedTool = "select";
@@ -1794,7 +1982,7 @@
           const mousePos = getMousePos(e);
           const clickedElement = getElementAtPos(mousePos.x, mousePos.y);
 
-          // Priority 1: Toggle a switch
+          // Priority 1: Toggle switches
           if (clickedElement && clickedElement.type === "switch") {
             clickedElement.state =
               clickedElement.state === "closed" ? "open" : "closed";
@@ -1802,17 +1990,28 @@
             redrawCanvas();
             return;
           }
+          if (clickedElement && clickedElement.type === "spdtSwitch") {
+            clickedElement.state = clickedElement.state === 1 ? 2 : 1;
+            saveState();
+            redrawCanvas();
+            return;
+          }
 
           // Priority 2: Edit a text element
           if (clickedElement && clickedElement.type === "text") {
-            const newText = prompt("Edit text:", clickedElement.text);
-            // The prompt returns null if the user clicks Cancel.
-            // We proceed only if the user clicks OK (even with an empty string).
-            if (newText !== null) {
-              clickedElement.text = newText;
-              saveState();
-              redrawCanvas();
-            }
+            showTextInputModal(
+              clickedElement.text,
+              clickedElement.isItalic ?? true
+            )
+              .then(({ text, isItalic }) => {
+                clickedElement.text = text;
+                clickedElement.isItalic = isItalic;
+                saveState();
+                redrawCanvas();
+              })
+              .catch(() => {
+                /* User cancelled, do nothing */
+              });
             return; // Stop further execution
           }
 
@@ -1930,7 +2129,7 @@
             )
               continue;
             if (el.type === "text") {
-              const { width, height } = measureParsedText(el.text);
+              const { width, height } = measureParsedText(el);
               const padding = 4;
               if (
                 x > el.x - width / 2 - padding &&
@@ -2037,7 +2236,7 @@
             if (el.type === "wire") {
               drawWire(el, true);
             } else if (el.type === "text") {
-              const { width, height } = measureParsedText(el.text);
+              const { width, height } = measureParsedText(el);
               const padding = 4;
               ctx.strokeRect(
                 el.x - width / 2 - padding,
@@ -2302,21 +2501,23 @@
          * Recursively measures the dimensions of parsed text chunks.
          * @param {Array} chunks - The parsed chunks from parseText.
          * @param {number} currentFontSize - The font size for this level of recursion.
+         * @param {boolean} isItalic - Whether to use italic font.
          * @returns {object} - An object with {width, height, ascent, descent}.
          */
-        function measureRecursive(chunks, currentFontSize) {
+        function measureRecursive(chunks, currentFontSize, isItalic) {
           let totalWidth = 0;
           let maxAscent = 0;
           let maxDescent = 0;
           const subSuperScale = 0.85;
-          const fractionLinePadding = 4; // Increased padding slightly
+          const fractionLinePadding = 4;
+          const fontStyle = isItalic ? "italic" : "normal";
 
-          ctx.font = `italic ${currentFontSize}px Georgia`;
-          const baselineHeight = ctx.measureText("M").width * 0.8; // Approx ascent for a normal char
+          ctx.font = `${fontStyle} ${currentFontSize}px Georgia`;
+          const baselineHeight = ctx.measureText("M").width * 0.8;
 
           chunks.forEach((chunk) => {
             if (chunk.type === "normal") {
-              ctx.font = `italic ${currentFontSize}px Georgia`;
+              ctx.font = `${fontStyle} ${currentFontSize}px Georgia`;
               const metrics = ctx.measureText(chunk.text);
               totalWidth += metrics.width;
               maxAscent = Math.max(maxAscent, baselineHeight);
@@ -2327,7 +2528,8 @@
             ) {
               const subMetrics = measureRecursive(
                 chunk.content,
-                currentFontSize * subSuperScale
+                currentFontSize * subSuperScale,
+                isItalic
               );
               totalWidth += subMetrics.width;
               if (chunk.type === "superscript") {
@@ -2336,7 +2538,6 @@
                   subMetrics.height + baselineHeight * 0.4
                 );
               } else {
-                // subscript
                 maxDescent = Math.max(
                   maxDescent,
                   subMetrics.height - baselineHeight * 0.4
@@ -2345,18 +2546,18 @@
             } else if (chunk.type === "fraction") {
               const numMetrics = measureRecursive(
                 chunk.numerator,
-                currentFontSize
+                currentFontSize,
+                isItalic
               );
               const denMetrics = measureRecursive(
                 chunk.denominator,
-                currentFontSize
+                currentFontSize,
+                isItalic
               );
               const fracWidth =
                 Math.max(numMetrics.width, denMetrics.width) + 4;
               totalWidth += fracWidth;
 
-              // UPDATED: Calculate ascent/descent based on full heights of num/den
-              // to correctly reserve space around the main text baseline.
               const fractionAscent = numMetrics.height + fractionLinePadding;
               const fractionDescent = denMetrics.height + fractionLinePadding;
 
@@ -2372,10 +2573,11 @@
           };
         }
 
-        function measureParsedText(rawText) {
-          if (!rawText) return { width: 0, height: textFontSize };
-          const chunks = parseText(rawText);
-          const metrics = measureRecursive(chunks, textFontSize);
+        function measureParsedText(el) {
+          if (!el.text) return { width: 0, height: textFontSize };
+          const isItalic = el.isItalic ?? true; // Backward compatibility
+          const chunks = parseText(el.text);
+          const metrics = measureRecursive(chunks, textFontSize, isItalic);
           return {
             width: metrics.width,
             height: Math.max(textFontSize, metrics.height),
@@ -2388,19 +2590,21 @@
          * @param {number} x - The starting X coordinate.
          * @param {number} y - The baseline Y coordinate.
          * @param {number} currentFontSize - The font size for this level.
+         * @param {boolean} isItalic - Whether to use italic font.
          * @returns {number} - The new X coordinate after drawing.
          */
-        function drawRecursive(chunks, x, y, currentFontSize) {
+        function drawRecursive(chunks, x, y, currentFontSize, isItalic) {
           let currentX = x;
           const subSuperScale = 0.85;
           const subSuperYOffsetFactor = 0.4;
-          const fractionLinePadding = 4; // Increased padding slightly
+          const fractionLinePadding = 4;
+          const fontStyle = isItalic ? "italic" : "normal";
 
-          ctx.font = `italic ${currentFontSize}px Georgia`;
+          ctx.font = `${fontStyle} ${currentFontSize}px Georgia`;
 
           chunks.forEach((chunk) => {
             if (chunk.type === "normal") {
-              ctx.font = `italic ${currentFontSize}px Georgia`;
+              ctx.font = `${fontStyle} ${currentFontSize}px Georgia`;
               ctx.fillText(chunk.text, currentX, y);
               currentX += ctx.measureText(chunk.text).width;
             } else if (
@@ -2416,35 +2620,44 @@
                 chunk.content,
                 currentX,
                 y + yOffset,
-                newFontSize
+                newFontSize,
+                isItalic
               );
             } else if (chunk.type === "fraction") {
               const numMetrics = measureRecursive(
                 chunk.numerator,
-                currentFontSize
+                currentFontSize,
+                isItalic
               );
               const denMetrics = measureRecursive(
                 chunk.denominator,
-                currentFontSize
+                currentFontSize,
+                isItalic
               );
               const fracWidth = Math.max(numMetrics.width, denMetrics.width);
 
               const numX = currentX + (fracWidth - numMetrics.width) / 2;
               const denX = currentX + (fracWidth - denMetrics.width) / 2;
 
-              // UPDATED: Dynamic Y positions based on measured metrics
-              const dividerY = y + 2; // Position divider slightly below the main baseline
-
-              // Position numerator baseline so its descenders are above the divider
+              const dividerY = y + 2;
               const numY = dividerY - numMetrics.descent - fractionLinePadding;
-
-              // Position denominator baseline so its ascenders are below the divider
               const denY = dividerY + denMetrics.ascent + fractionLinePadding;
 
-              drawRecursive(chunk.numerator, numX, numY, currentFontSize);
-              drawRecursive(chunk.denominator, denX, denY, currentFontSize);
+              drawRecursive(
+                chunk.numerator,
+                numX,
+                numY,
+                currentFontSize,
+                isItalic
+              );
+              drawRecursive(
+                chunk.denominator,
+                denX,
+                denY,
+                currentFontSize,
+                isItalic
+              );
 
-              // Draw fraction line at the dynamically calculated dividerY
               ctx.beginPath();
               ctx.moveTo(currentX - 2, dividerY + 4);
               ctx.lineTo(currentX + fracWidth + 2, dividerY + 4);
@@ -2462,19 +2675,20 @@
           ctx.textBaseline = "middle";
           ctx.textAlign = "left";
 
+          const isItalic = el.isItalic ?? true; // Backward compatibility
           const chunks = parseText(el.text);
           const {
             width: totalWidth,
             ascent,
             descent,
-          } = measureRecursive(chunks, textFontSize);
+          } = measureRecursive(chunks, textFontSize, isItalic);
           const totalHeight = ascent + descent;
 
           // Center the entire block vertically
           const startY = el.y - totalHeight / 2 + ascent;
           const startX = el.x - totalWidth / 2;
 
-          drawRecursive(chunks, startX, startY, textFontSize);
+          drawRecursive(chunks, startX, startY, textFontSize, isItalic);
         }
 
         // ***************************************************************
@@ -2579,6 +2793,48 @@
           ctx.arc(rightContactX, 0, circleRadius, 0, 2 * Math.PI);
           ctx.fill();
           ctx.stroke();
+          ctx.restore();
+        }
+        function drawSpdtSwitch(el) {
+          const circleRadius = 4,
+            commonX = -15,
+            throwX = 15,
+            throwY1 = -20,
+            throwY2 = 20;
+
+          // Draw lead wires to external terminals
+          ctx.beginPath();
+          ctx.moveTo(-40, 0);
+          ctx.lineTo(commonX, 0);
+          ctx.moveTo(throwX, throwY1);
+          ctx.lineTo(40, throwY1);
+          ctx.moveTo(throwX, throwY2);
+          ctx.lineTo(40, throwY2);
+
+          // Draw switch blade
+          if (el.state === 2) {
+            ctx.moveTo(commonX, 0);
+            ctx.lineTo(throwX, throwY2);
+          } else {
+            // state 1 is default
+            ctx.moveTo(commonX, 0);
+            ctx.lineTo(throwX, throwY1);
+          }
+          ctx.stroke();
+
+          // Draw contact circles
+          ctx.save();
+          ctx.fillStyle = "white";
+          [
+            { x: commonX, y: 0 },
+            { x: throwX, y: throwY1 },
+            { x: throwX, y: throwY2 },
+          ].forEach((p) => {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, circleRadius, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.stroke();
+          });
           ctx.restore();
         }
         function drawDiode() {
@@ -2743,7 +2999,7 @@
                 maxY = Math.max(maxY, p.y);
               });
             } else if (el.type === "text") {
-              const { width, height } = measureParsedText(el.text);
+              const { width, height } = measureParsedText(el);
               minX = Math.min(minX, el.x - width / 2);
               maxX = Math.max(maxX, el.x + width / 2);
               minY = Math.min(minY, el.y - height / 2);
@@ -2803,7 +3059,7 @@
           );
           if (!filename) return;
           const dataToSave = {
-            version: "0.32b",
+            version: "0.32e",
             elements: circuitElements,
             nextId: nextId,
           };
