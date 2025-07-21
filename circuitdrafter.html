@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -850,6 +851,7 @@
        * Circuit Drafter - V0.32e (Date: 2025-07-21)
        *  - Add SPDT
        *  - Text font can be italic or normal.
+       *  - Add small red arrow marker with Alt+Click.
        * Circuit Drafter - V0.32b (Date: 2025-07-20)
        * SUMMARY OF CHANGES FROM V0.28a:
        * - UI Overhaul: Grouped R/L/C components and reorganized the toolbar.
@@ -945,6 +947,7 @@
           IDC: "currentsource",
           GND: "gnd",
           BATT: "battery",
+          ARROW: "arrow_marker"
         };
         const shortNameToTypeCI = Object.keys(shortNameToType).reduce(
           (acc, key) => {
@@ -1073,6 +1076,11 @@
             ],
           },
           gnd: { width: 30, height: 30, terminals: [{ x: 0, y: -10 }] },
+          arrow_marker: {
+            width: 12,
+            height: 8,
+            terminals: [],
+          },
         };
 
         const actionButtons = {
@@ -1763,6 +1771,9 @@
               case "gnd":
                 drawGround();
                 break;
+              case "arrow_marker":
+                drawArrowMarker(el);
+                break;
               case "junction":
                 drawManualJunction();
                 break;
@@ -1782,6 +1793,23 @@
 
         function handleMouseDown(e) {
           const mousePos = getMousePos(e);
+
+          if (e.altKey) {
+            e.preventDefault();
+            const newArrow = {
+              id: nextId++,
+              type: "arrow_marker",
+              x: snapToGrid(mousePos.x),
+              y: snapToGrid(mousePos.y),
+              rotation: 0,
+              color: "red",
+            };
+            circuitElements.push(newArrow);
+            saveState();
+            redrawCanvas();
+            return;
+          }
+
           if (e.ctrlKey && !e.metaKey) {
             e.preventDefault();
             const newJunction = {
@@ -2963,6 +2991,19 @@
           ctx.moveTo(-5, 12);
           ctx.lineTo(5, 12);
           ctx.stroke();
+        }
+        function drawArrowMarker(el) {
+          ctx.fillStyle = el.color || "red";
+          ctx.beginPath();
+          // A small arrow head. Let's say 12px long, 8px wide.
+          // Tip points along the positive x-axis.
+          const length = 12;
+          const width = 8;
+          ctx.moveTo(length / 2, 0); // Tip
+          ctx.lineTo(-length / 2, -width / 2);
+          ctx.lineTo(-length / 2, width / 2);
+          ctx.closePath();
+          ctx.fill();
         }
         function drawCurrentSource() {
           const r = 16,
