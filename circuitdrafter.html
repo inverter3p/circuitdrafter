@@ -406,7 +406,7 @@
     </div>
 
     <a
-      href="https://github.com/inverter3p/circuitdrafter/blob/main/tutorial.md"
+      href="https://github.com/inverter3p/circuitdrafter/blob/main/README.md"
       target="_blank"
       rel="noopener noreferrer"
       id="helpBtn"
@@ -1802,7 +1802,7 @@
               x: snapToGrid(mousePos.x),
               y: snapToGrid(mousePos.y),
               rotation: 0,
-              color: "red",
+              color: "black",
             };
             circuitElements.push(newArrow);
             saveState();
@@ -2993,7 +2993,7 @@
           ctx.stroke();
         }
         function drawArrowMarker(el) {
-          ctx.fillStyle = el.color || "red";
+          ctx.fillStyle = el.color || "black";
           ctx.beginPath();
           // A small arrow head. Let's say 12px long, 8px wide.
           // Tip points along the positive x-axis.
