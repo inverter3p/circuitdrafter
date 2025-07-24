@@ -890,6 +890,7 @@
        *  - Add \times for multiply symbol.
        *   - Add dependent sources.
        *  - Double click component to direct edit rotation value.
+       *  - Change color from black to red by Alt+C
        * Circuit Drafter - V0.32e (Date: 2025-07-21)
        *  - Add SPDT
        *  - Text font can be italic or normal.
@@ -1209,6 +1210,24 @@
           )
             return;
           if (e.key === "Shift") isShiftDown = true;
+
+          // NEW: Add this block for Alt+R
+          else if (e.altKey && e.key.toLowerCase() === 'c') {
+            e.preventDefault();
+            if (selectedElements.length > 0) {
+              selectedElements.forEach(el => {
+                // Toggle the color property
+                if (el.color === 'red') {
+                  delete el.color; // Revert to default (black)
+                } else {
+                  el.color = 'red';
+                }
+              });
+              saveState(); // Save the change to history
+              redrawCanvas();
+            }
+          }
+          // END of new block
 
           if (e.ctrlKey || e.metaKey) {
             e.preventDefault();
@@ -1843,7 +1862,7 @@
 
         function drawElement(el, isSelected = false) {
           ctx.save();
-          setDrawingStyle(isSelected);
+          setDrawingStyle(isSelected, el.color); // <-- MODIFY THIS LINE
           if (el.type === "wire") {
             drawWire(el, isSelected);
           } else if (el.type === "text") {
@@ -1911,9 +1930,14 @@
           }
           ctx.restore();
         }
-        function setDrawingStyle(isSelected = false) {
-          ctx.strokeStyle = isSelected ? "#007bff" : "#000";
-          ctx.fillStyle = isSelected ? "#007bff" : "#000";
+                function setDrawingStyle(isSelected = false, color = 'black') {
+          // If a color is passed (e.g., 'red'), use it. Otherwise, default to black.
+          const finalColor = color || 'black'; 
+          
+          // Use blue for selection, otherwise use the component's color.
+          ctx.strokeStyle = isSelected ? "#007bff" : finalColor;
+          ctx.fillStyle = isSelected ? "#007bff" : finalColor;
+
           ctx.lineWidth = isSelected ? 2.5 : 2;
           ctx.lineCap = "round";
         }
@@ -2500,7 +2524,7 @@
           ctx.stroke();
         }
         function drawWire(el, isSelected) {
-          setDrawingStyle(isSelected);
+          setDrawingStyle(isSelected, el.color); // <-- MODIFY THIS LINE
           drawWireFromPath(getWirePath(el));
         }
         function drawWirePreview(start, end) {
@@ -2874,7 +2898,9 @@
         }
 
         function drawText(el, isSelected) {
-          ctx.fillStyle = isSelected ? "#007bff" : "#000";
+          // New lines in drawText()
+          const baseColor = el.color === 'red' ? 'red' : 'black';
+          ctx.fillStyle = isSelected ? "#007bff" : baseColor;
           ctx.strokeStyle = ctx.fillStyle; // For fraction line
           ctx.textBaseline = "middle";
           ctx.textAlign = "left";
