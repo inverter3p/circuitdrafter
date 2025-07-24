@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -400,13 +399,13 @@
         class="logo"
       />
       <div>
-        <h1>Circuit Drafter (V0.32e)</h1>
+        <h1>Circuit Drafter (V0.32R)</h1>
         <p id="tagline">Effortless circuit schematics.</p>
       </div>
     </div>
 
     <a
-      href="https://github.com/inverter3p/circuitdrafter/blob/main/tutorial.md"
+      href="https://github.com/inverter3p/circuitdrafter/blob/main/README.md"
       target="_blank"
       rel="noopener noreferrer"
       id="helpBtn"
@@ -496,7 +495,7 @@
           </div>
         </div>
         <!-- END: RLC Dropdown -->
-         <div class="tool-dropdown">
+        <div class="tool-dropdown">
           <button class="tool-btn dropdown-trigger" title="Diodes">
             <svg viewBox="-2 -10 24 20">
               <path
@@ -613,7 +612,13 @@
                   stroke-linecap="round"
                 />
                 <circle cx="-30" cy="0" r="4" stroke-width="1.5" fill="white" />
-                <circle cx="-8" cy="-12" r="4" stroke-width="1.5" fill="white" />
+                <circle
+                  cx="-8"
+                  cy="-12"
+                  r="4"
+                  stroke-width="1.5"
+                  fill="white"
+                />
                 <circle cx="-8" cy="12" r="4" stroke-width="1.5" fill="white" />
               </svg>
             </button>
@@ -623,9 +628,8 @@
       </div>
       <div class="divider"></div>
       <div class="tool-group">
-        
         <div class="tool-dropdown">
-          <button class="tool-btn dropdown-trigger" title="Voltage Sources">
+          <button class="tool-btn dropdown-trigger" title="Sources">
             <svg viewBox="-12 -12 24 24">
               <circle cx="0" cy="0" r="10" fill="none"></circle>
               <path d="M-3,-3 H4 M0,-7 V1, M-3,3 H4" fill="none"></path>
@@ -665,6 +669,34 @@
                 <circle cx="0" cy="0" r="10" fill="none"></circle>
                 <path
                   d="M0,7 L0,-7 M-4,-2 L0,-7 L4,-2"
+                  fill="none"
+                  stroke-linecap="round"
+                ></path>
+              </svg>
+            </button>
+            <button
+              class="tool-btn"
+              id="tool-dependent_voltage"
+              title="Dependent Voltage Source"
+            >
+              <svg viewBox="-12 -12 24 24">
+                <path d="M0 -10 L10 0 L0 10 L-10 0 Z" fill="none"></path>
+                <!-- Plus sign -->
+                <path d="M-2.5 -5 L2.5 -5 M0 -7.5 L0 -2.5" fill="none"></path>
+                <!-- Minus sign -->
+                <path d="M-2.5 5 L2.5 5" fill="none"></path>
+              </svg>
+            </button>
+            <button
+              class="tool-btn"
+              id="tool-dependent_current"
+              title="Dependent Current Source"
+            >
+              <svg viewBox="-12 -12 24 24">
+                <path d="M0 -10 L10 0 L0 10 L-10 0 Z" fill="none"></path>
+                <!-- Arrow -->
+                <path
+                  d="M0 6 L0 -6 M-3 -2 L0 -6 L3 -2"
                   fill="none"
                   stroke-linecap="round"
                 ></path>
@@ -763,7 +795,8 @@
         <span class="modal-close" id="bulkAddModalClose">&times;</span>
         <h3>Bulk Add Components</h3>
         <p>
-          Valid names: R, L, C, D, ZD, LED, SW, SPDT, Vdc, Vac, Idc, GND, Batt.
+          Valid names: R, L, C, D, ZD, LED, SW, SPDT, Vdc, Vac, Idc, DVS, DCS,
+          GND, Batt.
         </p>
         <div class="modal-table-container">
           <table id="bulk-input-table">
@@ -824,6 +857,10 @@
         <span class="modal-close" id="textInputModalClose">&times;</span>
         <h3>Add / Edit Text Label</h3>
         <p>Use LaTeX style: V_{in}, R^2, \frac{num}{den}, \mu, etc.</p>
+        <p>
+          Wrap math expression inside &...& to evaluate the numerical value:
+          &(1/15)+8**2&.
+        </p>
         <textarea
           id="text-input-area"
           placeholder="Enter text here..."
@@ -848,6 +885,11 @@
 
     <script>
       /****************************************************************************
+       * Circuit Drafter - V0.32R (Date: 2025-07-24)
+       *   - Math expression can be evaluated inside &.....&
+       *  - Add \times for multiply symbol.
+       *   - Add dependent sources.
+       *  - Double click component to direct edit rotation value.
        * Circuit Drafter - V0.32e (Date: 2025-07-21)
        *  - Add SPDT
        *  - Text font can be italic or normal.
@@ -945,9 +987,11 @@
           VDC: "voltage",
           VAC: "acvoltage",
           IDC: "currentsource",
+          DVS: "dependent_voltage",
+          DCS: "dependent_current",
           GND: "gnd",
           BATT: "battery",
-          ARROW: "arrow_marker"
+          ARROW: "arrow_marker",
         };
         const shortNameToTypeCI = Object.keys(shortNameToType).reduce(
           (acc, key) => {
@@ -1060,6 +1104,22 @@
             ],
           },
           currentsource: {
+            width: 60,
+            height: 60,
+            terminals: [
+              { x: 0, y: -30 },
+              { x: 0, y: 30 },
+            ],
+          },
+          dependent_voltage: {
+            width: 60,
+            height: 60,
+            terminals: [
+              { x: 0, y: -30 },
+              { x: 0, y: 30 },
+            ],
+          },
+          dependent_current: {
             width: 60,
             height: 60,
             terminals: [
@@ -1648,10 +1708,12 @@
           const textsToAdd = [];
 
           textItems.forEach((item) => {
+            // Evaluate expressions like &(1+1)& in each item
+            const processedItem = evaluateExpressions(item);
             const newText = {
               id: nextId++,
               type: "text",
-              text: item,
+              text: processedItem, // Use the processed text here
               x: placementStart.x,
               y: placeY,
               rotation: 0,
@@ -1681,8 +1743,10 @@
 
             const onOk = () => {
               cleanup();
+              // Evaluate expressions like &(1+1)& before resolving
+              const processedText = evaluateExpressions(textInputArea.value);
               resolve({
-                text: textInputArea.value,
+                text: processedText,
                 isItalic: textItalicCheckbox.checked,
               });
             };
@@ -1719,6 +1783,62 @@
           });
         }
         // --- END: Text Input Modal Function ---
+
+        // ... (code for measureParsedText, drawRecursive, drawText ends here)
+
+        // ***************************************************************
+        // END: NEW RECURSIVE TEXT PARSING, MEASURING, AND DRAWING ENGINE
+        // ***************************************************************
+
+        // START: INSERT THIS NEW FUNCTION HERE
+        /**
+         * Finds and evaluates mathematical expressions enclosed in &...&.
+         * Example: "&(1/2000+1/1000)&" becomes "1.5e-3".
+         * Uses a safe Function constructor for evaluation.
+         * @param {string} text The input string.
+         * @returns {string} The string with expressions replaced by their values.
+         */
+        function evaluateExpressions(text) {
+          if (!text || !text.includes("&")) {
+            return text;
+          }
+
+          // Regex to find content between &...& non-greedily
+          const regex = /&(.+?)&/g;
+
+          return text.replace(regex, (match, expression) => {
+            try {
+              // Use the Function constructor for safer evaluation than eval().
+              // It runs in its own scope, preventing access to local variables.
+              const result = new Function("return " + expression)();
+
+              if (typeof result !== "number" || !isFinite(result)) {
+                return match; // Not a number, return original string
+              }
+
+              // Use exponential notation for very large or very small numbers
+              if (
+                Math.abs(result) > 1e6 ||
+                (Math.abs(result) < 1e-6 && result !== 0)
+              ) {
+                // toExponential() gives the format "1.5e-3" as requested
+                return result.toExponential(6);
+              }
+
+              // For other numbers, prevent long floating point representations
+              return parseFloat(result.toPrecision(6)).toString();
+            } catch (e) {
+              // If evaluation fails (e.g., syntax error like "&hello&"),
+              // log the error and return the original text so the app doesn't break.
+              console.warn(
+                `Could not evaluate expression: ${match}`,
+                e.message
+              );
+              return match;
+            }
+          });
+        }
+        // END: INSERT THIS NEW FUNCTION HERE
 
         function drawElement(el, isSelected = false) {
           ctx.save();
@@ -1764,6 +1884,12 @@
                 break;
               case "currentsource":
                 drawCurrentSource();
+                break;
+              case "dependent_voltage":
+                drawDependentVoltageSource();
+                break;
+              case "dependent_current":
+                drawDependentCurrentSource();
                 break;
               case "battery":
                 drawBattery();
@@ -2010,29 +2136,44 @@
           const mousePos = getMousePos(e);
           const clickedElement = getElementAtPos(mousePos.x, mousePos.y);
 
-          // Priority 1: Toggle switches
-          if (clickedElement && clickedElement.type === "switch") {
+          // If we didn't click on any element, create an open terminal as before.
+          if (!clickedElement) {
+            const newTerminal = {
+              id: nextId++,
+              type: "open_terminal",
+              x: snapToGrid(mousePos.x),
+              y: snapToGrid(mousePos.y),
+              rotation: 0,
+            };
+            circuitElements.push(newTerminal);
+            saveState();
+            redrawCanvas();
+            return;
+          }
+
+          // Priority 1: Handle switches (they have a special toggle action)
+          if (clickedElement.type === "switch") {
             clickedElement.state =
               clickedElement.state === "closed" ? "open" : "closed";
             saveState();
             redrawCanvas();
             return;
           }
-          if (clickedElement && clickedElement.type === "spdtSwitch") {
+          if (clickedElement.type === "spdtSwitch") {
             clickedElement.state = clickedElement.state === 1 ? 2 : 1;
             saveState();
             redrawCanvas();
             return;
           }
 
-          // Priority 2: Edit a text element
-          if (clickedElement && clickedElement.type === "text") {
+          // Priority 2: Handle text labels (opens the editor modal)
+          if (clickedElement.type === "text") {
             showTextInputModal(
               clickedElement.text,
               clickedElement.isItalic ?? true
             )
               .then(({ text, isItalic }) => {
-                clickedElement.text = text;
+                clickedElement.text = evaluateExpressions(text); // Also evaluate on edit
                 clickedElement.isItalic = isItalic;
                 saveState();
                 redrawCanvas();
@@ -2040,20 +2181,46 @@
               .catch(() => {
                 /* User cancelled, do nothing */
               });
-            return; // Stop further execution
+            return;
           }
 
-          // Default action: Create an open terminal if nothing else was hit
-          const newTerminal = {
-            id: nextId++,
-            type: "open_terminal",
-            x: snapToGrid(mousePos.x),
-            y: snapToGrid(mousePos.y),
-            rotation: 0,
-          };
-          circuitElements.push(newTerminal);
-          saveState();
-          redrawCanvas();
+          // --- START: NEW LOGIC FOR COMPONENT ROTATION ---
+          // Priority 3: For any other component (not a wire, junction, etc.), prompt for rotation.
+          const isRotatableComponent =
+            clickedElement.type !== "wire" &&
+            clickedElement.type !== "junction" &&
+            clickedElement.type !== "open_terminal";
+
+          if (isRotatableComponent) {
+            const currentRotation = clickedElement.rotation || 0;
+            const newRotationStr = prompt(
+              "Enter new rotation angle (in degrees):",
+              currentRotation
+            );
+
+            // If user clicks "Cancel", the prompt returns null.
+            if (newRotationStr === null) {
+              return;
+            }
+
+            const newRotation = parseFloat(newRotationStr);
+
+            // Check if the input is a valid number
+            if (isNaN(newRotation)) {
+              alert("Invalid angle. Please enter a number.");
+              return;
+            }
+
+            // Update the element's rotation and redraw
+            clickedElement.rotation = newRotation;
+            saveState();
+            redrawCanvas();
+            return; // We're done, so exit the function
+          }
+          // --- END: NEW LOGIC FOR COMPONENT ROTATION ---
+
+          // If we reach here, it means a wire, junction, or existing terminal was double-clicked.
+          // In this case, we do nothing.
         }
 
         canvas.addEventListener("mousedown", handleMouseDown);
@@ -2395,6 +2562,7 @@
           phi: "φ",
           Omega: "Ω",
           omega: "ω",
+          times: "×",
         };
 
         /**
@@ -2952,6 +3120,79 @@
           ctx.quadraticCurveTo(waveEndX / 2, waveAmplitude, waveEndX, 0);
           ctx.stroke();
         }
+        function drawCurrentSource() {
+          const r = 16,
+            arrowY_start = -10,
+            arrowY_end = 10,
+            arrowHeadSize = 6;
+          ctx.beginPath();
+          ctx.arc(0, 0, r, 0, 2 * Math.PI);
+          ctx.moveTo(0, -30);
+          ctx.lineTo(0, -r);
+          ctx.moveTo(0, r);
+          ctx.lineTo(0, 30);
+          ctx.moveTo(-arrowHeadSize / 2, arrowY_start + arrowHeadSize);
+          ctx.lineTo(0, arrowY_start);
+          ctx.lineTo(arrowHeadSize / 2, arrowY_start + arrowHeadSize);
+          ctx.moveTo(0, arrowY_end);
+          ctx.lineTo(0, 0);
+          ctx.lineTo(0, -5);
+          ctx.stroke();
+        }
+        function drawDependentVoltageSource() {
+          const w = 20,
+            h = 20; // half-width and half-height of the diamond
+          ctx.beginPath();
+          // Draw leads
+          ctx.moveTo(0, -30);
+          ctx.lineTo(0, -h);
+          ctx.moveTo(0, h);
+          ctx.lineTo(0, 30);
+          // Draw diamond
+          ctx.moveTo(0, -h);
+          ctx.lineTo(w, 0);
+          ctx.lineTo(0, h);
+          ctx.lineTo(-w, 0);
+          ctx.closePath();
+          // Draw '+' and '-' signs
+          const signSize = 4;
+          // Plus sign at top
+          ctx.moveTo(-signSize, -h * 0.5 + 2);
+          ctx.lineTo(signSize, -h * 0.5 + 2);
+          ctx.moveTo(0, -h * 0.5 - signSize + 2);
+          ctx.lineTo(0, -h * 0.5 + signSize + 2);
+          // Minus sign at bottom
+          ctx.moveTo(-signSize, h * 0.5 - 2);
+          ctx.lineTo(signSize, h * 0.5 - 2);
+          ctx.stroke();
+        }
+        function drawDependentCurrentSource() {
+          const w = 20,
+            h = 20; // half-width and half-height of the diamond
+          ctx.beginPath();
+          // Draw leads
+          ctx.moveTo(0, -30);
+          ctx.lineTo(0, -h);
+          ctx.moveTo(0, h);
+          ctx.lineTo(0, 30);
+          // Draw diamond
+          ctx.moveTo(0, -h);
+          ctx.lineTo(w, 0);
+          ctx.lineTo(0, h);
+          ctx.lineTo(-w, 0);
+          ctx.closePath();
+          // Draw arrow inside (pointing up)
+          const arrowY_start = -h * 0.7,
+            arrowY_end = h * 0.7,
+            arrowHeadSize = 6;
+          ctx.moveTo(0, arrowY_end); // Start from bottom of arrow shaft
+          ctx.lineTo(0, arrowY_start); // Draw up to top
+          // Arrow head
+          ctx.moveTo(-arrowHeadSize / 2, arrowY_start + arrowHeadSize);
+          ctx.lineTo(0, arrowY_start);
+          ctx.lineTo(arrowHeadSize / 2, arrowY_start + arrowHeadSize);
+          ctx.stroke();
+        }
         function drawBattery() {
           const longPlateW = 34,
             shortPlateW = 14,
@@ -3004,25 +3245,6 @@
           ctx.lineTo(-length / 2, width / 2);
           ctx.closePath();
           ctx.fill();
-        }
-        function drawCurrentSource() {
-          const r = 16,
-            arrowY_start = -10,
-            arrowY_end = 10,
-            arrowHeadSize = 6;
-          ctx.beginPath();
-          ctx.arc(0, 0, r, 0, 2 * Math.PI);
-          ctx.moveTo(0, -30);
-          ctx.lineTo(0, -r);
-          ctx.moveTo(0, r);
-          ctx.lineTo(0, 30);
-          ctx.moveTo(-arrowHeadSize / 2, arrowY_start + arrowHeadSize);
-          ctx.lineTo(0, arrowY_start);
-          ctx.lineTo(arrowHeadSize / 2, arrowY_start + arrowHeadSize);
-          ctx.moveTo(0, arrowY_end);
-          ctx.lineTo(0, 0);
-          ctx.lineTo(0, -5);
-          ctx.stroke();
         }
         function calculateBoundingBox() {
           if (circuitElements.length === 0) return null;
@@ -3100,7 +3322,7 @@
           );
           if (!filename) return;
           const dataToSave = {
-            version: "0.32e",
+            version: "0.32R",
             elements: circuitElements,
             nextId: nextId,
           };
