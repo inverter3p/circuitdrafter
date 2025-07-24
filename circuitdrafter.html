@@ -1013,6 +1013,7 @@
         const gridSize = 20,
           snapTolerance = 12,
           textFontSize = 16;
+          const fineGridSize = gridSize / 8; // <-- ADD THIS LINE (5px grid)
         let history = [],
           historyIndex = -1;
 
@@ -2247,7 +2248,7 @@
           return Math.round(val / (gridSize / 2)) * (gridSize / 2);
         }
 
-        function getWireSegmentSnapPoint(pos) {
+                function getWireSegmentSnapPoint(pos) {
           for (const wire of circuitElements) {
             if (wire.type !== "wire") continue;
             const path = getWirePath(wire);
@@ -2255,7 +2256,14 @@
               const p1 = path[i];
               const p2 = path[i + 1];
               if (distToSegment(pos, p1, p2) < snapTolerance) {
-                return projectPointOnSegment(pos, p1, p2);
+                // First, find the closest point on the line, just like before.
+                const projectedPoint = projectPointOnSegment(pos, p1, p2);
+
+                // NEW: Now, snap that projected point to our new fine grid.
+                const snappedX = Math.round(projectedPoint.x / fineGridSize) * fineGridSize;
+                const snappedY = Math.round(projectedPoint.y / fineGridSize) * fineGridSize;
+                
+                return { x: snappedX, y: snappedY };
               }
             }
           }
