@@ -1,4 +1,4 @@
-# Circuit Drafter (V0.32b)
+# Circuit Drafter (V0.32R)
 <img width="200" height="200" alt="circuit-drafter-logo" src="https://github.com/user-attachments/assets/29b49b83-8617-48fc-aabf-a31d292b27f1" />
 
 A simple, dependency-free, in-browser tool for quickly drafting electronic circuit diagrams. Everything runs client-side in a single HTML file.
@@ -8,10 +8,12 @@ A simple, dependency-free, in-browser tool for quickly drafting electronic circu
 <img width="1056" height="465" alt="circuitdrafter-v0.32b" src="https://github.com/user-attachments/assets/dc10be2e-41da-445c-b514-c0a613505a4a" />
 
 ---
-
+## Circuit Drafter - V0.32R (Date: 2025-07-24)
+*    **Math expression** can be evaluated inside &.....&
+*   Add \times for multiply symbol.
+*   Add dependent sources.
+*   Double click component to direct edit rotation value.
 ## `update` What's New in V0.32b
-
-This version introduces significant workflow enhancements, UI refinements, and a more powerful text engine.
 
 *   **UI Overhaul**: The main toolbar has been reorganized for a more intuitive workflow. R/L/C components are now grouped together.
 *   **Bulk Component Placement**: A new "Bulk Add Components" feature allows for rapid creation of multiple components via a table-based modal.
