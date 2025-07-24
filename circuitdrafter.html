@@ -891,6 +891,7 @@
        *   - Add dependent sources.
        *  - Double click component to direct edit rotation value.
        *  - Change color from black to red by Alt+C
+       *  - Change design of the inductor !!! 
        * Circuit Drafter - V0.32e (Date: 2025-07-21)
        *  - Add SPDT
        *  - Text font can be italic or normal.
@@ -2969,28 +2970,47 @@
           ctx.stroke();
         }
         function drawInductor() {
-          const radiusX = 6,
-            radiusY = 12,
-            startX = -21;
-          ctx.beginPath();
-          ctx.lineJoin = "round";
-          ctx.moveTo(-40, 0);
-          ctx.lineTo(startX, 0);
-          ctx.ellipse(-11, 0, radiusX, radiusY, 0, Math.PI, Math.PI / 8, false);
-          ctx.ellipse(
-            0,
-            0,
-            radiusX,
-            radiusY,
-            0,
-            (Math.PI * 7) / 8,
-            Math.PI / 8,
-            false
-          );
-          ctx.ellipse(11, 0, radiusX, radiusY, 0, (Math.PI * 7) / 8, 0, false);
-          ctx.lineTo(40, 0);
-          ctx.stroke();
-        }
+      // 1. READ the desired final line width from the context.
+      //    This will be '2' after setDrawingStyle(false) is called.
+      const baseLineWidth = ctx.lineWidth; 
+
+      const originalCenterX = 218;
+      const originalCenterY = 457;
+      const originalWidth = 37.78;
+      const targetWidth = 42;
+      const scaleFactor = targetWidth / originalWidth;
+      const angle = -45 * Math.PI / 180;
+
+      // --- Draw the Transformed Inductor Coils ---
+      ctx.save();
+
+      // 2. COMPENSATE the line width for the upcoming scaling.
+      //    This ensures the coils are drawn with a final visual thickness of 'baseLineWidth'.
+      ctx.lineWidth = baseLineWidth / scaleFactor;
+
+      // Apply transformations for the coils
+      ctx.rotate(angle);
+      ctx.scale(scaleFactor, scaleFactor);
+      ctx.translate(-originalCenterX, -originalCenterY);
+
+      // Define and draw the coil paths
+      const pathData = [ "m 219.95536,449.39345 c -1.70702,-1.35573 -4.87183,-1.13729 -7.47037,0.0774 -2.93691,1.3729 -6.23449,5.09529 -5.27517,6.50738", "m 219.95536,449.39345 c 1.35573,1.70702 1.13729,4.87183 -0.0774,7.47037 -1.3729,2.93691 -5.09529,6.23449 -6.50738,5.27517", "m 213.7946,443.23269 c 1.35573,1.70702 1.13729,4.87183 -0.0774,7.47037 -1.3729,2.93691 -5.09529,6.23449 -6.50738,5.27517", "m 226.11612,455.55421 c -1.70702,-1.35573 -4.87183,-1.13729 -7.47037,0.0774 -2.93691,1.3729 -6.23449,5.09529 -5.27517,6.50738", "m 226.11612,455.55421 c 1.35573,1.70702 1.13729,4.87183 -0.0774,7.47037 -1.3729,2.93691 -5.09529,6.23449 -6.50738,5.27517", "m 232.27688,461.71497 c -1.70702,-1.35573 -4.87183,-1.13729 -7.47037,0.0774 -2.93691,1.3729 -6.23449,5.09529 -5.27517,6.50738", "m 232.27688,461.71497 c 1.63452,1.48399 0.9202,6.50391 -1.11912,9.36441", "m 213.7946,443.23269 c -1.48399,-1.63452 -6.50391,-0.9202 -9.36441,1.11912" ];
+      const paths = pathData.map(d => new Path2D(d));
+      paths.forEach(path => ctx.stroke(path));
+      ctx.restore();
+
+      // --- Draw the Connecting Lines ---
+      // These lines are not scaled, so we can use the baseLineWidth directly.
+      ctx.beginPath();
+      ctx.moveTo(-40, 0);
+      ctx.lineTo(-21, 0);
+      ctx.moveTo(21, 0);
+      ctx.lineTo(40, 0);
+      // The line width is already set to 2 by setDrawingStyle, so we just stroke.
+      ctx.stroke();
+    }
+
+
         function drawSwitch(el) {
           const circleRadius = 4,
             leftContactX = -15,
