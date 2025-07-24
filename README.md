@@ -13,6 +13,7 @@ A simple, dependency-free, in-browser tool for quickly drafting electronic circu
 *   Add \times for multiply symbol.
 *   Add dependent sources.
 *   Double click component to direct edit rotation value.
+*   Change color from black to red by Alt+C
 ## `update` What's New in V0.32b
 
 *   **UI Overhaul**: The main toolbar has been reorganized for a more intuitive workflow. R/L/C components are now grouped together.
