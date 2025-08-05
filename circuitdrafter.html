@@ -399,7 +399,7 @@
         class="logo"
       />
       <div>
-        <h1>Circuit Drafter (V0.32R)</h1>
+        <h1>Circuit Drafter (V0.40a)</h1>
         <p id="tagline">Effortless circuit schematics.</p>
       </div>
     </div>
@@ -566,65 +566,89 @@
                 />
               </svg>
             </button>
+            <button
+              class="tool-btn"
+              id="tool-fwd"
+              title="FWD"
+              style="font-size: 14px; font-weight: bold"
+            >
+              FWD
+            </button>
           </div>
         </div>
-        <!-- START: Switches Dropdown -->
+        <!-- START: Transistors Dropdown -->
         <div class="tool-dropdown">
-          <button class="tool-btn dropdown-trigger" title="Switches">
-            <svg viewBox="-45 -20 50 40">
+          <button class="tool-btn dropdown-trigger" title="Transistors">
+            <svg viewBox="-20 -20 40 40">
               <path
-                d="M-40,0 L-30,0 M-8, 0 L10,0 M-30,0 L-8,-18"
-                stroke-width="2.5"
+                d="M -20 0 h 10 M -10 -10 v 20 M 5 -18 v 6 M 5 -12 L -10 -5 M 5 18 v -6 M 5 12 L -10 5"
                 fill="none"
                 stroke-linecap="round"
-              />
-              <circle cx="-30" cy="0" r="4" stroke-width="1.5" fill="white" />
-              <circle cx="-8" cy="0" r="4" stroke-width="1.5" fill="white" />
+                stroke-linejoin="round"
+              ></path>
+              <path fill="#495057" d="M5 12 L0 5 L -3 12 Z" />
             </svg>
           </button>
           <div class="dropdown-content">
             <button
               class="tool-btn"
-              id="tool-switch"
-              title="Switch (SPST - Double-click to toggle)"
+              id="tool-npn"
+              title="NPN"
+              style="font-size: 14px; font-weight: bold"
             >
-              <svg viewBox="-45 -20 50 40">
-                <path
-                  d="M-40,0 L-30,0 M-8, 0 L10,0 M-30,0 L-8,-18"
-                  stroke-width="2.5"
-                  fill="none"
-                  stroke-linecap="round"
-                />
-                <circle cx="-30" cy="0" r="4" stroke-width="1.5" fill="white" />
-                <circle cx="-8" cy="0" r="4" stroke-width="1.5" fill="white" />
-              </svg>
+              <svg viewBox="-20 -20 40 40">
+              <path
+                d="M -20 0 h 10 M -10 -10 v 20 M 5 -18 v 6 M 5 -12 L -10 -5 M 5 18 v -6 M 5 12 L -10 5"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+              <path fill="#495057" d="M5 12 L0 5 L -3 12 Z" />
+            </svg>
             </button>
             <button
               class="tool-btn"
-              id="tool-spdtSwitch"
-              title="2-Way Switch (SPDT - Double-click to toggle)"
+              id="tool-pnp"
+              title="PNP"
+              style="font-size: 14px; font-weight: bold"
             >
-              <svg viewBox="-45 -20 50 40">
-                <path
-                  d="M-40,0 L-30,0 M-8, -12 L10,-12 M-8, 12 L10,12 M-30,0 L-8,-18"
-                  stroke-width="2.5"
-                  fill="none"
-                  stroke-linecap="round"
-                />
-                <circle cx="-30" cy="0" r="4" stroke-width="1.5" fill="white" />
-                <circle
-                  cx="-8"
-                  cy="-12"
-                  r="4"
-                  stroke-width="1.5"
-                  fill="white"
-                />
-                <circle cx="-8" cy="12" r="4" stroke-width="1.5" fill="white" />
-              </svg>
+              <svg viewBox="-20 -20 40 40">
+              <path
+                d="M -20 0 h 10 M -10 -10 v 20 M 5 -18 v 6 M 5 -12 L -10 -5 M 5 18 v -6 M 5 12 L -10 5"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+              <path fill="#495057" d="M-10 -5 L0 -5 L -3 -12 z" />
+            </svg>
+            </button>
+            <button
+              class="tool-btn"
+              id="tool-nfet"
+              title="N-CH"
+              style="font-size: 12px; font-weight: bold"
+            >
+              N-CH
+            </button>
+            <button
+              class="tool-btn"
+              id="tool-pfet"
+              title="N-CH"
+              style="font-size: 12px; font-weight: bold"
+            >
+              P-CH
+            </button>
+            <button
+              class="tool-btn"
+              id="tool-igbt"
+              title="IGBT"
+              style="font-size: 14px; font-weight: bold"
+            >
+              IGBT
             </button>
           </div>
         </div>
-        <!-- END: Switches Dropdown -->
+        <!-- END: Switches & Transistors Dropdown -->
       </div>
       <div class="divider"></div>
       <div class="tool-group">
@@ -702,27 +726,81 @@
                 ></path>
               </svg>
             </button>
+            <button class="tool-btn" id="tool-battery" title="Battery">
+              <svg viewBox="-10 -10 20 20">
+                <path
+                  d="M-8,-8 H8 M-4,-3 H4 M-8,3 H8 M-4,8 H4"
+                  stroke-width="1.5"
+                  fill="none"
+                ></path>
+              </svg>
+            </button>
+            <button class="tool-btn" id="tool-gnd" title="Ground">
+              <svg viewBox="-10 -2 20 14">
+                <path
+                  d="M0,0 V8 M-8,8 H8 M-5,11 H5 M-2,14 H2"
+                  fill="none"
+                  stroke-linecap="round"
+                ></path>
+              </svg>
+            </button>
           </div>
         </div>
-        <button class="tool-btn" id="tool-battery" title="Battery">
-          <svg viewBox="-10 -10 20 20">
+      </div>
+      <!-- START: Switches  Dropdown -->
+      <div class="tool-dropdown">
+        <button
+          class="tool-btn dropdown-trigger"
+          title="Switches & Transistors"
+        >
+          <svg viewBox="-45 -20 50 40">
             <path
-              d="M-8,-8 H8 M-4,-3 H4 M-8,3 H8 M-4,8 H4"
-              stroke-width="1.5"
-              fill="none"
-            ></path>
-          </svg>
-        </button>
-        <button class="tool-btn" id="tool-gnd" title="Ground">
-          <svg viewBox="-10 -2 20 14">
-            <path
-              d="M0,0 V8 M-8,8 H8 M-5,11 H5 M-2,14 H2"
+              d="M-40,0 L-30,0 M-8, 0 L10,0 M-30,0 L-8,-18"
+              stroke-width="2.5"
               fill="none"
               stroke-linecap="round"
-            ></path>
+            />
+            <circle cx="-30" cy="0" r="4" stroke-width="1.5" fill="white" />
+            <circle cx="-8" cy="0" r="4" stroke-width="1.5" fill="white" />
           </svg>
         </button>
+        <div class="dropdown-content">
+          <button
+            class="tool-btn"
+            id="tool-switch"
+            title="Switch (SPST - Double-click to toggle)"
+          >
+            <svg viewBox="-45 -20 50 40">
+              <path
+                d="M-40,0 L-30,0 M-8, 0 L10,0 M-30,0 L-8,-18"
+                stroke-width="2.5"
+                fill="none"
+                stroke-linecap="round"
+              />
+              <circle cx="-30" cy="0" r="4" stroke-width="1.5" fill="white" />
+              <circle cx="-8" cy="0" r="4" stroke-width="1.5" fill="white" />
+            </svg>
+          </button>
+          <button
+            class="tool-btn"
+            id="tool-spdtSwitch"
+            title="2-Way Switch (SPDT - Double-click to toggle)"
+          >
+            <svg viewBox="-45 -20 50 40">
+              <path
+                d="M-40,0 L-30,0 M-8, -12 L10,-12 M-8, 12 L10,12 M-30,0 L-8,-18"
+                stroke-width="2.5"
+                fill="none"
+                stroke-linecap="round"
+              />
+              <circle cx="-30" cy="0" r="4" stroke-width="1.5" fill="white" />
+              <circle cx="-8" cy="-12" r="4" stroke-width="1.5" fill="white" />
+              <circle cx="-8" cy="12" r="4" stroke-width="1.5" fill="white" />
+            </svg>
+          </button>
+        </div>
       </div>
+      <!-- END: Switches & Transistors Dropdown -->
       <div class="divider"></div>
       <div class="tool-group">
         <button class="action-btn" id="undoBtn" title="Undo (Ctrl+Z)">
@@ -781,6 +859,15 @@
           <button class="action-btn" id="loadBtn" title="Load File (Ctrl+O)">
             <i class="material-symbols-outlined">folder_open</i>
           </button>
+          <!-- ===== GEMINI BUTTON START ===== -->
+          <button
+            class="action-btn"
+            id="geminiAIBtn"
+            title="Generate Circuit with AI"
+          >
+            <i class="material-icons">auto_awesome</i>
+          </button>
+          <!-- ===== GEMINI BUTTON END ===== -->
         </div>
       </div>
       <!-- END: File Operations Dropdown -->
@@ -796,7 +883,7 @@
         <h3>Bulk Add Components</h3>
         <p>
           Valid names: R, L, C, D, ZD, LED, SW, SPDT, Vdc, Vac, Idc, DVS, DCS,
-          GND, Batt.
+          GND, Batt, IGBT, NPN, PNP.
         </p>
         <div class="modal-table-container">
           <table id="bulk-input-table">
@@ -885,13 +972,16 @@
 
     <script>
       /****************************************************************************
+       * Circuit Drafter - V0.40aR (Date: 2025-08-05)
+       *   - Add NPN PNP and IGBT
+       *   - Add draw by AI button
        * Circuit Drafter - V0.32R (Date: 2025-07-24)
        *   - Math expression can be evaluated inside &.....&
        *  - Add \times for multiply symbol.
        *   - Add dependent sources.
        *  - Double click component to direct edit rotation value.
        *  - Change color from black to red by Alt+C
-       *  - Change design of the inductor !!! 
+       *  - Change design of the inductor !!!
        * Circuit Drafter - V0.32e (Date: 2025-07-21)
        *  - Add SPDT
        *  - Text font can be italic or normal.
@@ -976,6 +1066,10 @@
           "text-modal-cancel-btn"
         );
 
+        // ===== GEMINI AI BUTTON START =====
+        const geminiAIBtn = document.getElementById("geminiAIBtn");
+        // ===== GEMINI AI BUTTON END =====
+
         let autoLabelCounters = {};
         const shortNameToType = {
           R: "resistor",
@@ -984,8 +1078,14 @@
           D: "diode",
           ZD: "zener",
           LED: "led",
+          FWD: "fwd",
           SW: "switch",
           SPDT: "spdtSwitch",
+          IGBT: "igbt",
+          NFET: "nfet",
+          PFET: "pfet",
+          NPN: "npn",
+          PNP: "pnp",
           VDC: "voltage",
           VAC: "acvoltage",
           IDC: "currentsource",
@@ -1015,7 +1115,7 @@
         const gridSize = 20,
           snapTolerance = 12,
           textFontSize = 16;
-          const fineGridSize = gridSize / 8; // <-- ADD THIS LINE (5px grid)
+        const fineGridSize = gridSize / 8; // <-- ADD THIS LINE (5px grid)
         let history = [],
           historyIndex = -1;
 
@@ -1057,6 +1157,14 @@
               { x: 30, y: 0 },
             ],
           },
+          fwd: {
+            width: 60,
+            height: 30,
+            terminals: [
+              { x: -30, y: 0 },
+              { x: 30, y: 0 },
+            ],
+          },
           zener: {
             width: 60,
             height: 34,
@@ -1088,6 +1196,51 @@
               { x: -40, y: 0 }, // common
               { x: 40, y: -20 }, // throw 1
               { x: 40, y: 20 }, // throw 2
+            ],
+          },
+          igbt: {
+            width: 60,
+            height: 105,
+            terminals: [
+              { x: 70, y: 0 }, // Collector
+              { x: 70, y: 105 }, // Emitter
+              { x: 0, y: 65 }, // Gate
+            ],
+          },
+          nfet: {
+            width: 60,
+            height: 105,
+            terminals: [
+              { x: 70, y: 0 }, // Drain
+              { x: 70, y: 105 }, // Source
+              { x: 0, y: 65 }, // Gate
+            ],
+          },
+          pfet: {
+            width: 60,
+            height: 105,
+            terminals: [
+              { x: 70, y: 0 }, // Drain
+              { x: 70, y: 105 }, // Source
+              { x: 0, y: 65 }, // Gate
+            ],
+          },
+          npn: {
+            width: 60,
+            height: 105,
+            terminals: [
+              { x: 70, y: 0 }, // Collector
+              { x: 70, y: 105 }, // Emitter
+              { x: 0, y: 65 }, // Base
+            ],
+          },
+          pnp: {
+            width: 60,
+            height: 105,
+            terminals: [
+              { x: 70, y: 0 }, // Emitter
+              { x: 70, y: 105 }, // Collector
+              { x: 0, y: 65 }, // Base
             ],
           },
           voltage: {
@@ -1138,7 +1291,7 @@
               { x: 0, y: 30 },
             ],
           },
-          gnd: { width: 30, height: 30, terminals: [{ x: 0, y: -10 }] },
+          gnd: { width: 30, height: 20, terminals: [{ x: 0, y: -10 }] },
           arrow_marker: {
             width: 16,
             height: 10,
@@ -1211,17 +1364,16 @@
           )
             return;
           if (e.key === "Shift") isShiftDown = true;
-
           // NEW: Add this block for Alt+R
-          else if (e.altKey && e.key.toLowerCase() === 'c') {
+          else if (e.altKey && e.key.toLowerCase() === "c") {
             e.preventDefault();
             if (selectedElements.length > 0) {
-              selectedElements.forEach(el => {
+              selectedElements.forEach((el) => {
                 // Toggle the color property
-                if (el.color === 'red') {
+                if (el.color === "red") {
                   delete el.color; // Revert to default (black)
                 } else {
-                  el.color = 'red';
+                  el.color = "red";
                 }
               });
               saveState(); // Save the change to history
@@ -1636,71 +1788,20 @@
             return;
           }
 
-          // --- START: New JSON Append Logic ---
+          // Check if the input is a JSON object to append.
           if (rawText.startsWith("{") && rawText.endsWith("}")) {
-            try {
-              const data = JSON.parse(rawText);
-              // Check if it's a valid circuit drafter file structure
-              if (data && data.elements && data.nextId !== undefined) {
-                // It's a valid circuit! Let's APPEND it.
-
-                // 1. Calculate the vertical offset to place the new circuit below the existing one.
-                const currentBounds = calculateBoundingBox();
-                const yOffset = currentBounds ? currentBounds.maxY + 100 : 0; // Add 100px padding, or start at top if canvas is empty.
-
-                // 2. Process and remap the new elements.
-                const elementsToAppend = [];
-                data.elements.forEach((el) => {
-                  const newEl = JSON.parse(JSON.stringify(el)); // Deep copy to avoid modifying original data
-                  newEl.id = nextId++; // Assign a new, unique ID from the current project's counter.
-
-                  // Apply the vertical offset to the new element's coordinates
-                  if (newEl.type === "wire") {
-                    newEl.start.y += yOffset;
-                    newEl.end.y += yOffset;
-                  } else {
-                    // This covers components, text, junctions, etc.
-                    if (newEl.y !== undefined) {
-                      newEl.y += yOffset;
-                    }
-                  }
-                  elementsToAppend.push(newEl);
-                });
-
-                // 3. Add the new, re-coordinated elements to the main array.
-                if (elementsToAppend.length > 0) {
-                  circuitElements.push(...elementsToAppend);
-                }
-
-                // 4. Resize canvas to fit the newly combined circuit.
-                const finalBounds = calculateBoundingBox();
-                if (finalBounds) {
-                  const padding = 50;
-                  resizeCanvas(
-                    finalBounds.maxX + padding,
-                    finalBounds.maxY + padding
-                  );
-                }
-
-                // 5. Finalize state
-                saveState();
-                redrawCanvas();
-                closeBulkTextModal();
-                alert("Circuit appended successfully from text!");
-                return; // IMPORTANT: Stop execution here
-              }
-            } catch (e) {
-              // It looked like JSON but failed to parse.
-              // We'll ignore the error and let it be treated as regular text.
-              console.warn(
-                "Could not parse input as circuit JSON. Treating as regular text.",
-                e
-              );
+            if (
+              appendCircuitFromJSON(
+                rawText,
+                "Circuit appended successfully from text!"
+              )
+            ) {
+              closeBulkTextModal();
             }
+            return;
           }
-          // --- END: New JSON Append Logic ---
 
-          // If the input was not a valid circuit JSON, proceed with original text-adding logic.
+          // If not JSON, proceed with original text-adding logic.
           const textItems = rawText
             .split(";")
             .map((item) => item.trim())
@@ -1729,12 +1830,11 @@
           const textsToAdd = [];
 
           textItems.forEach((item) => {
-            // Evaluate expressions like &(1+1)& in each item
             const processedItem = evaluateExpressions(item);
             const newText = {
               id: nextId++,
               type: "text",
-              text: processedItem, // Use the processed text here
+              text: processedItem,
               x: placementStart.x,
               y: placeY,
               rotation: 0,
@@ -1885,6 +1985,9 @@
               case "diode":
                 drawDiode();
                 break;
+              case "fwd":
+                drawFWD();
+                break;
               case "zener":
                 drawZenerDiode();
                 break;
@@ -1896,6 +1999,21 @@
                 break;
               case "spdtSwitch":
                 drawSpdtSwitch(el);
+                break;
+              case "igbt":
+                drawIGBT();
+                break;
+              case "nfet":
+                drawNFET();
+                break;
+              case "pfet":
+                drawPFET();
+                break;
+              case "npn":
+                drawNPN();
+                break;
+              case "pnp":
+                drawPNP();
                 break;
               case "voltage":
                 drawVoltageSource();
@@ -1931,10 +2049,10 @@
           }
           ctx.restore();
         }
-                function setDrawingStyle(isSelected = false, color = 'black') {
+        function setDrawingStyle(isSelected = false, color = "black") {
           // If a color is passed (e.g., 'red'), use it. Otherwise, default to black.
-          const finalColor = color || 'black'; 
-          
+          const finalColor = color || "black";
+
           // Use blue for selection, otherwise use the component's color.
           ctx.strokeStyle = isSelected ? "#007bff" : finalColor;
           ctx.fillStyle = isSelected ? "#007bff" : finalColor;
@@ -2270,10 +2388,10 @@
           };
         }
         function snapToGrid(val) {
-          return Math.round(val / (gridSize / 2)) * (gridSize / 2);
+          return Math.round(val / (gridSize / 4)) * (gridSize / 4);
         }
 
-                function getWireSegmentSnapPoint(pos) {
+        function getWireSegmentSnapPoint(pos) {
           for (const wire of circuitElements) {
             if (wire.type !== "wire") continue;
             const path = getWirePath(wire);
@@ -2285,9 +2403,11 @@
                 const projectedPoint = projectPointOnSegment(pos, p1, p2);
 
                 // NEW: Now, snap that projected point to our new fine grid.
-                const snappedX = Math.round(projectedPoint.x / fineGridSize) * fineGridSize;
-                const snappedY = Math.round(projectedPoint.y / fineGridSize) * fineGridSize;
-                
+                const snappedX =
+                  Math.round(projectedPoint.x / fineGridSize) * fineGridSize;
+                const snappedY =
+                  Math.round(projectedPoint.y / fineGridSize) * fineGridSize;
+
                 return { x: snappedX, y: snappedY };
               }
             }
@@ -2900,7 +3020,7 @@
 
         function drawText(el, isSelected) {
           // New lines in drawText()
-          const baseColor = el.color === 'red' ? 'red' : 'black';
+          const baseColor = el.color === "red" ? "red" : "black";
           ctx.fillStyle = isSelected ? "#007bff" : baseColor;
           ctx.strokeStyle = ctx.fillStyle; // For fraction line
           ctx.textBaseline = "middle";
@@ -2970,46 +3090,54 @@
           ctx.stroke();
         }
         function drawInductor() {
-      // 1. READ the desired final line width from the context.
-      //    This will be '2' after setDrawingStyle(false) is called.
-      const baseLineWidth = ctx.lineWidth; 
+          // 1. READ the desired final line width from the context.
+          //    This will be '2' after setDrawingStyle(false) is called.
+          const baseLineWidth = ctx.lineWidth;
 
-      const originalCenterX = 218;
-      const originalCenterY = 457;
-      const originalWidth = 37.78;
-      const targetWidth = 42;
-      const scaleFactor = targetWidth / originalWidth;
-      const angle = -45 * Math.PI / 180;
+          const originalCenterX = 218;
+          const originalCenterY = 457;
+          const originalWidth = 37.78;
+          const targetWidth = 42;
+          const scaleFactor = targetWidth / originalWidth;
+          const angle = (-45 * Math.PI) / 180;
 
-      // --- Draw the Transformed Inductor Coils ---
-      ctx.save();
+          // --- Draw the Transformed Inductor Coils ---
+          ctx.save();
 
-      // 2. COMPENSATE the line width for the upcoming scaling.
-      //    This ensures the coils are drawn with a final visual thickness of 'baseLineWidth'.
-      ctx.lineWidth = baseLineWidth / scaleFactor;
+          // 2. COMPENSATE the line width for the upcoming scaling.
+          //    This ensures the coils are drawn with a final visual thickness of 'baseLineWidth'.
+          ctx.lineWidth = baseLineWidth / scaleFactor;
 
-      // Apply transformations for the coils
-      ctx.rotate(angle);
-      ctx.scale(scaleFactor, scaleFactor);
-      ctx.translate(-originalCenterX, -originalCenterY);
+          // Apply transformations for the coils
+          ctx.rotate(angle);
+          ctx.scale(scaleFactor, scaleFactor);
+          ctx.translate(-originalCenterX, -originalCenterY);
 
-      // Define and draw the coil paths
-      const pathData = [ "m 219.95536,449.39345 c -1.70702,-1.35573 -4.87183,-1.13729 -7.47037,0.0774 -2.93691,1.3729 -6.23449,5.09529 -5.27517,6.50738", "m 219.95536,449.39345 c 1.35573,1.70702 1.13729,4.87183 -0.0774,7.47037 -1.3729,2.93691 -5.09529,6.23449 -6.50738,5.27517", "m 213.7946,443.23269 c 1.35573,1.70702 1.13729,4.87183 -0.0774,7.47037 -1.3729,2.93691 -5.09529,6.23449 -6.50738,5.27517", "m 226.11612,455.55421 c -1.70702,-1.35573 -4.87183,-1.13729 -7.47037,0.0774 -2.93691,1.3729 -6.23449,5.09529 -5.27517,6.50738", "m 226.11612,455.55421 c 1.35573,1.70702 1.13729,4.87183 -0.0774,7.47037 -1.3729,2.93691 -5.09529,6.23449 -6.50738,5.27517", "m 232.27688,461.71497 c -1.70702,-1.35573 -4.87183,-1.13729 -7.47037,0.0774 -2.93691,1.3729 -6.23449,5.09529 -5.27517,6.50738", "m 232.27688,461.71497 c 1.63452,1.48399 0.9202,6.50391 -1.11912,9.36441", "m 213.7946,443.23269 c -1.48399,-1.63452 -6.50391,-0.9202 -9.36441,1.11912" ];
-      const paths = pathData.map(d => new Path2D(d));
-      paths.forEach(path => ctx.stroke(path));
-      ctx.restore();
+          // Define and draw the coil paths
+          const pathData = [
+            "m 219.95536,449.39345 c -1.70702,-1.35573 -4.87183,-1.13729 -7.47037,0.0774 -2.93691,1.3729 -6.23449,5.09529 -5.27517,6.50738",
+            "m 219.95536,449.39345 c 1.35573,1.70702 1.13729,4.87183 -0.0774,7.47037 -1.3729,2.93691 -5.09529,6.23449 -6.50738,5.27517",
+            "m 213.7946,443.23269 c 1.35573,1.70702 1.13729,4.87183 -0.0774,7.47037 -1.3729,2.93691 -5.09529,6.23449 -6.50738,5.27517",
+            "m 226.11612,455.55421 c -1.70702,-1.35573 -4.87183,-1.13729 -7.47037,0.0774 -2.93691,1.3729 -6.23449,5.09529 -5.27517,6.50738",
+            "m 226.11612,455.55421 c 1.35573,1.70702 1.13729,4.87183 -0.0774,7.47037 -1.3729,2.93691 -5.09529,6.23449 -6.50738,5.27517",
+            "m 232.27688,461.71497 c -1.70702,-1.35573 -4.87183,-1.13729 -7.47037,0.0774 -2.93691,1.3729 -6.23449,5.09529 -5.27517,6.50738",
+            "m 232.27688,461.71497 c 1.63452,1.48399 0.9202,6.50391 -1.11912,9.36441",
+            "m 213.7946,443.23269 c -1.48399,-1.63452 -6.50391,-0.9202 -9.36441,1.11912",
+          ];
+          const paths = pathData.map((d) => new Path2D(d));
+          paths.forEach((path) => ctx.stroke(path));
+          ctx.restore();
 
-      // --- Draw the Connecting Lines ---
-      // These lines are not scaled, so we can use the baseLineWidth directly.
-      ctx.beginPath();
-      ctx.moveTo(-40, 0);
-      ctx.lineTo(-21, 0);
-      ctx.moveTo(21, 0);
-      ctx.lineTo(40, 0);
-      // The line width is already set to 2 by setDrawingStyle, so we just stroke.
-      ctx.stroke();
-    }
-
+          // --- Draw the Connecting Lines ---
+          // These lines are not scaled, so we can use the baseLineWidth directly.
+          ctx.beginPath();
+          ctx.moveTo(-40, 0);
+          ctx.lineTo(-21, 0);
+          ctx.moveTo(21, 0);
+          ctx.lineTo(40, 0);
+          // The line width is already set to 2 by setDrawingStyle, so we just stroke.
+          ctx.stroke();
+        }
 
         function drawSwitch(el) {
           const circleRadius = 4,
@@ -3087,6 +3215,236 @@
           });
           ctx.restore();
         }
+        function drawArrowhead(ctx, fromX, fromY, toX, toY, headLength = 12) {
+          const angle = Math.atan2(toY - fromY, toX - fromX);
+          const arrowAngle = Math.PI / 7;
+
+          // Start a new path for the arrowhead so it can be filled separately
+          ctx.beginPath();
+
+          // Move to the tip of the arrow
+          ctx.moveTo(toX, toY);
+
+          // Draw a line to the first corner of the arrowhead base
+          ctx.lineTo(
+            toX - headLength * Math.cos(angle - arrowAngle),
+            toY - headLength * Math.sin(angle - arrowAngle)
+          );
+
+          // Draw a line to the second corner of the arrowhead base
+          ctx.lineTo(
+            toX - headLength * Math.cos(angle + arrowAngle),
+            toY - headLength * Math.sin(angle + arrowAngle)
+          );
+
+          // Close the path to complete the triangle
+          ctx.closePath();
+
+          // Fill the closed path
+          ctx.fill();
+        }
+
+        // --- IGBT Drawing Function ---
+        // The drawing is split into two parts: stroking the lines and filling the arrowhead.
+        function drawIGBT() {
+          // --- Part 1: Draw and stroke the main lines of the symbol ---
+          ctx.beginPath();
+
+          // Gate
+          ctx.moveTo(10 - 40, 65 - 55);
+          ctx.lineTo(38 - 40, 65 - 55); // Gate lead
+          ctx.moveTo(38 - 40, 65 - 55);
+          ctx.lineTo(38 - 40, 43 - 55); // Gate plate
+
+          // Channel (Capacitor Plate)
+          ctx.moveTo(45 - 40, 75 - 55);
+          ctx.lineTo(45 - 40, 35 - 55);
+
+          // Collector & Emitter leads
+          ctx.moveTo(70 - 40, 35 - 55);
+          ctx.lineTo(70 - 40, 5 - 55); // Collector lead
+          ctx.moveTo(70 - 40, 75 - 55);
+          ctx.lineTo(70 - 40, 105 - 55); // Emitter lead
+
+          // Slanted connections
+          ctx.moveTo(70 - 40, 35 - 55);
+          ctx.lineTo(45 - 40, 48 - 55); // Top slant
+
+          // Define start and end points for the bottom slant
+          const fromX = 45 - 40,
+            fromY = 62 - 55;
+          const toX = 70 - 40,
+            toY = 75 - 55;
+
+          // Draw the bottom slant line itself
+          ctx.moveTo(fromX, fromY);
+          ctx.lineTo(toX, toY);
+
+          // Render all the lines defined above
+          ctx.stroke();
+
+          // --- Part 2: Draw the filled arrowhead ---
+          // This is done as a separate operation to allow it to be a filled shape.
+          drawArrowhead(ctx, fromX, fromY, toX, toY);
+        }
+
+        function drawNFET() {
+          // --- Part 1: Draw and stroke the main lines of the symbol ---
+          ctx.beginPath();
+
+          // Gate
+          ctx.moveTo(10 - 40, 75 - 55);
+          ctx.lineTo(38 - 40, 75 - 55); // Gate lead
+          ctx.moveTo(38 - 40, 75 - 55);
+          ctx.lineTo(38 - 40, 35 - 55); // Gate plate
+
+          // Channel (Drain Plate)
+          ctx.moveTo(45 - 40, 35 - 55);
+          ctx.lineTo(45 - 40, 43 - 55);
+          ctx.moveTo(45 - 40, 39 - 55);
+          ctx.lineTo(70 - 40, 39 - 55);
+          // Channel (Gate Plate)
+          ctx.moveTo(45 - 40, 51 - 55);
+          ctx.lineTo(45 - 40, 59 - 55);
+          ctx.moveTo(45 - 40, 55 - 55);
+          ctx.lineTo(70 - 40, 55 - 55);
+
+          // Channel (Source Plate)
+          ctx.moveTo(45 - 40, 67 - 55);
+          ctx.lineTo(45 - 40, 75 - 55);
+          ctx.moveTo(45 - 40, 71 - 55);
+          ctx.lineTo(70 - 40, 71 - 55);
+
+          // Collector & Emitter leads
+          ctx.moveTo(70 - 40, 39 - 55);
+          ctx.lineTo(70 - 40, 5 - 55); // Drain lead
+          ctx.moveTo(70 - 40, 55 - 55);
+          ctx.lineTo(70 - 40, 105 - 55); // Source lead
+
+          // Render all the lines defined above
+          ctx.stroke();
+
+          // --- Part 2: Draw the filled arrowhead ---
+          // This is done as a separate operation to allow it to be a filled shape.
+          drawArrowhead(ctx, 70 - 40, 55 - 55, 45 - 40, 55 - 55);
+        }
+
+        function drawPFET() {
+          // --- Part 1: Draw and stroke the main lines of the symbol ---
+          ctx.beginPath();
+
+          // Gate
+          ctx.moveTo(10 - 40, 75 - 55);
+          ctx.lineTo(38 - 40, 75 - 55); // Gate lead
+          ctx.moveTo(38 - 40, 75 - 55);
+          ctx.lineTo(38 - 40, 35 - 55); // Gate plate
+
+          // Channel (Drain Plate)
+          ctx.moveTo(45 - 40, 35 - 55);
+          ctx.lineTo(45 - 40, 43 - 55);
+          ctx.moveTo(45 - 40, 39 - 55);
+          ctx.lineTo(70 - 40, 39 - 55);
+          // Channel (Gate Plate)
+          ctx.moveTo(45 - 40, 51 - 55);
+          ctx.lineTo(45 - 40, 59 - 55);
+          ctx.moveTo(45 - 40, 55 - 55);
+          ctx.lineTo(70 - 40, 55 - 55);
+
+          // Channel (Source Plate)
+          ctx.moveTo(45 - 40, 67 - 55);
+          ctx.lineTo(45 - 40, 75 - 55);
+          ctx.moveTo(45 - 40, 71 - 55);
+          ctx.lineTo(70 - 40, 71 - 55);
+
+          // Collector & Emitter leads
+          ctx.moveTo(70 - 40, 39 - 55);
+          ctx.lineTo(70 - 40, 5 - 55); // Drain lead
+          ctx.moveTo(70 - 40, 55 - 55);
+          ctx.lineTo(70 - 40, 105 - 55); // Source lead
+
+          // Render all the lines defined above
+          ctx.stroke();
+
+          // --- Part 2: Draw the filled arrowhead ---
+          // This is done as a separate operation to allow it to be a filled shape.
+          drawArrowhead(ctx, 45 - 40, 55 - 55, 70 - 40, 55 - 55);
+        }
+        function drawNPN() {
+          // --- Part 1: Draw and stroke the main lines of the symbol ---
+          ctx.beginPath();
+
+          // Base
+          ctx.moveTo(10 - 40, 55 - 55);
+          ctx.lineTo(42 - 40, 55 - 55); // Base lead
+          ctx.moveTo(42 - 40, 75 - 55);
+          ctx.lineTo(42 - 40, 35 - 55); // Base plate
+
+          // Collector & Emitter leads
+          ctx.moveTo(70 - 40, 35 - 55);
+          ctx.lineTo(70 - 40, 5 - 55); // Collector lead
+          ctx.moveTo(70 - 40, 75 - 55);
+          ctx.lineTo(70 - 40, 105 - 55); // Emitter lead
+
+          // Slanted connections
+          ctx.moveTo(70 - 40, 35 - 55);
+          ctx.lineTo(42 - 40, 48 - 55); // Top slant
+
+          // Define start and end points for the bottom slant
+          const fromX = 42 - 40,
+            fromY = 62 - 55;
+          const toX = 70 - 40,
+            toY = 75 - 55;
+
+          // Draw the bottom slant line itself
+          ctx.moveTo(fromX, fromY);
+          ctx.lineTo(toX, toY);
+
+          // Render all the lines defined above
+          ctx.stroke();
+
+          // --- Part 2: Draw the filled arrowhead ---
+          // This is done as a separate operation to allow it to be a filled shape.
+          drawArrowhead(ctx, fromX, fromY, toX, toY);
+        }
+
+        function drawPNP() {
+          // --- Part 1: Draw and stroke the main lines of the symbol ---
+          ctx.beginPath();
+
+          // Base
+          ctx.moveTo(10 - 40, 55 - 55);
+          ctx.lineTo(42 - 40, 55 - 55); // Base lead
+          ctx.moveTo(42 - 40, 75 - 55);
+          ctx.lineTo(42 - 40, 35 - 55); // Base plate
+
+          // Collector & Emitter leads
+          ctx.moveTo(70 - 40, 35 - 55);
+          ctx.lineTo(70 - 40, 5 - 55); // Collector lead
+          ctx.moveTo(70 - 40, 75 - 55);
+          ctx.lineTo(70 - 40, 105 - 55); // Emitter lead
+
+          // Slanted connections
+          ctx.moveTo(70 - 40, 35 - 55);
+          ctx.lineTo(42 - 40, 48 - 55); // Top slant
+
+          // Define start and end points for the bottom slant
+          const fromX = 70 - 40,
+            fromY = 75 - 55;
+          const toX = 42 - 40,
+            toY = 62 - 55;
+
+          // Draw the bottom slant line itself
+          ctx.moveTo(fromX, fromY);
+          ctx.lineTo(toX, toY);
+
+          // Render all the lines defined above
+          ctx.stroke();
+
+          // --- Part 2: Draw the filled arrowhead ---
+          // This is done as a separate operation to allow it to be a filled shape.
+          drawArrowhead(ctx, 70 - 40, 35 - 55, 42 - 40, 48 - 55);
+        }
+
         function drawDiode() {
           const triHeight = 22,
             baseX = -10,
@@ -3109,6 +3467,30 @@
           ctx.lineTo(tipX, triHeight / 2);
           ctx.stroke();
         }
+
+        function drawFWD() {
+          const triHeight = 12,
+            baseX = -6,
+            tipX = 6;
+          ctx.beginPath();
+          ctx.lineJoin = "round";
+          ctx.moveTo(-30, 0);
+          ctx.lineTo(baseX, 0);
+          ctx.moveTo(tipX, 0);
+          ctx.lineTo(30, 0);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(baseX, -triHeight / 2);
+          ctx.lineTo(tipX, 0);
+          ctx.lineTo(baseX, triHeight / 2);
+          ctx.closePath();
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(tipX, -triHeight / 2);
+          ctx.lineTo(tipX, triHeight / 2);
+          ctx.stroke();
+        }
+
         function drawZenerDiode() {
           drawDiode();
           const tipX = 10,
@@ -3352,6 +3734,179 @@
           return { minX, minY, maxX, maxY };
         }
 
+        /**
+         * Universal function to parse a circuit JSON string and append it to the canvas.
+         * @param {string} jsonString - The string containing the circuit data.
+         * @param {string} successMessage - The message to show in the alert on success.
+         * @returns {boolean} - True if appending was successful, false otherwise.
+         */
+        function appendCircuitFromJSON(
+          jsonString,
+          successMessage = "Circuit appended successfully!"
+        ) {
+          try {
+            const data = JSON.parse(jsonString);
+            if (data && data.elements && data.nextId !== undefined) {
+              const currentBounds = calculateBoundingBox();
+              const yOffset = currentBounds ? currentBounds.maxY + 100 : 0;
+
+              const elementsToAppend = [];
+              data.elements.forEach((el) => {
+                const newEl = JSON.parse(JSON.stringify(el));
+                newEl.id = nextId++;
+                if (newEl.type === "wire") {
+                  newEl.start.y += yOffset;
+                  newEl.end.y += yOffset;
+                } else {
+                  if (newEl.y !== undefined) newEl.y += yOffset;
+                }
+                elementsToAppend.push(newEl);
+              });
+
+              if (elementsToAppend.length > 0) {
+                circuitElements.push(...elementsToAppend);
+              }
+
+              const finalBounds = calculateBoundingBox();
+              if (finalBounds) {
+                resizeCanvas(finalBounds.maxX + 50, finalBounds.maxY + 50);
+              }
+
+              saveState();
+              redrawCanvas();
+              alert(successMessage);
+              return true;
+            } else {
+              alert(
+                "Operation failed: Invalid circuit data structure in the JSON."
+              );
+              return false;
+            }
+          } catch (e) {
+            console.error("Could not parse input as circuit JSON.", e);
+            alert(
+              "Operation failed: Could not parse JSON. See console for details."
+            );
+            return false;
+          }
+        }
+
+        /**
+         * Prompts user for description, calls Gemini API, and appends the resulting circuit.
+         */
+        async function handleAIGenerate() {
+          const description = prompt(
+            "Describe the circuit you want to generate:",
+            "A 9V battery in series with a 470 ohm resistor and a red LED, connected to ground."
+          );
+          if (!description) return;
+
+          // --- ⚠️ IMPORTANT SECURITY WARNING ⚠️ ---
+          // In a real-world application, NEVER expose your API key on the client-side like this.
+          // An attacker could steal your key and use your account.
+          // This key should be stored in a secure backend server that makes the API call.
+          // For this demonstration, replace the placeholder with your key.
+          const API_KEY = "AIzaSyCK5Pp_H-brLUOOQhA-0iDS2Z_yALEVvs0";
+
+          if (API_KEY === "YOUR_GEMINI_API_KEY") {
+            alert(
+              "ERROR: Please open the HTML file, find the 'handleAIGenerate' function in the script, and replace 'YOUR_GEMINI_API_KEY' with your actual Gemini API key."
+            );
+            return;
+          }
+
+          const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`;
+
+          document.body.style.cursor = "wait";
+          alert(
+            "Generating circuit with AI... Please wait. This may take a moment."
+          );
+
+          const system_prompt = `You are a circuit design assistant for 'Circuit Drafter'. Your ONLY task is to generate a valid JSON object representing a circuit from a user's description. Your output MUST be a single, raw JSON object and nothing else. Do not include explanations or markdown formatting.
+
+The JSON structure must be:
+{
+  "version": "0.4a",
+  "elements": [ ... element objects ... ],
+  "nextId": <number>
+}
+
+Valid element types and properties:
+1. Component: {"id":<int>, "type":<string>, "x":<int>, "y":<int>, "rotation":<int>}
+   - types: "resistor", "capacitor", "inductor", "diode", "zener", "led", "switch", "spdtSwitch", "voltage", "acvoltage", "currentsource", "battery", "gnd"
+2. Wire: {"id":<int>, "type":"wire", "start":{"x":<int>,"y":<int>}, "end":{"x":<int>,"y":<int>}, "routing":"manhattan"}
+3. Text Label: {"id":<int>, "type":"text", "text":<string>, "x":<int>, "y":<int>, "rotation":0, "isItalic":true}
+
+RULES:
+- Every element needs a unique integer 'id', starting from 0.
+- 'nextId' must be one greater than the highest 'id'.
+- Wires must connect to component terminals. A standard horizontal resistor at (x,y) has terminals at (x-40, y) and (x+40, y). A standard vertical voltage source has terminals at (x, y-30) and (x, y+30). Adhere to these dimensions.
+- Create clean, logical layouts within a 1000x700 canvas area.
+- Add labels for component names (e.g., "R_{1}") and values (e.g., "10k\\\\Omega", "5V"). Use LaTeX for subscripts and symbols.
+
+Example Output for "A 5V DC source, a 1k resistor, and ground":
+{
+  "version": "0.40a",
+  "elements": [
+    { "id": 0, "type": "voltage", "x": 200, "y": 150, "rotation": 0 },
+    { "id": 1, "type": "resistor", "x": 200, "y": 250, "rotation": 0 },
+    { "id": 2, "type": "gnd", "x": 200, "y": 350, "rotation": 0 },
+    { "id": 3, "type": "wire", "start": { "x": 200, "y": 120 }, "end": { "x": 200, "y": 210 }, "routing": "manhattan" },
+    { "id": 4, "type": "wire", "start": { "x": 200, "y": 290 }, "end": { "x": 200, "y": 340 }, "routing": "manhattan" },
+    { "id": 5, "type": "text", "text": "V_{in}", "x": 150, "y": 150, "rotation": 0, "isItalic": true },
+    { "id": 6, "type": "text", "text": "5V", "x": 250, "y": 150, "rotation": 0, "isItalic": true },
+    { "id": 7, "type": "text", "text": "R_{1}", "x": 150, "y": 250, "rotation": 0, "isItalic": true },
+    { "id": 8, "type": "text", "text": "1k\\\\Omega", "x": 250, "y": 250, "rotation": 0, "isItalic": true }
+  ],
+  "nextId": 9
+}`;
+
+          try {
+            const response = await nfetch(API_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                contents: [
+                  {
+                    parts: [
+                      { text: system_prompt },
+                      { text: `\n\n**User Request**: "${description}"` },
+                    ],
+                  },
+                ],
+              }),
+            });
+
+            if (!response.ok) {
+              const errorBody = await response.json();
+              throw new Error(
+                `API Error: ${response.status}. ${errorBody.error.message}`
+              );
+            }
+
+            const responseData = await response.json();
+            const jsonString = responseData.candidates[0].content.parts[0].text;
+            const cleanedJsonString = jsonString.replace(
+              /^```json\s*|```\s*$/g,
+              ""
+            );
+
+            appendCircuitFromJSON(
+              cleanedJsonString,
+              "Circuit generated by AI and appended successfully!"
+            );
+          } catch (error) {
+            console.error("AI Generation Error:", error);
+            alert(
+              `An error occurred while generating the circuit: ${error.message}`
+            );
+          } finally {
+            document.body.style.cursor = "default";
+          }
+        }
+
+        geminiAIBtn.addEventListener("click", handleAIGenerate);
+
         function handleSaveExport() {
           const choiceRaw = prompt(
             "Save as project file (json) or export as image (png)?",
@@ -3376,7 +3931,7 @@
           );
           if (!filename) return;
           const dataToSave = {
-            version: "0.32R",
+            version: "0.40a",
             elements: circuitElements,
             nextId: nextId,
           };
