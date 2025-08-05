@@ -646,6 +646,14 @@
             >
               IGBT
             </button>
+            <button
+              class="tool-btn"
+              id="tool-opamp"
+              title="OPAMP"
+              style="font-size: 14px;font-weight: bold"
+            >
+              OP-AMP
+            </button>
           </div>
         </div>
         <!-- END: Switches & Transistors Dropdown -->
@@ -883,7 +891,7 @@
         <h3>Bulk Add Components</h3>
         <p>
           Valid names: R, L, C, D, ZD, LED, SW, SPDT, Vdc, Vac, Idc, DVS, DCS,
-          GND, Batt, IGBT, NPN, PNP.
+          GND, Batt, IGBT, NPN, PNP, NFET,PFET, OPAMP.
         </p>
         <div class="modal-table-container">
           <table id="bulk-input-table">
@@ -973,7 +981,7 @@
     <script>
       /****************************************************************************
        * Circuit Drafter - V0.40aR (Date: 2025-08-05)
-       *   - Add NPN PNP and IGBT
+       *   - Add NPN PNP MOSFET and OPAMP
        *   - Add draw by AI button
        * Circuit Drafter - V0.32R (Date: 2025-07-24)
        *   - Math expression can be evaluated inside &.....&
@@ -1082,6 +1090,7 @@
           SW: "switch",
           SPDT: "spdtSwitch",
           IGBT: "igbt",
+          OPAMP: "opamp",
           NFET: "nfet",
           PFET: "pfet",
           NPN: "npn",
@@ -1205,6 +1214,15 @@
               { x: 70, y: 0 }, // Collector
               { x: 70, y: 105 }, // Emitter
               { x: 0, y: 65 }, // Gate
+            ],
+          },
+          opamp: {
+            width: 140,
+            height: 100,
+            terminals: [
+              { x: -20, y: -20 }, // +
+              { x: -20, y: 20 }, // -
+              { x: 120, y: 0 }, // output
             ],
           },
           nfet: {
@@ -1999,6 +2017,9 @@
                 break;
               case "spdtSwitch":
                 drawSpdtSwitch(el);
+                break;
+              case "opamp":
+                drawOPAMP();
                 break;
               case "igbt":
                 drawIGBT();
@@ -3286,6 +3307,39 @@
           // --- Part 2: Draw the filled arrowhead ---
           // This is done as a separate operation to allow it to be a filled shape.
           drawArrowhead(ctx, fromX, fromY, toX, toY);
+        }
+
+        function drawOPAMP() {
+          // --- Part 1: Draw and stroke the main lines of the symbol ---
+          ctx.beginPath();
+
+          // 
+          ctx.moveTo(0-50,-50);
+          ctx.lineTo(100-50,0); 
+          ctx.lineTo(0-50,50); 
+          ctx.lineTo(0-50,-50); 
+
+          // Terminal leads
+          ctx.moveTo(0-50,-20);
+          ctx.lineTo(-20-50,-20); // + Terminal
+          ctx.moveTo(0-50,20);
+          ctx.lineTo(-20-50,20); // - Terminal
+          ctx.moveTo(100-50,0);
+          ctx.lineTo(120-50,0); // - Terminal
+           
+          // + - sign
+          ctx.moveTo(10-50,-20);
+          ctx.lineTo(20-50,-20); // + 
+          ctx.moveTo(15-50,-25); // + 
+          ctx.lineTo(15-50,-15); // + 
+          
+          ctx.moveTo(10-50,20);
+          ctx.lineTo(20-50,20); // - 
+
+          // Render all the lines defined above
+          ctx.stroke();
+
+          
         }
 
         function drawNFET() {
