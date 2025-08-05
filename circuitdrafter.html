@@ -388,6 +388,38 @@
         height: 16px;
       }
       /* --- END: Style for new Text Modal Options --- */
+
+      /* --- START: Component Transform Modal Styles --- */
+      .transform-options-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin: 20px 0;
+      }
+      .transform-options-container label:not(.transform-checkbox-label) {
+        font-weight: 500;
+        color: #495057;
+      }
+      .modal-input-field {
+        width: 95%;
+        padding: 8px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      .transform-checkbox-label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        font-size: 0.95rem;
+        color: #495057;
+      }
+      .transform-checkbox-label input[type="checkbox"] {
+        margin-right: 10px;
+        width: 16px;
+        height: 16px;
+      }
+      /* --- END: Component Transform Modal Styles --- */
       /* --- END: Modal Styles --- */
     </style>
   </head>
@@ -978,6 +1010,42 @@
     </div>
     <!-- END: Text Input Modal -->
 
+    <!-- START: Component Transform Modal -->
+    <div id="transformModal" class="modal-overlay">
+      <div class="modal-content">
+        <span class="modal-close" id="transformModalClose">&times;</span>
+        <h3>Transform Component</h3>
+        <div class="transform-options-container">
+          <label for="transform-rotation-input">Rotation (degrees):</label>
+          <input
+            type="number"
+            id="transform-rotation-input"
+            step="45"
+            class="modal-input-field"
+          />
+
+          <label class="transform-checkbox-label">
+            <input type="checkbox" id="transform-flipH-checkbox" />
+            <span>Flip Horizontally</span>
+          </label>
+
+          <label class="transform-checkbox-label">
+            <input type="checkbox" id="transform-flipV-checkbox" />
+            <span>Flip Vertically</span>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button id="transform-modal-cancel-btn" class="modal-button secondary">
+            Cancel
+          </button>
+          <button id="transform-modal-ok-btn" class="modal-button primary">
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- END: Component Transform Modal -->
+
     <script>
       /****************************************************************************
        * Circuit Drafter - V0.40aR (Date: 2025-08-05)
@@ -1077,6 +1145,27 @@
         // ===== GEMINI AI BUTTON START =====
         const geminiAIBtn = document.getElementById("geminiAIBtn");
         // ===== GEMINI AI BUTTON END =====
+
+        // START: Transform Modal Variables
+        const transformModal = document.getElementById("transformModal");
+        const transformModalClose = document.getElementById(
+          "transformModalClose"
+        );
+        const transformRotationInput = document.getElementById(
+          "transform-rotation-input"
+        );
+        const transformFlipHCheckbox = document.getElementById(
+          "transform-flipH-checkbox"
+        );
+        const transformFlipVCheckbox = document.getElementById(
+          "transform-flipV-checkbox"
+        );
+        const transformModalOkBtn = document.getElementById(
+          "transform-modal-ok-btn"
+        );
+        const transformModalCancelBtn = document.getElementById(
+          "transform-modal-cancel-btn"
+        );
 
         let autoLabelCounters = {};
         const shortNameToType = {
@@ -1382,7 +1471,7 @@
           )
             return;
           if (e.key === "Shift") isShiftDown = true;
-          // NEW: Add this block for Alt+R
+          // NEW: Add this block for Alt+C
           else if (e.altKey && e.key.toLowerCase() === "c") {
             e.preventDefault();
             if (selectedElements.length > 0) {
@@ -1484,6 +1573,9 @@
             closeBulkTextModal();
           }
           if (event.target == textInputModal) {
+            // This is handled by the promise-based function's cancel logic
+          }
+          if (event.target == transformModal) {
             // This is handled by the promise-based function's cancel logic
           }
         });
@@ -1752,6 +1844,8 @@
                 x: placeX,
                 y: placeY,
                 rotation: 0,
+                flipH: false,
+                flipV: false,
               };
               if (newComp.type === "switch") {
                 newComp.state = "open";
@@ -1923,6 +2017,64 @@
         }
         // --- END: Text Input Modal Function ---
 
+        // --- START: Transform Modal Function ---
+        function showTransformModal(element) {
+          return new Promise((resolve, reject) => {
+            // Populate modal with current values
+            transformRotationInput.value = element.rotation || 0;
+            transformFlipHCheckbox.checked = element.flipH || false;
+            transformFlipVCheckbox.checked = element.flipV || false;
+
+            transformModal.style.display = "flex";
+            transformRotationInput.focus();
+            transformRotationInput.select();
+
+            const onOk = () => {
+              const newRotation = parseFloat(transformRotationInput.value);
+              if (isNaN(newRotation)) {
+                alert("Invalid angle. Please enter a number.");
+                transformRotationInput.focus();
+                transformRotationInput.select();
+                return; // Don't close the modal
+              }
+              cleanup();
+              resolve({
+                rotation: newRotation,
+                flipH: transformFlipHCheckbox.checked,
+                flipV: transformFlipVCheckbox.checked,
+              });
+            };
+
+            const onCancel = () => {
+              cleanup();
+              reject();
+            };
+
+            const cleanup = () => {
+              transformModalOkBtn.removeEventListener("click", onOk);
+              transformModalCancelBtn.removeEventListener("click", onCancel);
+              transformModalClose.removeEventListener("click", onCancel);
+              window.removeEventListener("keydown", onKeydown);
+              transformModal.style.display = "none";
+            };
+
+            const onKeydown = (e) => {
+              if (e.key === "Enter" && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                onOk();
+              } else if (e.key === "Escape") {
+                onCancel();
+              }
+            };
+
+            transformModalOkBtn.addEventListener("click", onOk);
+            transformModalCancelBtn.addEventListener("click", onCancel);
+            transformModalClose.addEventListener("click", onCancel);
+            window.addEventListener("keydown", onKeydown);
+          });
+        }
+        // --- END: Transform Modal Function ---
+
         // ... (code for measureParsedText, drawRecursive, drawText ends here)
 
         // ***************************************************************
@@ -1989,6 +2141,8 @@
           } // NOTE: Removed translate for text, handled in drawText
           else {
             ctx.translate(el.x, el.y);
+            // Apply flipping FIRST, then rotation
+            ctx.scale(el.flipH ? -1 : 1, el.flipV ? -1 : 1);
             ctx.rotate((el.rotation * Math.PI) / 180);
             switch (el.type) {
               case "resistor":
@@ -2183,6 +2337,8 @@
               x: snapToGrid(mousePos.x),
               y: snapToGrid(mousePos.y),
               rotation: 0,
+              flipH: false,
+              flipV: false,
             };
             if (newEl.type === "switch") {
               newEl.state = "open";
@@ -2349,40 +2505,28 @@
             return;
           }
 
-          // --- START: NEW LOGIC FOR COMPONENT ROTATION ---
-          // Priority 3: For any other component (not a wire, junction, etc.), prompt for rotation.
-          const isRotatableComponent =
+          // --- START: MODIFIED LOGIC FOR COMPONENT TRANSFORM ---
+          // Priority 3: For any other component (not a wire, junction, etc.), open the transform modal.
+          const isTransformableComponent =
             clickedElement.type !== "wire" &&
             clickedElement.type !== "junction" &&
             clickedElement.type !== "open_terminal";
 
-          if (isRotatableComponent) {
-            const currentRotation = clickedElement.rotation || 0;
-            const newRotationStr = prompt(
-              "Enter new rotation angle (in degrees):",
-              currentRotation
-            );
-
-            // If user clicks "Cancel", the prompt returns null.
-            if (newRotationStr === null) {
-              return;
-            }
-
-            const newRotation = parseFloat(newRotationStr);
-
-            // Check if the input is a valid number
-            if (isNaN(newRotation)) {
-              alert("Invalid angle. Please enter a number.");
-              return;
-            }
-
-            // Update the element's rotation and redraw
-            clickedElement.rotation = newRotation;
-            saveState();
-            redrawCanvas();
+          if (isTransformableComponent) {
+            showTransformModal(clickedElement)
+              .then(({ rotation, flipH, flipV }) => {
+                clickedElement.rotation = rotation;
+                clickedElement.flipH = flipH;
+                clickedElement.flipV = flipV;
+                saveState();
+                redrawCanvas();
+              })
+              .catch(() => {
+                /* User cancelled, do nothing */
+              });
             return; // We're done, so exit the function
           }
-          // --- END: NEW LOGIC FOR COMPONENT ROTATION ---
+          // --- END: MODIFIED LOGIC FOR COMPONENT TRANSFORM ---
 
           // If we reach here, it means a wire, junction, or existing terminal was double-clicked.
           // In this case, we do nothing.
@@ -2474,13 +2618,27 @@
         function getAbsoluteTerminals(el) {
           const data = componentData[el.type];
           if (!data || !data.terminals) return [];
+          
+          const scaleX = el.flipH ? -1 : 1;
+          const scaleY = el.flipV ? -1 : 1;
+
           const angle = (el.rotation * Math.PI) / 180,
             cos = Math.cos(angle),
             sin = Math.sin(angle);
-          return data.terminals.map((t) => ({
-            x: el.x + (t.x * cos - t.y * sin),
-            y: el.y + (t.x * sin + t.y * cos),
-          }));
+            
+          return data.terminals.map((t) => {
+              // 1. Apply flipping
+              const flippedX = t.x * scaleX;
+              const flippedY = t.y * scaleY;
+              // 2. Apply rotation
+              const rotatedX = flippedX * cos - flippedY * sin;
+              const rotatedY = flippedX * sin + flippedY * cos;
+              // 3. Apply translation
+              return {
+                  x: el.x + rotatedX,
+                  y: el.y + rotatedY,
+              };
+          });
         }
         function getElementAtPos(x, y) {
           for (let i = circuitElements.length - 1; i >= 0; i--) {
@@ -2510,14 +2668,24 @@
               }
             } else {
               const data = componentData[el.type];
-              const dx = x - el.x,
-                dy = y - el.y,
-                angle = (-el.rotation * Math.PI) / 180;
-              const rX = dx * Math.cos(angle) - dy * Math.sin(angle),
-                rY = dx * Math.sin(angle) + dy * Math.cos(angle);
+              // Transform mouse coordinates into the component's local space
+              const dx = x - el.x;
+              const dy = y - el.y;
+
+              // 1. Un-rotate
+              const angle = (-el.rotation * Math.PI) / 180;
+              const rX = dx * Math.cos(angle) - dy * Math.sin(angle);
+              const rY = dx * Math.sin(angle) + dy * Math.cos(angle);
+              
+              // 2. Un-flip
+              const scaleX = el.flipH ? -1 : 1;
+              const scaleY = el.flipV ? -1 : 1;
+              const localX = rX * scaleX;
+              const localY = rY * scaleY;
+
               if (
-                Math.abs(rX) < data.width / 2 &&
-                Math.abs(rY) < data.height / 2
+                Math.abs(localX) < data.width / 2 &&
+                Math.abs(localY) < data.height / 2
               )
                 return el;
             }
@@ -2621,6 +2789,7 @@
             } else {
               const data = componentData[el.type];
               ctx.translate(el.x, el.y);
+              ctx.scale(el.flipH ? -1 : 1, el.flipV ? -1 : 1);
               ctx.rotate((el.rotation * Math.PI) / 180);
               ctx.strokeRect(
                 -data.width / 2,
@@ -3764,24 +3933,39 @@
               maxY = Math.max(maxY, el.y);
             } else {
               const data = componentData[el.type];
-              const w = data.width,
-                h = data.height;
-              const angle = (el.rotation * Math.PI) / 180;
-              const cos = Math.cos(angle),
-                sin = Math.sin(angle);
-              const corners = [
-                { x: -w / 2, y: -h / 2 },
-                { x: w / 2, y: -h / 2 },
-                { x: w / 2, y: h / 2 },
-                { x: -w / 2, y: h / 2 },
+              const w = data.width, h = data.height;
+
+              // Get bounding box of terminals which already accounts for rotation and flip
+              const terminals = getAbsoluteTerminals(el);
+              const cornerMultipliers = [
+                  {x: -0.5, y: -0.5}, {x: 0.5, y: -0.5},
+                  {x: 0.5, y: 0.5},  {x: -0.5, y: 0.5}
               ];
-              corners.forEach((c) => {
-                const rx = el.x + c.x * cos - c.y * sin;
-                const ry = el.y + c.x * sin + c.y * cos;
-                minX = Math.min(minX, rx);
-                maxX = Math.max(maxX, rx);
-                minY = Math.min(minY, ry);
-                maxY = Math.max(maxY, ry);
+              const scaleX = el.flipH ? -1 : 1;
+              const scaleY = el.flipV ? -1 : 1;
+              const angle = (el.rotation * Math.PI) / 180;
+              const cos = Math.cos(angle), sin = Math.sin(angle);
+              
+              cornerMultipliers.forEach(m => {
+                  const localX = m.x * data.width;
+                  const localY = m.y * data.height;
+
+                  // Apply flip
+                  const flippedX = localX * scaleX;
+                  const flippedY = localY * scaleY;
+                  
+                  // Apply rotation
+                  const rotatedX = flippedX * cos - flippedY * sin;
+                  const rotatedY = flippedX * sin + flippedY * cos;
+                  
+                  // Apply translation
+                  const finalX = el.x + rotatedX;
+                  const finalY = el.y + rotatedY;
+                  
+                  minX = Math.min(minX, finalX);
+                  maxX = Math.max(maxX, finalX);
+                  minY = Math.min(minY, finalY);
+                  maxY = Math.max(maxY, finalY);
               });
             }
           });
@@ -3880,14 +4064,14 @@
 
 The JSON structure must be:
 {
-  "version": "0.4a",
+  "version": "0.40a",
   "elements": [ ... element objects ... ],
   "nextId": <number>
 }
 
 Valid element types and properties:
-1. Component: {"id":<int>, "type":<string>, "x":<int>, "y":<int>, "rotation":<int>}
-   - types: "resistor", "capacitor", "inductor", "diode", "zener", "led", "switch", "spdtSwitch", "voltage", "acvoltage", "currentsource", "battery", "gnd"
+1. Component: {"id":<int>, "type":<string>, "x":<int>, "y":<int>, "rotation":<int>, "flipH":false, "flipV":false}
+   - types: "resistor", "capacitor", "inductor", "diode", "zener", "led", "switch", "spdtSwitch", "voltage", "acvoltage", "currentsource", "battery", "gnd", "npn", "pnp", "nfet", "pfet", "opamp", "igbt"
 2. Wire: {"id":<int>, "type":"wire", "start":{"x":<int>,"y":<int>}, "end":{"x":<int>,"y":<int>}, "routing":"manhattan"}
 3. Text Label: {"id":<int>, "type":"text", "text":<string>, "x":<int>, "y":<int>, "rotation":0, "isItalic":true}
 
@@ -3902,9 +4086,9 @@ Example Output for "A 5V DC source, a 1k resistor, and ground":
 {
   "version": "0.40a",
   "elements": [
-    { "id": 0, "type": "voltage", "x": 200, "y": 150, "rotation": 0 },
-    { "id": 1, "type": "resistor", "x": 200, "y": 250, "rotation": 0 },
-    { "id": 2, "type": "gnd", "x": 200, "y": 350, "rotation": 0 },
+    { "id": 0, "type": "voltage", "x": 200, "y": 150, "rotation": 0, "flipH":false, "flipV":false },
+    { "id": 1, "type": "resistor", "x": 200, "y": 250, "rotation": 0, "flipH":false, "flipV":false },
+    { "id": 2, "type": "gnd", "x": 200, "y": 350, "rotation": 0, "flipH":false, "flipV":false },
     { "id": 3, "type": "wire", "start": { "x": 200, "y": 120 }, "end": { "x": 200, "y": 210 }, "routing": "manhattan" },
     { "id": 4, "type": "wire", "start": { "x": 200, "y": 290 }, "end": { "x": 200, "y": 340 }, "routing": "manhattan" },
     { "id": 5, "type": "text", "text": "V_{in}", "x": 150, "y": 150, "rotation": 0, "isItalic": true },
@@ -3916,7 +4100,7 @@ Example Output for "A 5V DC source, a 1k resistor, and ground":
 }`;
 
           try {
-            const response = await nfetch(API_URL, {
+            const response = await fetch(API_URL, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -4075,6 +4259,8 @@ Example Output for "A 5V DC source, a 1k resistor, and ground":
           ctx = exportCtx;
 
           ctx.save();
+          ctx.fillStyle = "white";
+          ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
           ctx.scale(scaleFactor, scaleFactor);
           ctx.translate(-bounds.minX + padding, -bounds.minY + padding);
           circuitElements.forEach((el) => drawElement(el));
