@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -11,7 +12,7 @@
     />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=folder_open"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=folder_open,polyline"
     />
     <!-- Google Material Icons -->
 
@@ -102,6 +103,7 @@
       /* Universal rule for selected button icons */
       .tool-btn.selected svg,
       .tool-btn.selected .material-icons,
+      .tool-btn.selected .material-symbols-outlined,
       .action-btn.selected svg,
       .action-btn.selected .material-icons {
         stroke: white;
@@ -419,6 +421,25 @@
         width: 16px;
         height: 16px;
       }
+       /* New styles for scaling section */
+      .scale-section {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #e0e0e0;
+      }
+      .scale-input-group {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        margin-top: 10px;
+      }
+      .scale-input-group > div {
+        flex: 1;
+      }
+      .modal-input-field:disabled {
+        background-color: #e9ecef;
+        cursor: not-allowed;
+      }
       /* --- END: Component Transform Modal Styles --- */
       /* --- END: Modal Styles --- */
     </style>
@@ -431,7 +452,7 @@
         class="logo"
       />
       <div>
-        <h1>Circuit Drafter (V0.40a)</h1>
+        <h1>Circuit Drafter (V0.43a)</h1>
         <p id="tagline">Effortless circuit schematics.</p>
       </div>
     </div>
@@ -461,22 +482,43 @@
             <path id="select-icon-arrow" d="M4 3 L15 12 L11 14 L4 3Z" />
           </svg>
         </button>
-        <button
-          class="tool-btn"
-          id="tool-wire"
-          title="Wire (W, Shift for straight line, Ctrl+Click for dot)"
-        >
-          <svg viewBox="0 0 24 24">
-            <path
-              d="M4 12 L20 12"
-              fill="none"
-              stroke-linejoin="round"
-              stroke-linecap="round"
-            ></path>
-            <circle cx="4" cy="12" r="2" stroke="red" fill="red" />
-            <circle cx="20" cy="12" r="2" stroke="red" fill="red" />
-          </svg>
-        </button>
+        <!-- START: Wire Dropdown -->
+        <div class="tool-dropdown">
+           <button class="tool-btn dropdown-trigger" title="Wire Tools">
+             <svg viewBox="0 0 24 24">
+               <path
+                 d="M4 12 L20 12"
+                 fill="none"
+                 stroke-linejoin="round"
+                 stroke-linecap="round"
+               ></path>
+               <circle cx="4" cy="12" r="2" stroke="red" fill="red" />
+               <circle cx="20" cy="12" r="2" stroke="red" fill="red" />
+             </svg>
+           </button>
+           <div class="dropdown-content">
+              <button
+                class="tool-btn"
+                id="tool-wire"
+                title="Wire (W, Shift for straight line, Ctrl+Click for dot)"
+              >
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M4 12 L20 12"
+                    fill="none"
+                    stroke-linejoin="round"
+                    stroke-linecap="round"
+                  ></path>
+                  <circle cx="4" cy="12" r="2" stroke="red" fill="red" />
+                  <circle cx="20" cy="12" r="2" stroke="red" fill="red" />
+                </svg>
+              </button>
+              <button class="tool-btn" id="tool-path-wire" title="Path Wire (P)">
+                 <i class="material-symbols-outlined">polyline</i>
+              </button>
+           </div>
+        </div>
+        <!-- END: Wire Dropdown -->
         <button class="tool-btn" id="tool-text" title="Text (T)">
           <i class="material-icons">text_fields</i>
         </button>
@@ -1012,101 +1054,69 @@
 
     <!-- START: Component Transform Modal -->
     <div id="transformModal" class="modal-overlay">
-      <div class="modal-content">
-        <span class="modal-close" id="transformModalClose">&times;</span>
-        <h3>Transform Component</h3>
-        <div class="transform-options-container">
-          <label for="transform-rotation-input">Rotation (degrees):</label>
-          <input
-            type="number"
-            id="transform-rotation-input"
-            step="45"
-            class="modal-input-field"
-          />
+        <div class="modal-content">
+            <span class="modal-close" id="transformModalClose">&times;</span>
+            <h3>Transform Component</h3>
+            <div class="transform-options-container">
+                <div>
+                    <label for="transform-rotation-input">Rotation (degrees):</label>
+                    <input type="number" id="transform-rotation-input" step="45" class="modal-input-field" />
+                </div>
 
-          <label class="transform-checkbox-label">
-            <input type="checkbox" id="transform-flipH-checkbox" />
-            <span>Flip Horizontally</span>
-          </label>
+                <label class="transform-checkbox-label">
+                    <input type="checkbox" id="transform-flipH-checkbox" />
+                    <span>Flip Horizontally</span>
+                </label>
 
-          <label class="transform-checkbox-label">
-            <input type="checkbox" id="transform-flipV-checkbox" />
-            <span>Flip Vertically</span>
-          </label>
+                <label class="transform-checkbox-label">
+                    <input type="checkbox" id="transform-flipV-checkbox" />
+                    <span>Flip Vertically</span>
+                </label>
+                
+                <div class="scale-section">
+                    <label class="transform-checkbox-label">
+                        <input type="checkbox" id="transform-scale-checkbox" />
+                        <span>Scale Component (maintains aspect ratio)</span>
+                    </label>
+                    <div class="scale-input-group">
+                        <div>
+                            <label for="transform-width-input">New Width (multiple of 5):</label>
+                            <input type="number" id="transform-width-input" step="5" min="5" class="modal-input-field" disabled />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="transform-modal-cancel-btn" class="modal-button secondary">
+                    Cancel
+                </button>
+                <button id="transform-modal-ok-btn" class="modal-button primary">
+                    OK
+                </button>
+            </div>
         </div>
-        <div class="modal-actions">
-          <button id="transform-modal-cancel-btn" class="modal-button secondary">
-            Cancel
-          </button>
-          <button id="transform-modal-ok-btn" class="modal-button primary">
-            OK
-          </button>
-        </div>
-      </div>
     </div>
     <!-- END: Component Transform Modal -->
 
     <script>
       /****************************************************************************
-       * Circuit Drafter - V0.40aR (Date: 2025-08-05)
+       * Circuit Drafter - V0.43a (Date: 2025-08-07)
+       *   - Add Path Wire tool for command-based wire drawing.
+       * Circuit Drafter - V0.42aR (Date: 2025-08-07)
+       *   - Apply scaling transform to components.
+       *   - Refactored all drawing functions to respect custom component width/height.
        *   - Add NPN PNP MOSFET and OPAMP
        *   - Add draw by AI button
        * Circuit Drafter - V0.32R (Date: 2025-07-24)
        *   - Math expression can be evaluated inside &.....&
-       *  - Add \times for multiply symbol.
        *   - Add dependent sources.
-       *  - Double click component to direct edit rotation value.
-       *  - Change color from black to red by Alt+C
-       *  - Change design of the inductor !!!
-       * Circuit Drafter - V0.32e (Date: 2025-07-21)
-       *  - Add SPDT
-       *  - Text font can be italic or normal.
-       *  - Add small red arrow marker with Alt+Click.
-       * Circuit Drafter - V0.32b (Date: 2025-07-20)
-       * SUMMARY OF CHANGES FROM V0.28a:
-       * - UI Overhaul: Grouped R/L/C components and reorganized the toolbar.
-       * - Bulk Placement: Added "Bulk Add Components" via a table modal.
-       * - Bulk Text: Added "Bulk Add Text" via a semicolon-delimited input.
-       * - Smart Canvas: Implemented dynamic canvas resizing to prevent
-       *   off-screen placement of bulk-added elements.
-       * - Bug Fixes: Corrected diode/zener/led selection boxes and ensured
-       *   auto-labels are always capitalized.
-       * - Text Engine Upgrade: Added support for LaTeX-style grouped
-       *   subscripts/superscripts (e.g., V_{in}) and fractions (\frac{}{}).
-       *   Fixed fraction rendering with subscripts in the numerator.
-       * - Able to append json circuit file to the current drawing via Bulk text input.
+       *   - Double click component to direct edit rotation value.
        ****************************************************************************/
-      /**
-       * Handles the placement of elements from the "Bulk Add Text" modal.
-       * This function serves a dual purpose based on the user's input:
-       *
-       * 1.  **JSON Append Mode:** If the input text appears to be a valid Circuit Drafter
-       *     JSON object, this function will append the entire circuit from the JSON to
-       *     the canvas below the currently existing drawing. It intelligently recalculates
-       *     all coordinates and assigns new IDs to prevent conflicts.
-       *
-       * 2.  **Text Label Mode:** If the input is not a valid circuit JSON, it falls
-       *     back to its original behavior of treating the input as a list of text
-       *     labels separated by semicolons, placing each one on the canvas.
-       *
-       * The JSON Append logic follows these steps:
-       *   1.  Calculate the vertical offset required by finding the bottom-most point
-       *       (maxY) of the current circuit and adding a padding.
-       *   2.  Iterate through each element in the pasted JSON data. For each element:
-       *       a. Assign a new, unique ID from the current project's `nextId` counter.
-       *       b. Recalculate its Y-coordinate(s) by adding the vertical offset.
-       *   3.  Push the newly processed and re-coordinated elements into the main
-       *       `circuitElements` array.
-       *   4.  Resize the canvas to ensure it is large enough to fit the entire combined
-       *       drawing.
-       *   5.  Save the new state to the history and redraw the canvas.
-       */
       document.addEventListener("DOMContentLoaded", () => {
         let canvas = document.getElementById("circuitCanvas");
         let ctx = canvas.getContext("2d");
         const fileInput = document.getElementById("fileInput");
 
-        // START: Bulk Components Modal Variables
         const bulkAddBtn = document.getElementById("bulkAddBtn");
         const bulkAddModal = document.getElementById("bulkAddModal");
         const bulkAddModalClose = document.getElementById("bulkAddModalClose");
@@ -1116,8 +1126,6 @@
         const bulkInputTableBody = document.querySelector(
           "#bulk-input-table tbody"
         );
-
-        // START: Bulk Text Modal Variables
         const bulkTextBtn = document.getElementById("bulkTextBtn");
         const bulkTextModal = document.getElementById("bulkTextModal");
         const bulkTextModalClose =
@@ -1127,8 +1135,6 @@
         const bulkTextCancelBtn = document.getElementById(
           "bulk-text-cancel-btn"
         );
-
-        // START: New Text Input Modal Variables
         const textInputModal = document.getElementById("textInputModal");
         const textInputModalClose = document.getElementById(
           "textInputModalClose"
@@ -1141,57 +1147,24 @@
         const textModalCancelBtn = document.getElementById(
           "text-modal-cancel-btn"
         );
-
-        // ===== GEMINI AI BUTTON START =====
         const geminiAIBtn = document.getElementById("geminiAIBtn");
-        // ===== GEMINI AI BUTTON END =====
-
-        // START: Transform Modal Variables
         const transformModal = document.getElementById("transformModal");
-        const transformModalClose = document.getElementById(
-          "transformModalClose"
-        );
-        const transformRotationInput = document.getElementById(
-          "transform-rotation-input"
-        );
-        const transformFlipHCheckbox = document.getElementById(
-          "transform-flipH-checkbox"
-        );
-        const transformFlipVCheckbox = document.getElementById(
-          "transform-flipV-checkbox"
-        );
-        const transformModalOkBtn = document.getElementById(
-          "transform-modal-ok-btn"
-        );
-        const transformModalCancelBtn = document.getElementById(
-          "transform-modal-cancel-btn"
-        );
+        const transformModalClose = document.getElementById("transformModalClose");
+        const transformRotationInput = document.getElementById("transform-rotation-input");
+        const transformFlipHCheckbox = document.getElementById("transform-flipH-checkbox");
+        const transformFlipVCheckbox = document.getElementById("transform-flipV-checkbox");
+        const transformScaleCheckbox = document.getElementById("transform-scale-checkbox");
+        const transformWidthInput = document.getElementById("transform-width-input");
+        const transformModalOkBtn = document.getElementById("transform-modal-ok-btn");
+        const transformModalCancelBtn = document.getElementById("transform-modal-cancel-btn");
 
         let autoLabelCounters = {};
         const shortNameToType = {
-          R: "resistor",
-          L: "inductor",
-          C: "capacitor",
-          D: "diode",
-          ZD: "zener",
-          LED: "led",
-          FWD: "fwd",
-          SW: "switch",
-          SPDT: "spdtSwitch",
-          IGBT: "igbt",
-          OPAMP: "opamp",
-          NFET: "nfet",
-          PFET: "pfet",
-          NPN: "npn",
-          PNP: "pnp",
-          VDC: "voltage",
-          VAC: "acvoltage",
-          IDC: "currentsource",
-          DVS: "dependent_voltage",
-          DCS: "dependent_current",
-          GND: "gnd",
-          BATT: "battery",
-          ARROW: "arrow_marker",
+          R: "resistor", L: "inductor", C: "capacitor", D: "diode", ZD: "zener",
+          LED: "led", FWD: "fwd", SW: "switch", SPDT: "spdtSwitch", IGBT: "igbt",
+          OPAMP: "opamp", NFET: "nfet", PFET: "pfet", NPN: "npn", PNP: "pnp",
+          VDC: "voltage", VAC: "acvoltage", IDC: "currentsource", DVS: "dependent_voltage",
+          DCS: "dependent_current", GND: "gnd", BATT: "battery", ARROW: "arrow_marker",
         };
         const shortNameToTypeCI = Object.keys(shortNameToType).reduce(
           (acc, key) => {
@@ -1202,256 +1175,92 @@
         );
 
         let selectedTool = "select";
-        let isDrawingWire = false,
-          isDragging = false,
-          isShiftDown = false;
-        let wireStartPoint = null,
-          currentMousePos = { x: 0, y: 0 },
-          dragStartPoint = null;
+        let isDrawingWire = false, isDragging = false, isShiftDown = false;
+        let wireStartPoint = null, currentMousePos = { x: 0, y: 0 }, dragStartPoint = null;
         let circuitElements = [];
         let nextId = 0;
-        const gridSize = 20,
-          snapTolerance = 12,
-          textFontSize = 16;
-        const fineGridSize = gridSize / 8; // <-- ADD THIS LINE (5px grid)
-        let history = [],
-          historyIndex = -1;
-
+        const gridSize = 20, snapTolerance = 12, textFontSize = 16;
+        const fineGridSize = gridSize / 8;
+        let history = [], historyIndex = -1;
         let selectedElements = [];
         let isMarqueeSelecting = false;
         let marqueeStartPoint = null;
         let hoveredWireSegment = null;
 
         const componentData = {
-          resistor: {
-            width: 80,
-            height: 30,
-            terminals: [
-              { x: -40, y: 0 },
-              { x: 40, y: 0 },
-            ],
-          },
-          capacitor: {
-            width: 80,
-            height: 30,
-            terminals: [
-              { x: -40, y: 0 },
-              { x: 40, y: 0 },
-            ],
-          },
-          inductor: {
-            width: 80,
-            height: 30,
-            terminals: [
-              { x: -40, y: 0 },
-              { x: 40, y: 0 },
-            ],
-          },
-          diode: {
-            width: 60,
-            height: 30,
-            terminals: [
-              { x: -30, y: 0 },
-              { x: 30, y: 0 },
-            ],
-          },
-          fwd: {
-            width: 60,
-            height: 30,
-            terminals: [
-              { x: -30, y: 0 },
-              { x: 30, y: 0 },
-            ],
-          },
-          zener: {
-            width: 60,
-            height: 34,
-            terminals: [
-              { x: -30, y: 0 },
-              { x: 30, y: 0 },
-            ],
-          },
-          led: {
-            width: 60,
-            height: 50,
-            terminals: [
-              { x: -30, y: 0 },
-              { x: 30, y: 0 },
-            ],
-          },
-          switch: {
-            width: 80,
-            height: 30,
-            terminals: [
-              { x: -40, y: 0 },
-              { x: 40, y: 0 },
-            ],
-          },
-          spdtSwitch: {
-            width: 80,
-            height: 60,
-            terminals: [
-              { x: -40, y: 0 }, // common
-              { x: 40, y: -20 }, // throw 1
-              { x: 40, y: 20 }, // throw 2
-            ],
-          },
-          igbt: {
-            width: 60,
-            height: 105,
-            terminals: [
-              { x: 70, y: 0 }, // Collector
-              { x: 70, y: 105 }, // Emitter
-              { x: 0, y: 65 }, // Gate
-            ],
-          },
-          opamp: {
-            width: 140,
-            height: 100,
-            terminals: [
-              { x: -20, y: -20 }, // +
-              { x: -20, y: 20 }, // -
-              { x: 120, y: 0 }, // output
-            ],
-          },
-          nfet: {
-            width: 60,
-            height: 105,
-            terminals: [
-              { x: 70, y: 0 }, // Drain
-              { x: 70, y: 105 }, // Source
-              { x: 0, y: 65 }, // Gate
-            ],
-          },
-          pfet: {
-            width: 60,
-            height: 105,
-            terminals: [
-              { x: 70, y: 0 }, // Drain
-              { x: 70, y: 105 }, // Source
-              { x: 0, y: 65 }, // Gate
-            ],
-          },
-          npn: {
-            width: 60,
-            height: 105,
-            terminals: [
-              { x: 70, y: 0 }, // Collector
-              { x: 70, y: 105 }, // Emitter
-              { x: 0, y: 65 }, // Base
-            ],
-          },
-          pnp: {
-            width: 60,
-            height: 105,
-            terminals: [
-              { x: 70, y: 0 }, // Emitter
-              { x: 70, y: 105 }, // Collector
-              { x: 0, y: 65 }, // Base
-            ],
-          },
-          voltage: {
-            width: 60,
-            height: 60,
-            terminals: [
-              { x: 0, y: -30 },
-              { x: 0, y: 30 },
-            ],
-          },
-          acvoltage: {
-            width: 60,
-            height: 60,
-            terminals: [
-              { x: 0, y: -30 },
-              { x: 0, y: 30 },
-            ],
-          },
-          currentsource: {
-            width: 60,
-            height: 60,
-            terminals: [
-              { x: 0, y: -30 },
-              { x: 0, y: 30 },
-            ],
-          },
-          dependent_voltage: {
-            width: 60,
-            height: 60,
-            terminals: [
-              { x: 0, y: -30 },
-              { x: 0, y: 30 },
-            ],
-          },
-          dependent_current: {
-            width: 60,
-            height: 60,
-            terminals: [
-              { x: 0, y: -30 },
-              { x: 0, y: 30 },
-            ],
-          },
-          battery: {
-            width: 40,
-            height: 60,
-            terminals: [
-              { x: 0, y: -30 },
-              { x: 0, y: 30 },
-            ],
-          },
-          gnd: { width: 30, height: 20, terminals: [{ x: 0, y: -10 }] },
-          arrow_marker: {
-            width: 16,
-            height: 10,
-            terminals: [],
-          },
+          resistor: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] },
+          capacitor: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] },
+          inductor: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] },
+          diode: { width: 60, height: 30, terminals: [{ x: -30, y: 0 }, { x: 30, y: 0 }] },
+          fwd: { width: 60, height: 30, terminals: [{ x: -30, y: 0 }, { x: 30, y: 0 }] },
+          zener: { width: 60, height: 34, terminals: [{ x: -30, y: 0 }, { x: 30, y: 0 }] },
+          led: { width: 60, height: 50, terminals: [{ x: -30, y: 0 }, { x: 30, y: 0 }] },
+          switch: { width: 80, height: 30, terminals: [{ x: -40, y: 0 }, { x: 40, y: 0 }] },
+          spdtSwitch: { width: 80, height: 60, terminals: [{ x: -40, y: 0 }, { x: 40, y: -20 }, { x: 40, y: 20 }] },
+          igbt: { width: 60, height: 105, terminals: [{ x: 30, y: -52.5 }, { x: 30, y: 52.5 }, { x: -30, y: 12.5 }] },
+          opamp: { width: 140, height: 100, terminals: [{ x: -70, y: -20 }, { x: -70, y: 20 }, { x: 70, y: 0 }] },
+          nfet: { width: 60, height: 105, terminals: [{ x: 30, y: -52.5 }, { x: 30, y: 52.5 }, { x: -30, y: 12.5 }] },
+          pfet: { width: 60, height: 105, terminals: [{ x: 30, y: -52.5 }, { x: 30, y: 52.5 }, { x: -30, y: 12.5 }] },
+          npn: { width: 60, height: 105, terminals: [{ x: 30, y: -52.5 }, { x: 30, y: 52.5 }, { x: -30, y: 0 }] },
+          pnp: { width: 60, height: 105, terminals: [{ x: 30, y: -52.5 }, { x: 30, y: 52.5 }, { x: -30, y: 0 }] },
+          voltage: { width: 35, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] },
+          acvoltage: { width: 35, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] },
+          currentsource: { width: 35, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] },
+          dependent_voltage: { width: 40, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] },
+          dependent_current: { width: 40, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] },
+          battery: { width: 40, height: 60, terminals: [{ x: 0, y: -30 }, { x: 0, y: 30 }] },
+          gnd: { width: 30, height: 25, terminals: [{ x: 0, y: -10 }] },
+          arrow_marker: { width: 16, height: 10, terminals: [] },
         };
 
         const actionButtons = {
-          undo: document.getElementById("undoBtn"),
-          redo: document.getElementById("redoBtn"),
-          copy: document.getElementById("copyBtn"),
-          rotate: document.getElementById("rotateBtn"),
+          undo: document.getElementById("undoBtn"), redo: document.getElementById("redoBtn"),
+          copy: document.getElementById("copyBtn"), rotate: document.getElementById("rotateBtn"),
           delete: document.getElementById("deleteBtn"),
         };
+        
+        function getDimensionsAndScale(el) {
+            const defaultDims = componentData[el.type];
+            if (!defaultDims) return { width: 0, height: 0, scale: 1 };
+
+            const currentWidth = (el && el.width) ? el.width : defaultDims.width;
+            
+            let newHeight;
+            let scale;
+
+            if (defaultDims.width > 0) {
+                const aspectRatio = defaultDims.height / defaultDims.width;
+                newHeight = currentWidth * aspectRatio;
+                scale = currentWidth / defaultDims.width;
+            } else {
+                newHeight = defaultDims.height;
+                scale = 1;
+            }
+
+            return { width: currentWidth, height: newHeight, scale: scale };
+        }
 
         function updateToolbar() {
-          document
-            .querySelectorAll(".tool-btn, .action-btn")
-            .forEach((btn) => btn.classList.remove("selected"));
-          const currentToolButton = document.getElementById(
-            `tool-${selectedTool}`
-          );
+          document.querySelectorAll(".tool-btn, .action-btn").forEach((btn) => btn.classList.remove("selected"));
+          const currentToolButton = document.getElementById(`tool-${selectedTool}`);
           if (currentToolButton) {
             currentToolButton.classList.add("selected");
             const parentDropdown = currentToolButton.closest(".tool-dropdown");
-            if (parentDropdown)
-              parentDropdown
-                .querySelector(".dropdown-trigger")
-                .classList.add("selected");
+            if (parentDropdown) parentDropdown.querySelector(".dropdown-trigger").classList.add("selected");
           }
           actionButtons.undo.disabled = historyIndex <= 0;
           actionButtons.redo.disabled = historyIndex >= history.length - 1;
-          const isComponentSelected = selectedElements.some(
-            (el) =>
-              el.type !== "wire" &&
-              el.type !== "text" &&
-              el.type !== "junction" &&
-              el.type !== "open_terminal"
-          );
+          const isComponentSelected = selectedElements.some(el => el.type !== "wire" && el.type !== "text" && el.type !== "junction" && el.type !== "open_terminal" && el.type !== "path-wire");
           actionButtons.rotate.disabled = !isComponentSelected;
           actionButtons.copy.disabled = selectedElements.length === 0;
           actionButtons.delete.disabled = selectedElements.length === 0;
-          canvas.style.cursor =
-            selectedTool === "select" ? "default" : "crosshair";
+          canvas.style.cursor = selectedTool === "select" ? "default" : "crosshair";
         }
 
         document.getElementById("toolbar").addEventListener("click", (e) => {
           const target = e.target.closest("button");
           if (!target || target.disabled) return;
-          if (
-            target.classList.contains("tool-btn") &&
-            !target.classList.contains("dropdown-trigger")
-          ) {
+          if (target.classList.contains("tool-btn") && !target.classList.contains("dropdown-trigger")) {
             selectedTool = target.id.replace("tool-", "");
             if (selectedTool !== "select") selectedElements = [];
           } else if (target.id === "undoBtn") undo();
@@ -1465,164 +1274,86 @@
         });
 
         window.addEventListener("keydown", (e) => {
-          if (
-            document.activeElement.tagName === "INPUT" ||
-            document.activeElement.tagName === "TEXTAREA"
-          )
-            return;
+          if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") return;
           if (e.key === "Shift") isShiftDown = true;
-          // NEW: Add this block for Alt+C
           else if (e.altKey && e.key.toLowerCase() === "c") {
             e.preventDefault();
             if (selectedElements.length > 0) {
               selectedElements.forEach((el) => {
-                // Toggle the color property
-                if (el.color === "red") {
-                  delete el.color; // Revert to default (black)
-                } else {
-                  el.color = "red";
-                }
+                if (el.color === "red") { delete el.color; } else { el.color = "red"; }
               });
-              saveState(); // Save the change to history
+              saveState();
               redrawCanvas();
             }
           }
-          // END of new block
 
           if (e.ctrlKey || e.metaKey) {
             e.preventDefault();
             switch (e.key.toLowerCase()) {
-              case "z":
-                undo();
-                break;
-              case "y":
-                redo();
-                break;
-              case "d":
-                copySelected();
-                break;
-              case "s":
-                handleSaveExport();
-                break;
-              case "o":
-                fileInput.click();
-                break;
+              case "z": undo(); break;
+              case "y": redo(); break;
+              case "d": copySelected(); break;
+              case "s": handleSaveExport(); break;
+              case "o": fileInput.click(); break;
             }
           } else {
             switch (e.key.toLowerCase()) {
-              case "r":
-                if (selectedElements.length > 0) {
-                  e.preventDefault();
-                  rotateSelected();
-                }
-                break;
-              case "delete":
-              case "backspace":
-                if (selectedElements.length > 0) {
-                  e.preventDefault();
-                  deleteSelected();
-                }
-                break;
-              case "w":
-                selectedTool = "wire";
-                break;
-              case "s":
-                selectedTool = "select";
-                break;
-              case "t":
-                selectedTool = "text";
-                break;
+              case "r": if (selectedElements.length > 0) { e.preventDefault(); rotateSelected(); } break;
+              case "delete": case "backspace": if (selectedElements.length > 0) { e.preventDefault(); deleteSelected(); } break;
+              case "w": selectedTool = "wire"; break;
+              case "p": selectedTool = "path-wire"; break;
+              case "s": selectedTool = "select"; break;
+              case "t": selectedTool = "text"; break;
             }
           }
           redrawCanvas();
         });
 
-        window.addEventListener("keyup", (e) => {
-          if (e.key === "Shift") {
-            isShiftDown = false;
-            redrawCanvas();
-          }
-        });
-        window.addEventListener("blur", () => {
-          isShiftDown = false;
-        });
+        window.addEventListener("keyup", (e) => { if (e.key === "Shift") { isShiftDown = false; redrawCanvas(); } });
+        window.addEventListener("blur", () => { isShiftDown = false; });
         fileInput.addEventListener("change", handleFileLoad);
 
-        // START: Modal Event Listeners
         bulkAddBtn.addEventListener("click", openBulkAddModal);
         bulkAddModalClose.addEventListener("click", closeBulkAddModal);
         bulkCancelBtn.addEventListener("click", closeBulkAddModal);
         addRowBtn.addEventListener("click", () => addBulkRow());
         bulkPlaceBtn.addEventListener("click", handleBulkPlace);
-        bulkInputTableBody.addEventListener("click", (e) => {
-          if (e.target.classList.contains("delete-row-btn")) {
-            e.target.closest("tr").remove();
-          }
-        });
-
+        bulkInputTableBody.addEventListener("click", (e) => { if (e.target.classList.contains("delete-row-btn")) { e.target.closest("tr").remove(); } });
         bulkTextBtn.addEventListener("click", openBulkTextModal);
         bulkTextModalClose.addEventListener("click", closeBulkTextModal);
         bulkTextCancelBtn.addEventListener("click", closeBulkTextModal);
         bulkTextPlaceBtn.addEventListener("click", handleBulkTextPlace);
 
         window.addEventListener("click", (event) => {
-          if (event.target == bulkAddModal) {
-            closeBulkAddModal();
-          }
-          if (event.target == bulkTextModal) {
-            closeBulkTextModal();
-          }
-          if (event.target == textInputModal) {
-            // This is handled by the promise-based function's cancel logic
-          }
-          if (event.target == transformModal) {
-            // This is handled by the promise-based function's cancel logic
-          }
+          if (event.target == bulkAddModal) closeBulkAddModal();
+          if (event.target == bulkTextModal) closeBulkTextModal();
         });
-        // END: Modal Event Listeners
 
         function saveState() {
           history = history.slice(0, historyIndex + 1);
-          const cleanState = JSON.parse(
-            JSON.stringify(circuitElements, (key, value) =>
-              key === "dragInitialState" ? undefined : value
-            )
-          );
+          const cleanState = JSON.parse(JSON.stringify(circuitElements, (key, value) => key === "dragInitialState" ? undefined : value));
           history.push(cleanState);
           historyIndex++;
           updateToolbar();
         }
-        function undo() {
-          if (historyIndex > 0) {
-            historyIndex--;
-            setState();
-          }
-        }
-        function redo() {
-          if (historyIndex < history.length - 1) {
-            historyIndex++;
-            setState();
-          }
-        }
-        function setState() {
-          circuitElements = JSON.parse(JSON.stringify(history[historyIndex]));
-          selectedElements = [];
-          redrawCanvas();
-        }
+        function undo() { if (historyIndex > 0) { historyIndex--; setState(); } }
+        function redo() { if (historyIndex < history.length - 1) { historyIndex++; setState(); } }
+        function setState() { circuitElements = JSON.parse(JSON.stringify(history[historyIndex])); selectedElements = []; redrawCanvas(); }
+        
         function copySelected() {
           if (selectedElements.length === 0) return;
           const newSelection = [];
+          const offset = gridSize;
           selectedElements.forEach((el) => {
             const newEl = JSON.parse(JSON.stringify(el));
             newEl.id = nextId++;
             if (newEl.type === "wire") {
-              newEl.start.x += gridSize;
-              newEl.start.y += gridSize;
-              newEl.end.x += gridSize;
-              newEl.end.y += gridSize;
-            } else {
-              newEl.x += gridSize;
-              newEl.y += gridSize;
+              newEl.start.x += offset; newEl.start.y += offset;
+              newEl.end.x += offset; newEl.end.y += offset;
+            } else if (newEl.type === "path-wire") {
+                newEl.points.forEach(p => { p.x += offset; p.y += offset; });
+            } else { 
+                newEl.x += offset; newEl.y += offset; 
             }
             circuitElements.push(newEl);
             newSelection.push(newEl);
@@ -1631,15 +1362,11 @@
           saveState();
           redrawCanvas();
         }
+
         function rotateSelected() {
           if (selectedElements.length === 0) return;
           selectedElements.forEach((el) => {
-            if (
-              el.type !== "wire" &&
-              el.type !== "text" &&
-              el.type !== "junction" &&
-              el.type !== "open_terminal"
-            ) {
+            if (el.type !== "wire" && el.type !== "path-wire" && el.type !== "text" && el.type !== "junction" && el.type !== "open_terminal") {
               el.rotation = (el.rotation + 45) % 360;
             }
           });
@@ -1649,112 +1376,75 @@
         function deleteSelected() {
           if (selectedElements.length === 0) return;
           const selectedIds = new Set(selectedElements.map((el) => el.id));
-          circuitElements = circuitElements.filter(
-            (el) => !selectedIds.has(el.id)
-          );
+          circuitElements = circuitElements.filter((el) => !selectedIds.has(el.id));
           selectedElements = [];
           saveState();
           redrawCanvas();
         }
 
         function redrawCanvas() {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          drawGrid();
-          circuitElements.forEach((el) => drawElement(el));
-          if (hoveredWireSegment) {
-            ctx.save();
-            ctx.strokeStyle = "#007bff";
-            ctx.lineWidth = 4;
-            ctx.shadowColor = "rgba(0, 123, 255, 0.7)";
-            ctx.shadowBlur = 8;
-            ctx.lineCap = "round";
-            ctx.beginPath();
-            ctx.moveTo(hoveredWireSegment.p1.x, hoveredWireSegment.p1.y);
-            ctx.lineTo(hoveredWireSegment.p2.x, hoveredWireSegment.p2.y);
-            ctx.stroke();
-            ctx.restore();
-          }
-          drawJunctions();
-          drawSelection();
-          if (isDrawingWire && wireStartPoint) {
-            let endPoint = getSnappingPoint(
-              currentMousePos.x,
-              currentMousePos.y
-            );
-            drawWirePreview(wireStartPoint, endPoint);
-            drawSnapIndicator(endPoint);
-          } else if (selectedTool === "wire") {
-            const snapPoint = getSnappingPoint(
-              currentMousePos.x,
-              currentMousePos.y
-            );
-            drawSnapIndicator(snapPoint);
-          }
-          if (isMarqueeSelecting && marqueeStartPoint) {
-            drawMarquee(marqueeStartPoint, currentMousePos);
-          }
-          updateToolbar();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawGrid();
+            circuitElements.forEach((el) => drawElement(el));
+            if (hoveredWireSegment) {
+                ctx.save();
+                ctx.strokeStyle = "#007bff";
+                ctx.lineWidth = 4;
+                ctx.shadowColor = "rgba(0, 123, 255, 0.7)";
+                ctx.shadowBlur = 8;
+                ctx.lineCap = "round";
+                ctx.beginPath();
+                ctx.moveTo(hoveredWireSegment.p1.x, hoveredWireSegment.p1.y);
+                ctx.lineTo(hoveredWireSegment.p2.x, hoveredWireSegment.p2.y);
+                ctx.stroke();
+                ctx.restore();
+            }
+            drawJunctions();
+            drawSelection();
+            if (isDrawingWire && wireStartPoint) {
+                let endPoint = getSnappingPoint(currentMousePos.x, currentMousePos.y);
+                drawWirePreview(wireStartPoint, endPoint);
+                drawSnapIndicator(endPoint);
+            } else if (selectedTool === "wire" || selectedTool === "path-wire") {
+                const snapPoint = getSnappingPoint(currentMousePos.x, currentMousePos.y);
+                drawSnapIndicator(snapPoint);
+            }
+            if (isMarqueeSelecting && marqueeStartPoint) {
+                drawMarquee(marqueeStartPoint, currentMousePos);
+            }
+            updateToolbar();
         }
-
-        // --- START: Bulk Add/Text Functions ---
 
         function resizeCanvas(newWidth, newHeight) {
           if (canvas.width >= newWidth && canvas.height >= newHeight) return;
-
           const finalWidth = Math.max(canvas.width, newWidth);
           const finalHeight = Math.max(canvas.height, newHeight);
-
           canvas.width = finalWidth;
           canvas.height = finalHeight;
-
           redrawCanvas();
         }
 
         function addBulkRow(name = "", qty = 1, label = "Y") {
           const row = document.createElement("tr");
-          row.innerHTML = `
-                <td><input type="text" class="comp-name" placeholder="e.g., R, C, SPDT" value="${name}"></td>
-                <td><input type="number" class="comp-qty" min="1" value="${qty}"></td>
-                <td><input type="text" class="comp-label" placeholder="Y or N" value="${label}" maxlength="1"></td>
-                <td><button class="delete-row-btn">&times;</button></td>
-            `;
+          row.innerHTML = `<td><input type="text" class="comp-name" placeholder="e.g., R, C, SPDT" value="${name}"></td><td><input type="number" class="comp-qty" min="1" value="${qty}"></td><td><input type="text" class="comp-label" placeholder="Y or N" value="${label}" maxlength="1"></td><td><button class="delete-row-btn">&times;</button></td>`;
           bulkInputTableBody.appendChild(row);
         }
 
-        function openBulkAddModal() {
-          bulkInputTableBody.innerHTML = "";
-          addBulkRow();
-          bulkAddModal.style.display = "flex";
-        }
-
-        function closeBulkAddModal() {
-          bulkAddModal.style.display = "none";
-        }
-
-        function openBulkTextModal() {
-          bulkTextInput.value = "";
-          bulkTextModal.style.display = "flex";
-        }
-
-        function closeBulkTextModal() {
-          bulkTextModal.style.display = "none";
-        }
+        function openBulkAddModal() { bulkInputTableBody.innerHTML = ""; addBulkRow(); bulkAddModal.style.display = "flex"; }
+        function closeBulkAddModal() { bulkAddModal.style.display = "none"; }
+        function openBulkTextModal() { bulkTextInput.value = ""; bulkTextModal.style.display = "flex"; }
+        function closeBulkTextModal() { bulkTextModal.style.display = "none"; }
 
         function recalculateAutoLabelCounters() {
           autoLabelCounters = {};
-          // Updated regex to handle both "R1" and "R_{1}" formats
           const labelRegex = /^([A-Z_a-z]+)(?:_\{)?(\d+)\}?$/i;
-
           circuitElements.forEach((el) => {
             if (el.type === "text" && el.text) {
               const match = el.text.match(labelRegex);
               if (match) {
                 const prefix = match[1].toUpperCase();
                 const num = parseInt(match[2], 10);
-                if (
-                  !autoLabelCounters[prefix] ||
-                  num >= autoLabelCounters[prefix]
-                ) {
+                if (!autoLabelCounters[prefix] || num >= autoLabelCounters[prefix]) {
                   autoLabelCounters[prefix] = num + 1;
                 }
               }
@@ -1763,209 +1453,104 @@
         }
 
         function handleBulkPlace() {
-          recalculateAutoLabelCounters();
-          const rows = bulkInputTableBody.querySelectorAll("tr");
-          const placeStepX = 150;
-          const placeStepY = 120;
-          const placementMargin = 100;
-          const requests = [];
-          let totalComponentCount = 0;
+            recalculateAutoLabelCounters();
+            const rows = bulkInputTableBody.querySelectorAll("tr");
+            const placeStepX = 150; const placeStepY = 120;
+            const placementMargin = 100;
+            const requests = [];
+            let totalComponentCount = 0;
 
-          for (const row of rows) {
-            const nameInput = row.querySelector(".comp-name");
-            const qtyInput = row.querySelector(".comp-qty");
-            const labelInput = row.querySelector(".comp-label");
-            const shortNameRaw = nameInput.value.trim();
-            if (!shortNameRaw) continue;
+            for (const row of rows) {
+                const nameInput = row.querySelector(".comp-name");
+                const qtyInput = row.querySelector(".comp-qty");
+                const labelInput = row.querySelector(".comp-label");
+                const shortNameRaw = nameInput.value.trim();
+                if (!shortNameRaw) continue;
 
-            const shortName = shortNameRaw.toUpperCase();
-            const quantity = parseInt(qtyInput.value, 10);
-            const autoLabel = labelInput.value.trim().toUpperCase();
-            const componentType = shortNameToTypeCI[shortName];
+                const shortName = shortNameRaw.toUpperCase();
+                const quantity = parseInt(qtyInput.value, 10);
+                const autoLabel = labelInput.value.trim().toUpperCase();
+                const componentType = shortNameToTypeCI[shortName];
 
-            if (!componentType) {
-              alert(`Invalid component name: "${nameInput.value}".`);
-              nameInput.focus();
-              return;
+                if (!componentType) { alert(`Invalid component name: "${nameInput.value}".`); nameInput.focus(); return; }
+                if (isNaN(quantity) || quantity < 1) { alert(`Invalid quantity: "${qtyInput.value}".`); qtyInput.focus(); return; }
+                requests.push({ shortNameRaw, shortName, quantity, autoLabel, componentType });
+                totalComponentCount += quantity;
             }
-            if (isNaN(quantity) || quantity < 1) {
-              alert(`Invalid quantity: "${qtyInput.value}".`);
-              qtyInput.focus();
-              return;
-            }
-            requests.push({
-              shortNameRaw,
-              shortName,
-              quantity,
-              autoLabel,
-              componentType,
-            });
-            totalComponentCount += quantity;
-          }
 
-          if (totalComponentCount === 0) {
+            if (totalComponentCount === 0) { closeBulkAddModal(); return; }
+
+            const bounds = calculateBoundingBox();
+            const placementStart = {
+                x: placementMargin,
+                y: bounds ? Math.floor((bounds.maxY + placementMargin) / gridSize) * gridSize : placementMargin,
+            };
+
+            const componentsPerRow = Math.max(1, Math.floor((canvas.width - placementMargin * 2) / placeStepX));
+            const requiredRows = Math.ceil(totalComponentCount / componentsPerRow);
+            const requiredWidth = placementStart.x + Math.min(totalComponentCount, componentsPerRow) * placeStepX;
+            const requiredHeight = placementStart.y + requiredRows * placeStepY;
+            resizeCanvas(requiredWidth, requiredHeight);
+
+            let placeX = placementStart.x;
+            let placeY = placementStart.y;
+            const componentsToAdd = [];
+
+            for (const req of requests) {
+                for (let i = 0; i < req.quantity; i++) {
+                    const newComp = { id: nextId++, type: req.componentType, x: placeX, y: placeY, rotation: 0, flipH: false, flipV: false };
+                    if (newComp.type === "switch") newComp.state = "open";
+                    if (newComp.type === "spdtSwitch") newComp.state = 1;
+                    componentsToAdd.push(newComp);
+
+                    if (req.autoLabel === "Y") {
+                        if (!autoLabelCounters[req.shortName]) autoLabelCounters[req.shortName] = 1;
+                        const labelText = req.shortName + "_{" + autoLabelCounters[req.shortName]++ + "}";
+                        const newLabel = { id: nextId++, type: "text", text: labelText, x: placeX, y: placeY + 45, rotation: 0, isItalic: true };
+                        componentsToAdd.push(newLabel);
+                    }
+                    placeX += placeStepX;
+                    if (placeX > canvas.width - placementMargin) { placeX = placementStart.x; placeY += placeStepY; }
+                }
+            }
+            if (componentsToAdd.length > 0) { circuitElements.push(...componentsToAdd); saveState(); redrawCanvas(); }
             closeBulkAddModal();
-            return;
-          }
-
-          const bounds = calculateBoundingBox();
-          const placementStart = {
-            x: placementMargin,
-            y: bounds
-              ? Math.floor((bounds.maxY + placementMargin) / gridSize) *
-                gridSize
-              : placementMargin,
-          };
-
-          const componentsPerRow = Math.max(
-            1,
-            Math.floor((canvas.width - placementMargin * 2) / placeStepX)
-          );
-          const requiredRows = Math.ceil(
-            totalComponentCount / componentsPerRow
-          );
-
-          const requiredWidth =
-            placementStart.x +
-            Math.min(totalComponentCount, componentsPerRow) * placeStepX;
-          const requiredHeight = placementStart.y + requiredRows * placeStepY;
-
-          resizeCanvas(requiredWidth, requiredHeight);
-
-          let placeX = placementStart.x;
-          let placeY = placementStart.y;
-          const componentsToAdd = [];
-
-          for (const req of requests) {
-            for (let i = 0; i < req.quantity; i++) {
-              const newComp = {
-                id: nextId++,
-                type: req.componentType,
-                x: placeX,
-                y: placeY,
-                rotation: 0,
-                flipH: false,
-                flipV: false,
-              };
-              if (newComp.type === "switch") {
-                newComp.state = "open";
-              }
-              if (newComp.type === "spdtSwitch") {
-                newComp.state = 1;
-              }
-              componentsToAdd.push(newComp);
-
-              if (req.autoLabel === "Y") {
-                if (!autoLabelCounters[req.shortName])
-                  autoLabelCounters[req.shortName] = 1;
-                // Use LaTeX-style subscript for the auto-generated number
-                const labelText =
-                  req.shortName +
-                  "_{" +
-                  autoLabelCounters[req.shortName]++ +
-                  "}";
-                const newLabel = {
-                  id: nextId++,
-                  type: "text",
-                  text: labelText,
-                  x: placeX,
-                  y: placeY + 45,
-                  rotation: 0,
-                  isItalic: true,
-                };
-                componentsToAdd.push(newLabel);
-              }
-
-              placeX += placeStepX;
-              if (placeX > canvas.width - placementMargin) {
-                placeX = placementStart.x;
-                placeY += placeStepY;
-              }
-            }
-          }
-
-          if (componentsToAdd.length > 0) {
-            circuitElements.push(...componentsToAdd);
-            saveState();
-            redrawCanvas();
-          }
-
-          closeBulkAddModal();
         }
 
         function handleBulkTextPlace() {
           const rawText = bulkTextInput.value.trim();
-          if (!rawText) {
-            closeBulkTextModal();
-            return;
-          }
+          if (!rawText) { closeBulkTextModal(); return; }
 
-          // Check if the input is a JSON object to append.
           if (rawText.startsWith("{") && rawText.endsWith("}")) {
-            if (
-              appendCircuitFromJSON(
-                rawText,
-                "Circuit appended successfully from text!"
-              )
-            ) {
+            if (appendCircuitFromJSON(rawText, "Circuit appended successfully from text!")) {
               closeBulkTextModal();
             }
             return;
           }
 
-          // If not JSON, proceed with original text-adding logic.
-          const textItems = rawText
-            .split(";")
-            .map((item) => item.trim())
-            .filter((item) => item.length > 0);
-          if (textItems.length === 0) {
-            closeBulkTextModal();
-            return;
-          }
+          const textItems = rawText.split(";").map((item) => item.trim()).filter((item) => item.length > 0);
+          if (textItems.length === 0) { closeBulkTextModal(); return; }
 
           const verticalSpacing = 40;
           const placementMargin = 100;
           const bounds = calculateBoundingBox();
-
-          const placementStart = {
-            x: placementMargin,
-            y: bounds
-              ? Math.floor((bounds.maxY + 80) / gridSize) * gridSize
-              : 80,
-          };
-
-          const requiredHeight =
-            placementStart.y + textItems.length * verticalSpacing;
+          const placementStart = { x: placementMargin, y: bounds ? Math.floor((bounds.maxY + 80) / gridSize) * gridSize : 80 };
+          const requiredHeight = placementStart.y + textItems.length * verticalSpacing;
           resizeCanvas(canvas.width, requiredHeight);
 
           let placeY = placementStart.y;
           const textsToAdd = [];
-
           textItems.forEach((item) => {
             const processedItem = evaluateExpressions(item);
-            const newText = {
-              id: nextId++,
-              type: "text",
-              text: processedItem,
-              x: placementStart.x,
-              y: placeY,
-              rotation: 0,
-              isItalic: true,
-            };
+            const newText = { id: nextId++, type: "text", text: processedItem, x: placementStart.x, y: placeY, rotation: 0, isItalic: true };
             textsToAdd.push(newText);
             placeY += verticalSpacing;
           });
 
-          if (textsToAdd.length > 0) {
-            circuitElements.push(...textsToAdd);
-            saveState();
-            redrawCanvas();
-          }
-
+          if (textsToAdd.length > 0) { circuitElements.push(...textsToAdd); saveState(); redrawCanvas(); }
           closeBulkTextModal();
-        } // --- END: Bulk Add/Text Functions ---
+        }
 
-        // --- START: Text Input Modal Function ---
         function showTextInputModal(initialText = "", initialItalic = true) {
           return new Promise((resolve, reject) => {
             textInputArea.value = initialText;
@@ -1973,397 +1558,233 @@
             textInputModal.style.display = "flex";
             textInputArea.focus();
             textInputArea.select();
-
-            const onOk = () => {
-              cleanup();
-              // Evaluate expressions like &(1+1)& before resolving
-              const processedText = evaluateExpressions(textInputArea.value);
-              resolve({
-                text: processedText,
-                isItalic: textItalicCheckbox.checked,
-              });
-            };
-
-            const onCancel = () => {
-              cleanup();
-              reject();
-            };
-
-            const cleanup = () => {
-              textModalOkBtn.removeEventListener("click", onOk);
-              textModalCancelBtn.removeEventListener("click", onCancel);
-              textInputModalClose.removeEventListener("click", onCancel);
-              window.removeEventListener("keydown", onKeydown);
-              textInputModal.style.display = "none";
-            };
-
-            const onKeydown = (e) => {
-              if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-                onOk();
-              } else if (e.key === "Escape") {
-                onCancel();
-              }
-            };
-
+            const onOk = () => { cleanup(); const processedText = evaluateExpressions(textInputArea.value); resolve({ text: processedText, isItalic: textItalicCheckbox.checked }); };
+            const onCancel = () => { cleanup(); reject(); };
+            const cleanup = () => { textModalOkBtn.removeEventListener("click", onOk); textModalCancelBtn.removeEventListener("click", onCancel); textInputModalClose.removeEventListener("click", onCancel); window.removeEventListener("keydown", onKeydown); textInputModal.style.display = "none"; };
+            const onKeydown = (e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { onOk(); } else if (e.key === "Escape") { onCancel(); } };
             textModalOkBtn.addEventListener("click", onOk, { once: true });
-            textModalCancelBtn.addEventListener("click", onCancel, {
-              once: true,
-            });
-            textInputModalClose.addEventListener("click", onCancel, {
-              once: true,
-            });
+            textModalCancelBtn.addEventListener("click", onCancel, { once: true });
+            textInputModalClose.addEventListener("click", onCancel, { once: true });
             window.addEventListener("keydown", onKeydown);
           });
         }
-        // --- END: Text Input Modal Function ---
 
-        // --- START: Transform Modal Function ---
         function showTransformModal(element) {
-          return new Promise((resolve, reject) => {
-            // Populate modal with current values
-            transformRotationInput.value = element.rotation || 0;
-            transformFlipHCheckbox.checked = element.flipH || false;
-            transformFlipVCheckbox.checked = element.flipV || false;
+            return new Promise((resolve, reject) => {
+                transformRotationInput.value = element.rotation || 0;
+                transformFlipHCheckbox.checked = element.flipH || false;
+                transformFlipVCheckbox.checked = element.flipV || false;
 
-            transformModal.style.display = "flex";
-            transformRotationInput.focus();
-            transformRotationInput.select();
+                const currentDimensions = getDimensionsAndScale(element);
+                transformWidthInput.value = currentDimensions.width;
+                transformScaleCheckbox.checked = false;
+                transformWidthInput.disabled = true;
 
-            const onOk = () => {
-              const newRotation = parseFloat(transformRotationInput.value);
-              if (isNaN(newRotation)) {
-                alert("Invalid angle. Please enter a number.");
+                const onScaleChange = () => {
+                    transformWidthInput.disabled = !transformScaleCheckbox.checked;
+                };
+                transformScaleCheckbox.addEventListener('change', onScaleChange);
+
+                transformModal.style.display = "flex";
                 transformRotationInput.focus();
                 transformRotationInput.select();
-                return; // Don't close the modal
-              }
-              cleanup();
-              resolve({
-                rotation: newRotation,
-                flipH: transformFlipHCheckbox.checked,
-                flipV: transformFlipVCheckbox.checked,
-              });
-            };
 
-            const onCancel = () => {
-              cleanup();
-              reject();
-            };
+                const onOk = () => {
+                    const newRotation = parseFloat(transformRotationInput.value);
+                    if (isNaN(newRotation)) { alert("Invalid angle."); return; }
 
-            const cleanup = () => {
-              transformModalOkBtn.removeEventListener("click", onOk);
-              transformModalCancelBtn.removeEventListener("click", onCancel);
-              transformModalClose.removeEventListener("click", onCancel);
-              window.removeEventListener("keydown", onKeydown);
-              transformModal.style.display = "none";
-            };
+                    const result = { rotation: newRotation, flipH: transformFlipHCheckbox.checked, flipV: transformFlipVCheckbox.checked };
+                    
+                    if (transformScaleCheckbox.checked) {
+                        const newWidth = parseInt(transformWidthInput.value, 10);
+                        if (isNaN(newWidth) || newWidth <= 0) { alert("Invalid width."); return; }
+                        if (newWidth % 5 !== 0) { alert("Width must be a multiple of 5."); return; }
 
-            const onKeydown = (e) => {
-              if (e.key === "Enter" && !e.ctrlKey && !e.metaKey) {
-                e.preventDefault();
-                onOk();
-              } else if (e.key === "Escape") {
-                onCancel();
-              }
-            };
+                        const defaultDims = componentData[element.type];
+                        if (defaultDims && defaultDims.width > 0) {
+                            const aspectRatio = defaultDims.height / defaultDims.width;
+                            const newHeight = Math.round((newWidth * aspectRatio) / 5) * 5;
+                            result.newWidth = newWidth;
+                            result.newHeight = newHeight;
+                        }
+                    }
+                    cleanup();
+                    resolve(result);
+                };
 
-            transformModalOkBtn.addEventListener("click", onOk);
-            transformModalCancelBtn.addEventListener("click", onCancel);
-            transformModalClose.addEventListener("click", onCancel);
-            window.addEventListener("keydown", onKeydown);
-          });
+                const onCancel = () => { cleanup(); reject(); };
+                const cleanup = () => {
+                    transformScaleCheckbox.removeEventListener('change', onScaleChange);
+                    transformModalOkBtn.removeEventListener("click", onOk);
+                    transformModalCancelBtn.removeEventListener("click", onCancel);
+                    transformModalClose.removeEventListener("click", onCancel);
+                    window.removeEventListener("keydown", onKeydown);
+                    transformModal.style.display = "none";
+                };
+
+                const onKeydown = (e) => { if (e.key === "Enter" && !e.ctrlKey && !e.metaKey) { e.preventDefault(); onOk(); } else if (e.key === "Escape") { onCancel(); } };
+                transformModalOkBtn.addEventListener("click", onOk);
+                transformModalCancelBtn.addEventListener("click", onCancel);
+                transformModalClose.addEventListener("click", onCancel);
+                window.addEventListener("keydown", onKeydown);
+            });
         }
-        // --- END: Transform Modal Function ---
 
-        // ... (code for measureParsedText, drawRecursive, drawText ends here)
-
-        // ***************************************************************
-        // END: NEW RECURSIVE TEXT PARSING, MEASURING, AND DRAWING ENGINE
-        // ***************************************************************
-
-        // START: INSERT THIS NEW FUNCTION HERE
-        /**
-         * Finds and evaluates mathematical expressions enclosed in &...&.
-         * Example: "&(1/2000+1/1000)&" becomes "1.5e-3".
-         * Uses a safe Function constructor for evaluation.
-         * @param {string} text The input string.
-         * @returns {string} The string with expressions replaced by their values.
-         */
         function evaluateExpressions(text) {
-          if (!text || !text.includes("&")) {
-            return text;
-          }
-
-          // Regex to find content between &...& non-greedily
+          if (!text || !text.includes("&")) return text;
           const regex = /&(.+?)&/g;
-
           return text.replace(regex, (match, expression) => {
             try {
-              // Use the Function constructor for safer evaluation than eval().
-              // It runs in its own scope, preventing access to local variables.
               const result = new Function("return " + expression)();
-
-              if (typeof result !== "number" || !isFinite(result)) {
-                return match; // Not a number, return original string
-              }
-
-              // Use exponential notation for very large or very small numbers
-              if (
-                Math.abs(result) > 1e6 ||
-                (Math.abs(result) < 1e-6 && result !== 0)
-              ) {
-                // toExponential() gives the format "1.5e-3" as requested
+              if (typeof result !== "number" || !isFinite(result)) return match;
+              if (Math.abs(result) > 1e6 || (Math.abs(result) < 1e-6 && result !== 0)) {
                 return result.toExponential(6);
               }
-
-              // For other numbers, prevent long floating point representations
               return parseFloat(result.toPrecision(6)).toString();
-            } catch (e) {
-              // If evaluation fails (e.g., syntax error like "&hello&"),
-              // log the error and return the original text so the app doesn't break.
-              console.warn(
-                `Could not evaluate expression: ${match}`,
-                e.message
-              );
-              return match;
-            }
+            } catch (e) { console.warn(`Could not evaluate expression: ${match}`, e.message); return match; }
           });
         }
-        // END: INSERT THIS NEW FUNCTION HERE
 
         function drawElement(el, isSelected = false) {
           ctx.save();
-          setDrawingStyle(isSelected, el.color); // <-- MODIFY THIS LINE
+          setDrawingStyle(isSelected, el.color);
           if (el.type === "wire") {
             drawWire(el, isSelected);
+          } else if (el.type === "path-wire") {
+            drawPathWire(el, isSelected);
           } else if (el.type === "text") {
             drawText(el, isSelected);
-          } // NOTE: Removed translate for text, handled in drawText
-          else {
+          } else {
             ctx.translate(el.x, el.y);
-            // Apply flipping FIRST, then rotation
             ctx.scale(el.flipH ? -1 : 1, el.flipV ? -1 : 1);
             ctx.rotate((el.rotation * Math.PI) / 180);
             switch (el.type) {
-              case "resistor":
-                drawResistor();
-                break;
-              case "capacitor":
-                drawCapacitor();
-                break;
-              case "inductor":
-                drawInductor();
-                break;
-              case "diode":
-                drawDiode();
-                break;
-              case "fwd":
-                drawFWD();
-                break;
-              case "zener":
-                drawZenerDiode();
-                break;
-              case "led":
-                drawLED();
-                break;
-              case "switch":
-                drawSwitch(el);
-                break;
-              case "spdtSwitch":
-                drawSpdtSwitch(el);
-                break;
-              case "opamp":
-                drawOPAMP();
-                break;
-              case "igbt":
-                drawIGBT();
-                break;
-              case "nfet":
-                drawNFET();
-                break;
-              case "pfet":
-                drawPFET();
-                break;
-              case "npn":
-                drawNPN();
-                break;
-              case "pnp":
-                drawPNP();
-                break;
-              case "voltage":
-                drawVoltageSource();
-                break;
-              case "acvoltage":
-                drawACVoltageSource();
-                break;
-              case "currentsource":
-                drawCurrentSource();
-                break;
-              case "dependent_voltage":
-                drawDependentVoltageSource();
-                break;
-              case "dependent_current":
-                drawDependentCurrentSource();
-                break;
-              case "battery":
-                drawBattery();
-                break;
-              case "gnd":
-                drawGround();
-                break;
-              case "arrow_marker":
-                drawArrowMarker(el);
-                break;
-              case "junction":
-                drawManualJunction();
-                break;
-              case "open_terminal":
-                drawOpenTerminal();
-                break;
+              case "resistor": drawResistor(el); break;
+              case "capacitor": drawCapacitor(el); break;
+              case "inductor": drawInductor(el); break;
+              case "diode": drawDiode(el); break;
+              case "fwd": drawFWD(el); break;
+              case "zener": drawZenerDiode(el); break;
+              case "led": drawLED(el); break;
+              case "switch": drawSwitch(el); break;
+              case "spdtSwitch": drawSpdtSwitch(el); break;
+              case "opamp": drawOPAMP(el); break;
+              case "igbt": drawIGBT(el); break;
+              case "nfet": drawNFET(el); break;
+              case "pfet": drawPFET(el); break;
+              case "npn": drawNPN(el); break;
+              case "pnp": drawPNP(el); break;
+              case "voltage": drawVoltageSource(el); break;
+              case "acvoltage": drawACVoltageSource(el); break;
+              case "currentsource": drawCurrentSource(el); break;
+              case "dependent_voltage": drawDependentVoltageSource(el); break;
+              case "dependent_current": drawDependentCurrentSource(el); break;
+              case "battery": drawBattery(el); break;
+              case "gnd": drawGround(el); break;
+              case "arrow_marker": drawArrowMarker(el); break;
+              case "junction": drawManualJunction(); break;
+              case "open_terminal": drawOpenTerminal(); break;
             }
           }
           ctx.restore();
         }
-        function setDrawingStyle(isSelected = false, color = "black") {
-          // If a color is passed (e.g., 'red'), use it. Otherwise, default to black.
-          const finalColor = color || "black";
 
-          // Use blue for selection, otherwise use the component's color.
+        function setDrawingStyle(isSelected = false, color = "black") {
+          const finalColor = color || "black";
           ctx.strokeStyle = isSelected ? "#007bff" : finalColor;
           ctx.fillStyle = isSelected ? "#007bff" : finalColor;
-
           ctx.lineWidth = isSelected ? 2.5 : 2;
           ctx.lineCap = "round";
+          ctx.lineJoin = "round";
         }
 
         function handleMouseDown(e) {
-          const mousePos = getMousePos(e);
-
-          if (e.altKey) {
-            e.preventDefault();
-            const newArrow = {
-              id: nextId++,
-              type: "arrow_marker",
-              x: snapToGrid(mousePos.x),
-              y: snapToGrid(mousePos.y),
-              rotation: 0,
-              color: "black",
-            };
-            circuitElements.push(newArrow);
-            saveState();
-            redrawCanvas();
-            return;
-          }
-
-          if (e.ctrlKey && !e.metaKey) {
-            e.preventDefault();
-            const newJunction = {
-              id: nextId++,
-              type: "junction",
-              x: snapToGrid(mousePos.x),
-              y: snapToGrid(mousePos.y),
-              rotation: 0,
-            };
-            circuitElements.push(newJunction);
-            saveState();
-            redrawCanvas();
-            return;
-          }
-
-          let needsStateSave = false;
-          if (selectedTool === "select") {
-            const clickedElement = getElementAtPos(mousePos.x, mousePos.y);
-            if (clickedElement) {
-              isMarqueeSelecting = false;
-              isDragging = true;
-              dragStartPoint = mousePos;
-              if (!selectedElements.some((el) => el.id === clickedElement.id)) {
-                selectedElements = [clickedElement];
-              }
-              selectedElements.forEach((el) => {
-                el.dragInitialState = {
-                  x: el.x,
-                  y: el.y,
-                  start: el.start ? { ...el.start } : undefined,
-                  end: el.end ? { ...el.end } : undefined,
-                };
-              });
-            } else {
-              isMarqueeSelecting = true;
-              isDragging = false;
-              marqueeStartPoint = mousePos;
-              selectedElements = [];
+            const mousePos = getMousePos(e);
+            if (e.altKey) {
+                e.preventDefault();
+                const newArrow = { id: nextId++, type: "arrow_marker", x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0, color: "black" };
+                circuitElements.push(newArrow);
+                saveState(); redrawCanvas(); return;
             }
-          } else if (selectedTool === "wire") {
-            isDrawingWire = true;
-            wireStartPoint = getSnappingPoint(mousePos.x, mousePos.y);
-          } else if (selectedTool === "text") {
-            showTextInputModal(
-              "V_{out} = V_{in} \\frac{R_2}{R_1+R_2}", // Default text
-              true // Default italic
-            )
-              .then(({ text, isItalic }) => {
-                if (text) {
-                  // only add if text is not empty
-                  const newEl = {
-                    id: nextId++,
-                    type: "text",
-                    text: text,
-                    x: snapToGrid(mousePos.x),
-                    y: snapToGrid(mousePos.y),
-                    rotation: 0,
-                    isItalic: isItalic,
-                  };
-                  circuitElements.push(newEl);
-                  selectedTool = "select";
-                  selectedElements = [newEl];
-                  saveState();
-                  redrawCanvas();
+            if (e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                const newJunction = { id: nextId++, type: "junction", x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
+                circuitElements.push(newJunction);
+                saveState(); redrawCanvas(); return;
+            }
+
+            let needsStateSave = false;
+            if (selectedTool === "select") {
+                const clickedElement = getElementAtPos(mousePos.x, mousePos.y);
+                if (clickedElement) {
+                    isMarqueeSelecting = false; isDragging = true;
+                    dragStartPoint = mousePos;
+                    if (!selectedElements.some((el) => el.id === clickedElement.id)) { selectedElements = [clickedElement]; }
+                    selectedElements.forEach((el) => {
+                        const initialState = { x: el.x, y: el.y };
+                        if (el.type === 'wire') {
+                            initialState.start = { ...el.start };
+                            initialState.end = { ...el.end };
+                        } else if (el.type === 'path-wire') {
+                            initialState.points = JSON.parse(JSON.stringify(el.points));
+                        }
+                        el.dragInitialState = initialState;
+                    });
                 } else {
-                  selectedTool = "select";
-                  redrawCanvas();
+                    isMarqueeSelecting = true; isDragging = false;
+                    marqueeStartPoint = mousePos;
+                    selectedElements = [];
                 }
-              })
-              .catch(() => {
-                // User cancelled
+            } else if (selectedTool === "wire") {
+                isDrawingWire = true;
+                wireStartPoint = getSnappingPoint(mousePos.x, mousePos.y);
+            } else if (selectedTool === "path-wire") {
+                const startPoint = getSnappingPoint(mousePos.x, mousePos.y);
+                const commandStr = prompt("Enter path commands (e.g., h100 v50 cr 20 h-40 line(200,100))", "h100 v80");
+                if (commandStr) {
+                    try {
+                        const pathData = parsePathCommandString(startPoint, commandStr);
+                        if (pathData && pathData.points.length > 1) {
+                           circuitElements.push({ id: nextId++, type: "path-wire", commandStr: commandStr, ...pathData });
+                           needsStateSave = true;
+                        }
+                    } catch (error) {
+                       alert(`Error parsing path command: ${error.message}`);
+                    }
+                }
                 selectedTool = "select";
-                redrawCanvas();
-              });
-            return; // Return early, let the promise handle state changes
-          } else {
-            const newEl = {
-              id: nextId++,
-              type: selectedTool,
-              x: snapToGrid(mousePos.x),
-              y: snapToGrid(mousePos.y),
-              rotation: 0,
-              flipH: false,
-              flipV: false,
-            };
-            if (newEl.type === "switch") {
-              newEl.state = "open";
+            } else if (selectedTool === "text") {
+                showTextInputModal("V_{out} = V_{in} \\frac{R_2}{R_1+R_2}", true)
+                    .then(({ text, isItalic }) => {
+                        if (text) {
+                            const newEl = { id: nextId++, type: "text", text: text, x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0, isItalic: isItalic };
+                            circuitElements.push(newEl);
+                            selectedTool = "select";
+                            selectedElements = [newEl];
+                            saveState(); redrawCanvas();
+                        } else { selectedTool = "select"; redrawCanvas(); }
+                    })
+                    .catch(() => { selectedTool = "select"; redrawCanvas(); });
+                return;
+            } else {
+                const newEl = { id: nextId++, type: selectedTool, x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0, flipH: false, flipV: false };
+                if (newEl.type === "switch") newEl.state = "open";
+                if (newEl.type === "spdtSwitch") newEl.state = 1;
+                circuitElements.push(newEl);
+                selectedTool = "select";
+                selectedElements = [newEl];
+                needsStateSave = true;
             }
-            if (newEl.type === "spdtSwitch") {
-              newEl.state = 1;
-            }
-            circuitElements.push(newEl);
-            selectedTool = "select";
-            selectedElements = [newEl];
-            needsStateSave = true;
-          }
-          if (needsStateSave) saveState();
-          redrawCanvas();
+            if (needsStateSave) saveState();
+            redrawCanvas();
         }
 
         function updateHoveredWireSegment() {
-          if (selectedTool !== "wire") {
-            hoveredWireSegment = null;
-            return;
-          }
+          if (selectedTool !== "wire") { hoveredWireSegment = null; return; }
           hoveredWireSegment = null;
           for (const wire of circuitElements) {
-            if (wire.type !== "wire") continue;
-            const path = getWirePath(wire);
+            if (wire.type !== "wire" && wire.type !== "path-wire") continue;
+            const path = wire.type === 'wire' ? getWirePath(wire) : wire.points;
             for (let i = 0; i < path.length - 1; i++) {
               const p1 = path[i];
               const p2 = path[i + 1];
@@ -2378,25 +1799,25 @@
         function handleMouseMove(e) {
           currentMousePos = getMousePos(e);
           if (isDragging && selectedElements.length > 0 && dragStartPoint) {
-            const dx = currentMousePos.x - dragStartPoint.x,
-              dy = currentMousePos.y - dragStartPoint.y;
+            const dx = currentMousePos.x - dragStartPoint.x, dy = currentMousePos.y - dragStartPoint.y;
             selectedElements.forEach((el) => {
               const initialState = el.dragInitialState;
               if (!initialState) return;
               if (el.type === "wire") {
                 if (initialState.start && initialState.end) {
-                  el.start.x = snapToGrid(initialState.start.x + dx);
-                  el.start.y = snapToGrid(initialState.start.y + dy);
-                  el.end.x = snapToGrid(initialState.end.x + dx);
-                  el.end.y = snapToGrid(initialState.end.y + dy);
+                  el.start.x = snapToGrid(initialState.start.x + dx); el.start.y = snapToGrid(initialState.start.y + dy);
+                  el.end.x = snapToGrid(initialState.end.x + dx); el.end.y = snapToGrid(initialState.end.y + dy);
                 }
+              } else if (el.type === 'path-wire') {
+                  if(initialState.points) {
+                      el.points.forEach((p, i) => {
+                          p.x = snapToGrid(initialState.points[i].x + dx);
+                          p.y = snapToGrid(initialState.points[i].y + dy);
+                      });
+                  }
               } else {
-                if (
-                  initialState.x !== undefined &&
-                  initialState.y !== undefined
-                ) {
-                  el.x = snapToGrid(initialState.x + dx);
-                  el.y = snapToGrid(initialState.y + dy);
+                if (initialState.x !== undefined && initialState.y !== undefined) {
+                  el.x = snapToGrid(initialState.x + dx); el.y = snapToGrid(initialState.y + dy);
                 }
               }
             });
@@ -2409,170 +1830,122 @@
           let needsStateSave = false;
           if (isMarqueeSelecting) {
             const rect = {
-              x1: Math.min(marqueeStartPoint.x, currentMousePos.x),
-              y1: Math.min(marqueeStartPoint.y, currentMousePos.y),
-              x2: Math.max(marqueeStartPoint.x, currentMousePos.x),
-              y2: Math.max(marqueeStartPoint.y, currentMousePos.y),
+              x1: Math.min(marqueeStartPoint.x, currentMousePos.x), y1: Math.min(marqueeStartPoint.y, currentMousePos.y),
+              x2: Math.max(marqueeStartPoint.x, currentMousePos.x), y2: Math.max(marqueeStartPoint.y, currentMousePos.y),
             };
-            selectedElements = circuitElements.filter((el) =>
-              isElementInRect(el, rect)
-            );
+            selectedElements = circuitElements.filter((el) => isElementInRect(el, rect));
           }
           if (isDrawingWire) {
-            const endPoint = getSnappingPoint(
-              currentMousePos.x,
-              currentMousePos.y
-            );
-            if (
-              Math.hypot(
-                endPoint.x - wireStartPoint.x,
-                endPoint.y - wireStartPoint.y
-              ) > 0
-            ) {
-              circuitElements.push({
-                id: nextId++,
-                type: "wire",
-                start: wireStartPoint,
-                end: endPoint,
-                routing: isShiftDown ? "direct" : "manhattan",
-              });
+            const endPoint = getSnappingPoint(currentMousePos.x, currentMousePos.y);
+            if (Math.hypot(endPoint.x - wireStartPoint.x, endPoint.y - wireStartPoint.y) > 0) {
+              circuitElements.push({ id: nextId++, type: "wire", start: wireStartPoint, end: endPoint, routing: isShiftDown ? "direct" : "manhattan" });
               needsStateSave = true;
             }
           }
-          if (isDragging) {
-            needsStateSave = true;
-          }
-          isDrawingWire = false;
-          isDragging = false;
-          isMarqueeSelecting = false;
-          marqueeStartPoint = null;
-          dragStartPoint = null;
+          if (isDragging) { needsStateSave = true; }
+          isDrawingWire = false; isDragging = false; isMarqueeSelecting = false;
+          marqueeStartPoint = null; dragStartPoint = null;
           circuitElements.forEach((el) => delete el.dragInitialState);
           if (needsStateSave) saveState();
           redrawCanvas();
         }
 
-        function handleDoubleClick(e) {
-          e.preventDefault();
-          const mousePos = getMousePos(e);
-          const clickedElement = getElementAtPos(mousePos.x, mousePos.y);
+                function handleDoubleClick(e) {
+            e.preventDefault();
+            const mousePos = getMousePos(e);
+            const clickedElement = getElementAtPos(mousePos.x, mousePos.y);
 
-          // If we didn't click on any element, create an open terminal as before.
-          if (!clickedElement) {
-            const newTerminal = {
-              id: nextId++,
-              type: "open_terminal",
-              x: snapToGrid(mousePos.x),
-              y: snapToGrid(mousePos.y),
-              rotation: 0,
-            };
-            circuitElements.push(newTerminal);
-            saveState();
-            redrawCanvas();
-            return;
-          }
+            if (!clickedElement) {
+                const newTerminal = { id: nextId++, type: "open_terminal", x: snapToGrid(mousePos.x), y: snapToGrid(mousePos.y), rotation: 0 };
+                circuitElements.push(newTerminal);
+                saveState(); redrawCanvas(); return;
+            }
 
-          // Priority 1: Handle switches (they have a special toggle action)
-          if (clickedElement.type === "switch") {
-            clickedElement.state =
-              clickedElement.state === "closed" ? "open" : "closed";
-            saveState();
-            redrawCanvas();
-            return;
-          }
-          if (clickedElement.type === "spdtSwitch") {
-            clickedElement.state = clickedElement.state === 1 ? 2 : 1;
-            saveState();
-            redrawCanvas();
-            return;
-          }
+            // START: ADDED LOGIC FOR PATH WIRE
+                        if (clickedElement.type === "path-wire") {
+                const oldCommandStr = clickedElement.commandStr || "";
+                const newCommandStr = prompt("Edit path commands (e.g., h100 v80 arrow):", oldCommandStr);
 
-          // Priority 2: Handle text labels (opens the editor modal)
-          if (clickedElement.type === "text") {
-            showTextInputModal(
-              clickedElement.text,
-              clickedElement.isItalic ?? true
-            )
-              .then(({ text, isItalic }) => {
-                clickedElement.text = evaluateExpressions(text); // Also evaluate on edit
-                clickedElement.isItalic = isItalic;
-                saveState();
-                redrawCanvas();
-              })
-              .catch(() => {
-                /* User cancelled, do nothing */
-              });
-            return;
-          }
+                if (newCommandStr === null) {
+                    return; // User cancelled
+                }
 
-          // --- START: MODIFIED LOGIC FOR COMPONENT TRANSFORM ---
-          // Priority 3: For any other component (not a wire, junction, etc.), open the transform modal.
-          const isTransformableComponent =
-            clickedElement.type !== "wire" &&
-            clickedElement.type !== "junction" &&
-            clickedElement.type !== "open_terminal";
+                try {
+                    const startPoint = clickedElement.points[0];
+                    if (!startPoint) throw new Error("Path is invalid and has no starting point.");
+                    
+                    const newPathData = parsePathCommandString(startPoint, newCommandStr);
+                    
+                    if (newPathData && newPathData.points.length > 1) {
+                        // Update the existing element with new data
+                        clickedElement.points = newPathData.points;
+                        clickedElement.corners = newPathData.corners;
+                        clickedElement.commandStr = newCommandStr;
+                        clickedElement.hasArrow = newPathData.hasArrow; // Update the arrow property
 
-          if (isTransformableComponent) {
-            showTransformModal(clickedElement)
-              .then(({ rotation, flipH, flipV }) => {
-                clickedElement.rotation = rotation;
-                clickedElement.flipH = flipH;
-                clickedElement.flipV = flipV;
-                saveState();
-                redrawCanvas();
-              })
-              .catch(() => {
-                /* User cancelled, do nothing */
-              });
-            return; // We're done, so exit the function
-          }
-          // --- END: MODIFIED LOGIC FOR COMPONENT TRANSFORM ---
+                        saveState();
+                        redrawCanvas();
+                    } else {
+                       alert("The command did not produce a valid path. No changes were made.");
+                    }
+                } catch (error) {
+                    alert(`Error parsing path command: ${error.message}`);
+                }
+                return; // Stop further processing for this element
+            }
+            // END: ADDED LOGIC
 
-          // If we reach here, it means a wire, junction, or existing terminal was double-clicked.
-          // In this case, we do nothing.
+            if (clickedElement.type === "switch") { clickedElement.state = clickedElement.state === "closed" ? "open" : "closed"; saveState(); redrawCanvas(); return; }
+            if (clickedElement.type === "spdtSwitch") { clickedElement.state = clickedElement.state === 1 ? 2 : 1; saveState(); redrawCanvas(); return; }
+
+            if (clickedElement.type === "text") {
+                showTextInputModal(clickedElement.text, clickedElement.isItalic ?? true)
+                    .then(({ text, isItalic }) => {
+                        clickedElement.text = evaluateExpressions(text);
+                        clickedElement.isItalic = isItalic;
+                        saveState(); redrawCanvas();
+                    }).catch(() => {});
+                return;
+            }
+            
+            const isTransformableComponent = clickedElement.type !== "wire" && clickedElement.type !== "path-wire" && clickedElement.type !== "junction" && clickedElement.type !== "open_terminal";
+
+            if (isTransformableComponent) {
+                showTransformModal(clickedElement)
+                    .then(transformData => {
+                        clickedElement.rotation = transformData.rotation;
+                        clickedElement.flipH = transformData.flipH;
+                        clickedElement.flipV = transformData.flipV;
+                        if (transformData.newWidth !== undefined) {
+                            clickedElement.width = transformData.newWidth;
+                            clickedElement.height = transformData.newHeight;
+                        }
+                        saveState(); redrawCanvas();
+                    }).catch(() => {});
+                return;
+            }
         }
 
         canvas.addEventListener("mousedown", handleMouseDown);
         canvas.addEventListener("mousemove", handleMouseMove);
         canvas.addEventListener("mouseup", handleMouseUp);
         canvas.addEventListener("dblclick", handleDoubleClick);
-        canvas.addEventListener("mouseout", () => {
-          isDrawingWire = false;
-          isDragging = false;
-          isMarqueeSelecting = false;
-          marqueeStartPoint = null;
-          isShiftDown = false;
-          hoveredWireSegment = null;
-          redrawCanvas();
-        });
+        canvas.addEventListener("mouseout", () => { isDrawingWire = false; isDragging = false; isMarqueeSelecting = false; marqueeStartPoint = null; isShiftDown = false; hoveredWireSegment = null; redrawCanvas(); });
 
-        function getMousePos(e) {
-          return {
-            x: e.clientX - canvas.getBoundingClientRect().left,
-            y: e.clientY - canvas.getBoundingClientRect().top,
-          };
-        }
-        function snapToGrid(val) {
-          return Math.round(val / (gridSize / 4)) * (gridSize / 4);
-        }
+        function getMousePos(e) { return { x: e.clientX - canvas.getBoundingClientRect().left, y: e.clientY - canvas.getBoundingClientRect().top }; }
+        function snapToGrid(val) { return Math.round(val / (gridSize / 4)) * (gridSize / 4); }
 
         function getWireSegmentSnapPoint(pos) {
           for (const wire of circuitElements) {
-            if (wire.type !== "wire") continue;
-            const path = getWirePath(wire);
+            if (wire.type !== "wire" && wire.type !== "path-wire") continue;
+            const path = wire.type === 'wire' ? getWirePath(wire) : wire.points;
             for (let i = 0; i < path.length - 1; i++) {
               const p1 = path[i];
               const p2 = path[i + 1];
               if (distToSegment(pos, p1, p2) < snapTolerance) {
-                // First, find the closest point on the line, just like before.
                 const projectedPoint = projectPointOnSegment(pos, p1, p2);
-
-                // NEW: Now, snap that projected point to our new fine grid.
-                const snappedX =
-                  Math.round(projectedPoint.x / fineGridSize) * fineGridSize;
-                const snappedY =
-                  Math.round(projectedPoint.y / fineGridSize) * fineGridSize;
-
+                const snappedX = Math.round(projectedPoint.x / fineGridSize) * fineGridSize;
+                const snappedY = Math.round(projectedPoint.y / fineGridSize) * fineGridSize;
                 return { x: snappedX, y: snappedY };
               }
             }
@@ -2581,65 +1954,59 @@
         }
 
         function getSnappingPoint(x, y) {
-          if (selectedTool === "wire") {
+          if (selectedTool === "wire" || selectedTool === "path-wire") {
             const segmentSnap = getWireSegmentSnapPoint({ x, y });
             if (segmentSnap) return segmentSnap;
           }
           for (const el of circuitElements) {
-            if (
-              el.type === "wire" ||
-              el.type === "text" ||
-              el.type === "junction" ||
-              el.type === "open_terminal"
-            )
-              continue;
+            if (el.type === "wire" || el.type === "path-wire" || el.type === "text" || el.type === "junction" || el.type === "open_terminal") continue;
             const terminals = getAbsoluteTerminals(el);
             for (const term of terminals) {
-              if (Math.hypot(x - term.x, y - term.y) < snapTolerance)
-                return { x: term.x, y: term.y, ownerId: el.id };
+              if (Math.hypot(x - term.x, y - term.y) < snapTolerance) return { x: term.x, y: term.y, ownerId: el.id };
             }
           }
           for (const el of circuitElements) {
             if (el.type === "junction" || el.type === "open_terminal") {
-              if (Math.hypot(x - el.x, y - el.y) < snapTolerance)
-                return { x: el.x, y: el.y, ownerId: el.id };
+              if (Math.hypot(x - el.x, y - el.y) < snapTolerance) return { x: el.x, y: el.y, ownerId: el.id };
             }
           }
           for (const el of circuitElements) {
-            if (el.type !== "wire") continue;
-            if (Math.hypot(x - el.start.x, y - el.start.y) < snapTolerance)
-              return { x: el.start.x, y: el.start.y };
-            if (Math.hypot(x - el.end.x, y - el.end.y) < snapTolerance)
-              return { x: el.end.x, y: el.end.y };
+            if (el.type === "wire") {
+              if (Math.hypot(x - el.start.x, y - el.start.y) < snapTolerance) return { x: el.start.x, y: el.start.y };
+              if (Math.hypot(x - el.end.x, y - el.end.y) < snapTolerance) return { x: el.end.x, y: el.end.y };
+            } else if (el.type === "path-wire" && el.points.length > 0) {
+              const start = el.points[0];
+              const end = el.points[el.points.length - 1];
+              if (Math.hypot(x - start.x, y - start.y) < snapTolerance) return { ...start };
+              if (Math.hypot(x - end.x, y - end.y) < snapTolerance) return { ...end };
+            }
           }
           return { x: snapToGrid(x), y: snapToGrid(y), ownerId: null };
         }
 
         function getAbsoluteTerminals(el) {
-          const data = componentData[el.type];
-          if (!data || !data.terminals) return [];
-          
-          const scaleX = el.flipH ? -1 : 1;
-          const scaleY = el.flipV ? -1 : 1;
+            const defaultData = componentData[el.type];
+            if (!defaultData || !defaultData.terminals) return [];
 
-          const angle = (el.rotation * Math.PI) / 180,
-            cos = Math.cos(angle),
-            sin = Math.sin(angle);
+            const { scale } = getDimensionsAndScale(el);
             
-          return data.terminals.map((t) => {
-              // 1. Apply flipping
-              const flippedX = t.x * scaleX;
-              const flippedY = t.y * scaleY;
-              // 2. Apply rotation
-              const rotatedX = flippedX * cos - flippedY * sin;
-              const rotatedY = flippedX * sin + flippedY * cos;
-              // 3. Apply translation
-              return {
-                  x: el.x + rotatedX,
-                  y: el.y + rotatedY,
-              };
-          });
+            const flipScaleX = el.flipH ? -1 : 1;
+            const flipScaleY = el.flipV ? -1 : 1;
+            const angle = (el.rotation * Math.PI) / 180;
+            const cos = Math.cos(angle);
+            const sin = Math.sin(angle);
+            
+            return defaultData.terminals.map(t => {
+                const scaledTermX = t.x * scale;
+                const scaledTermY = t.y * scale;
+                const flippedX = scaledTermX * flipScaleX;
+                const flippedY = scaledTermY * flipScaleY;
+                const rotatedX = flippedX * cos - flippedY * sin;
+                const rotatedY = flippedX * sin + flippedY * cos;
+                return { x: el.x + rotatedX, y: el.y + rotatedY };
+            });
         }
+
         function getElementAtPos(x, y) {
           for (let i = circuitElements.length - 1; i >= 0; i--) {
             const el = circuitElements[i];
@@ -2649,63 +2016,42 @@
           }
           for (let i = circuitElements.length - 1; i >= 0; i--) {
             const el = circuitElements[i];
-            if (
-              el.type === "wire" ||
-              el.type === "junction" ||
-              el.type === "open_terminal"
-            )
-              continue;
+            if (el.type === "wire" || el.type === "path-wire" || el.type === "junction" || el.type === "open_terminal") continue;
             if (el.type === "text") {
               const { width, height } = measureParsedText(el);
               const padding = 4;
-              if (
-                x > el.x - width / 2 - padding &&
-                x < el.x + width / 2 + padding &&
-                y > el.y - height / 2 - padding &&
-                y < el.y + height / 2 + padding
-              ) {
+              if (x > el.x - width / 2 - padding && x < el.x + width / 2 + padding && y > el.y - height / 2 - padding && y < el.y + height / 2 + padding) {
                 return el;
               }
             } else {
-              const data = componentData[el.type];
-              // Transform mouse coordinates into the component's local space
+              const { width, height } = getDimensionsAndScale(el);
               const dx = x - el.x;
               const dy = y - el.y;
-
-              // 1. Un-rotate
               const angle = (-el.rotation * Math.PI) / 180;
               const rX = dx * Math.cos(angle) - dy * Math.sin(angle);
               const rY = dx * Math.sin(angle) + dy * Math.cos(angle);
-              
-              // 2. Un-flip
               const scaleX = el.flipH ? -1 : 1;
               const scaleY = el.flipV ? -1 : 1;
               const localX = rX * scaleX;
               const localY = rY * scaleY;
-
-              if (
-                Math.abs(localX) < data.width / 2 &&
-                Math.abs(localY) < data.height / 2
-              )
-                return el;
+              if (Math.abs(localX) < width / 2 && Math.abs(localY) < height / 2) return el;
             }
           }
           for (let i = circuitElements.length - 1; i >= 0; i--) {
             const el = circuitElements[i];
-            if (el.type !== "wire") continue;
-            if (isPointOnWire({ x, y }, el)) return el;
+            if (el.type === 'wire' || el.type === 'path-wire') {
+               if (isPointOnWire({ x, y }, el)) return el;
+            }
           }
           return null;
         }
+
         function distToSegment(p, v, w) {
           const l2 = (v.x - w.x) ** 2 + (v.y - w.y) ** 2;
           if (l2 === 0) return Math.hypot(p.x - v.x, p.y - v.y);
           let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
           t = Math.max(0, Math.min(1, t));
-          return Math.hypot(
-            p.x - (v.x + t * (w.x - v.x)),
-            p.y - (v.y + t * (w.y - v.y))
-          );
+          return Math.hypot(p.x - (v.x + t * (w.x - v.x)), p.y - (v.y + t * (w.y - v.y)));
         }
 
         function projectPointOnSegment(p, v, w) {
@@ -2717,568 +2063,378 @@
         }
 
         function isPointOnWire(point, wire) {
-          const path = getWirePath(wire);
-          for (let i = 0; i < path.length - 1; i++) {
-            if (distToSegment(point, path[i], path[i + 1]) < snapTolerance)
-              return true;
-          }
-          return false;
+            const path = wire.type === 'wire' ? getWirePath(wire) : wire.points;
+            for (let i = 0; i < path.length - 1; i++) {
+                if (distToSegment(point, path[i], path[i + 1]) < snapTolerance) return true;
+            }
+            return false;
         }
+
         function isElementInRect(el, rect) {
-          if (el.type !== "wire") {
-            return (
-              el.x >= rect.x1 &&
-              el.x <= rect.x2 &&
-              el.y >= rect.y1 &&
-              el.y <= rect.y2
-            );
-          }
           if (el.type === "wire") {
-            const startIn =
-              el.start.x >= rect.x1 &&
-              el.start.x <= rect.x2 &&
-              el.start.y >= rect.y1 &&
-              el.start.y <= rect.y2;
-            const endIn =
-              el.end.x >= rect.x1 &&
-              el.end.x <= rect.x2 &&
-              el.end.y >= rect.y1 &&
-              el.end.y <= rect.y2;
-            return startIn && endIn;
+             return (el.start.x >= rect.x1 && el.start.x <= rect.x2 && el.start.y >= rect.y1 && el.start.y <= rect.y2) &&
+                    (el.end.x >= rect.x1 && el.end.x <= rect.x2 && el.end.y >= rect.y1 && el.end.y <= rect.y2);
           }
-          return false;
+          if (el.type === "path-wire") {
+              return el.points.every(p => p.x >= rect.x1 && p.x <= rect.x2 && p.y >= rect.y1 && p.y <= rect.y2);
+          }
+          return (el.x >= rect.x1 && el.x <= rect.x2 && el.y >= rect.y1 && el.y <= rect.y2);
         }
 
         function drawGrid() {
-          ctx.strokeStyle = "#e9ecef";
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          for (let x = 0; x <= canvas.width; x += gridSize) {
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, canvas.height);
-          }
-          for (let y = 0; y <= canvas.height; y += gridSize) {
-            ctx.moveTo(0, y);
-            ctx.lineTo(canvas.width, y);
-          }
-          ctx.stroke();
+            ctx.strokeStyle = "#e9ecef"; ctx.lineWidth = 1; ctx.beginPath();
+            for (let x = 0; x <= canvas.width; x += gridSize) { ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); }
+            for (let y = 0; y <= canvas.height; y += gridSize) { ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); }
+            ctx.stroke();
         }
+
         function drawSelection() {
           if (selectedElements.length === 0) return;
           selectedElements.forEach((el) => {
             ctx.save();
-            ctx.strokeStyle = "#007bff";
-            ctx.lineWidth = 1;
-            ctx.setLineDash([4, 2]);
+            ctx.strokeStyle = "#007bff"; ctx.lineWidth = 1; ctx.setLineDash([4, 2]);
             if (el.type === "wire") {
               drawWire(el, true);
+            } else if (el.type === "path-wire") {
+                drawPathWire(el, true);
             } else if (el.type === "text") {
               const { width, height } = measureParsedText(el);
               const padding = 4;
-              ctx.strokeRect(
-                el.x - width / 2 - padding,
-                el.y - height / 2 - padding,
-                width + padding * 2,
-                height + padding * 2
-              );
+              ctx.strokeRect(el.x - width / 2 - padding, el.y - height / 2 - padding, width + padding * 2, height + padding * 2);
             } else if (el.type === "junction" || el.type === "open_terminal") {
-              ctx.translate(el.x, el.y);
-              ctx.beginPath();
-              ctx.arc(0, 0, 8, 0, 2 * Math.PI);
-              ctx.stroke();
+              ctx.translate(el.x, el.y); ctx.beginPath(); ctx.arc(0, 0, 8, 0, 2 * Math.PI); ctx.stroke();
             } else {
-              const data = componentData[el.type];
+              const { width, height } = getDimensionsAndScale(el);
               ctx.translate(el.x, el.y);
               ctx.scale(el.flipH ? -1 : 1, el.flipV ? -1 : 1);
               ctx.rotate((el.rotation * Math.PI) / 180);
-              ctx.strokeRect(
-                -data.width / 2,
-                -data.height / 2,
-                data.width,
-                data.height
-              );
+              ctx.strokeRect(-width / 2, -height / 2, width, height);
             }
             ctx.restore();
           });
         }
+
         function drawMarquee(start, end) {
-          ctx.save();
-          ctx.fillStyle = "rgba(0, 123, 255, 0.1)";
-          ctx.strokeStyle = "rgba(0, 123, 255, 0.5)";
-          ctx.lineWidth = 1;
-          ctx.setLineDash([6, 3]);
-          const width = end.x - start.x,
-            height = end.y - start.y;
-          ctx.beginPath();
-          ctx.rect(start.x, start.y, width, height);
-          ctx.fill();
-          ctx.stroke();
-          ctx.restore();
+            ctx.save();
+            ctx.fillStyle = "rgba(0, 123, 255, 0.1)"; ctx.strokeStyle = "rgba(0, 123, 255, 0.5)";
+            ctx.lineWidth = 1; ctx.setLineDash([6, 3]);
+            const width = end.x - start.x, height = end.y - start.y;
+            ctx.beginPath(); ctx.rect(start.x, start.y, width, height); ctx.fill(); ctx.stroke();
+            ctx.restore();
         }
         function drawSnapIndicator(point) {
-          ctx.beginPath();
-          ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-          ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
-          ctx.fill();
+            ctx.beginPath(); ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI); ctx.fillStyle = "rgba(255, 0, 0, 0.5)"; ctx.fill();
         }
-        function getWirePath(wire) {
-          return wire.routing === "direct"
-            ? [wire.start, wire.end]
-            : [wire.start, { x: wire.start.x, y: wire.end.y }, wire.end];
-        }
+        function getWirePath(wire) { return wire.routing === "direct" ? [wire.start, wire.end] : [wire.start, { x: wire.start.x, y: wire.end.y }, wire.end]; }
         function drawWireFromPath(path) {
-          ctx.beginPath();
-          ctx.moveTo(path[0].x, path[0].y);
-          for (let i = 1; i < path.length; i++) {
-            ctx.lineTo(path[i].x, path[i].y);
-          }
-          ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(path[0].x, path[0].y);
+            for (let i = 1; i < path.length; i++) { ctx.lineTo(path[i].x, path[i].y); }
+            ctx.stroke();
         }
-        function drawWire(el, isSelected) {
-          setDrawingStyle(isSelected, el.color); // <-- MODIFY THIS LINE
-          drawWireFromPath(getWirePath(el));
-        }
+        function drawWire(el, isSelected) { setDrawingStyle(isSelected, el.color); drawWireFromPath(getWirePath(el)); }
         function drawWirePreview(start, end) {
-          ctx.save();
-          setDrawingStyle(true);
-          ctx.setLineDash([4, 4]);
-          drawWireFromPath(
-            getWirePath({
-              start,
-              end,
-              routing: isShiftDown ? "direct" : "manhattan",
-            })
-          );
-          ctx.restore();
+            ctx.save(); setDrawingStyle(true); ctx.setLineDash([4, 4]);
+            drawWireFromPath(getWirePath({ start, end, routing: isShiftDown ? "direct" : "manhattan" }));
+            ctx.restore();
         }
 
         function drawJunctions() {
-          const connectionPoints = new Map();
-          const addPoint = (p) => {
-            const key = `${p.x},${p.y}`;
-            connectionPoints.set(key, (connectionPoints.get(key) || 0) + 1);
-          };
-          circuitElements.forEach((el) => {
-            if (el.type === "wire") {
-              addPoint(el.start);
-              addPoint(el.end);
-            } else if (el.type === "junction" || el.type === "open_terminal") {
-              addPoint(el);
-            } else if (el.type !== "text") {
-              getAbsoluteTerminals(el).forEach((term) => addPoint(term));
+            const connectionPoints = new Map();
+            const addPoint = (p) => { const key = `${p.x},${p.y}`; connectionPoints.set(key, (connectionPoints.get(key) || 0) + 1); };
+            circuitElements.forEach((el) => {
+                if (el.type === "wire") { addPoint(el.start); addPoint(el.end); } 
+                else if (el.type === "path-wire") { el.points.forEach(p => addPoint(p)); }
+                else if (el.type === "junction" || el.type === "open_terminal") { addPoint(el); } 
+                else if (el.type !== "text") { getAbsoluteTerminals(el).forEach((term) => addPoint(term)); }
+            });
+            ctx.save(); ctx.fillStyle = "#000";
+            for (const [key, count] of connectionPoints.entries()) {
+                if (count > 2) {
+                    const [x, y] = key.split(",").map(Number);
+                    ctx.beginPath(); ctx.arc(x, y, 4, 0, 2 * Math.PI); ctx.fill();
+                }
             }
-          });
-          ctx.save();
-          ctx.fillStyle = "#000";
-          for (const [key, count] of connectionPoints.entries()) {
-            if (count > 2) {
-              const [x, y] = key.split(",").map(Number);
-              ctx.beginPath();
-              ctx.arc(x, y, 4, 0, 2 * Math.PI);
-              ctx.fill();
-            }
-          }
-          ctx.restore();
+            ctx.restore();
         }
 
-        // ***************************************************************
-        // START: NEW RECURSIVE TEXT PARSING, MEASURING, AND DRAWING ENGINE
-        // ***************************************************************
-
         const greekSymbolMap = {
-          alpha: "α",
-          beta: "β",
-          gamma: "γ",
-          Delta: "Δ",
-          delta: "δ",
-          epsilon: "ε",
-          eta: "η",
-          theta: "θ",
-          lambda: "λ",
-          mu: "μ",
-          pi: "π",
-          rho: "ρ",
-          Sigma: "Σ",
-          sigma: "σ",
-          tau: "τ",
-          Phi: "Φ",
-          phi: "φ",
-          Omega: "Ω",
-          omega: "ω",
-          times: "×",
+          alpha: "α", beta: "β", gamma: "γ", Delta: "Δ", delta: "δ", epsilon: "ε", eta: "η", theta: "θ", lambda: "λ", mu: "μ",
+          pi: "π", rho: "ρ", Sigma: "Σ", sigma: "σ", tau: "τ", Phi: "Φ", phi: "φ", Omega: "Ω", omega: "ω", times: "×",
         };
 
-        /**
-         * Finds the index of the matching closing brace '}' for a given opening brace '{'.
-         * Handles nested braces correctly.
-         * @param {string} text - The full string to search within.
-         * @param {number} startIndex - The index right after the opening brace.
-         * @returns {number} - The index of the matching closing brace, or -1 if not found.
-         */
         function findMatchingBrace(text, startIndex) {
           let braceLevel = 1;
           for (let i = startIndex; i < text.length; i++) {
-            if (text[i] === "{") {
-              braceLevel++;
-            } else if (text[i] === "}") {
-              braceLevel--;
-              if (braceLevel === 0) {
-                return i;
-              }
-            }
+            if (text[i] === "{") braceLevel++;
+            else if (text[i] === "}") { braceLevel--; if (braceLevel === 0) return i; }
           }
-          return -1; // Not found
+          return -1;
         }
 
-        /**
-         * The main recursive parsing function.
-         * @param {string} text - The segment of text to parse.
-         * @returns {Array} - An array of parsed chunks.
-         */
         function _parseInternal(text) {
-          const chunks = [];
-          let currentText = "";
-
+          const chunks = []; let currentText = "";
           for (let i = 0; i < text.length; i++) {
-            const char = text[i];
-            let specialHandled = false;
-
-            // Handle Subscript and Superscript
+            const char = text[i]; let specialHandled = false;
             if (char === "_" || char === "^") {
-              if (currentText) {
-                chunks.push({ type: "normal", text: currentText });
-                currentText = "";
-              }
+              if (currentText) { chunks.push({ type: "normal", text: currentText }); currentText = ""; }
               const type = char === "_" ? "subscript" : "superscript";
-              let content = "";
-              let jump = 0;
-
+              let content = ""; let jump = 0;
               if (text[i + 1] === "{") {
                 const endBrace = findMatchingBrace(text, i + 2);
-                if (endBrace !== -1) {
-                  content = text.substring(i + 2, endBrace);
-                  jump = endBrace - i;
-                }
-              } else if (i + 1 < text.length) {
-                content = text[i + 1];
-                jump = 1;
-              }
-
-              if (content) {
-                chunks.push({ type: type, content: _parseInternal(content) });
-                i += jump;
-              } else {
-                currentText += char; // Incomplete, treat as literal
-              }
+                if (endBrace !== -1) { content = text.substring(i + 2, endBrace); jump = endBrace - i; }
+              } else if (i + 1 < text.length) { content = text[i + 1]; jump = 1; }
+              if (content) { chunks.push({ type: type, content: _parseInternal(content) }); i += jump; } 
+              else { currentText += char; }
               specialHandled = true;
-            }
-            // Handle Commands like \frac or \mu
-            else if (char === "\\") {
-              if (currentText) {
-                chunks.push({ type: "normal", text: currentText });
-                currentText = "";
-              }
-
-              // Check for \frac{num}{den}
-              if (
-                text.substring(i, i + 5) === "\\frac" &&
-                text[i + 5] === "{"
-              ) {
+            } else if (char === "\\") {
+              if (currentText) { chunks.push({ type: "normal", text: currentText }); currentText = ""; }
+              if (text.substring(i, i + 5) === "\\frac" && text[i + 5] === "{") {
                 const numEnd = findMatchingBrace(text, i + 6);
                 if (numEnd !== -1 && text[numEnd + 1] === "{") {
                   const denEnd = findMatchingBrace(text, numEnd + 2);
                   if (denEnd !== -1) {
                     const numerator = text.substring(i + 6, numEnd);
                     const denominator = text.substring(numEnd + 2, denEnd);
-                    chunks.push({
-                      type: "fraction",
-                      numerator: _parseInternal(numerator),
-                      denominator: _parseInternal(denominator),
-                    });
-                    i = denEnd;
-                    specialHandled = true;
+                    chunks.push({ type: "fraction", numerator: _parseInternal(numerator), denominator: _parseInternal(denominator) });
+                    i = denEnd; specialHandled = true;
                   }
                 }
-              }
-              // Check for Greek letters
-              else {
-                let symbolCandidate = "";
-                let bestMatch = "";
+              } else {
+                let symbolCandidate = ""; let bestMatch = "";
                 for (let j = i + 1; j < text.length; j++) {
                   if (!text[j].match(/[a-zA-Z]/)) break;
                   symbolCandidate += text[j];
-                  if (greekSymbolMap.hasOwnProperty(symbolCandidate)) {
-                    bestMatch = symbolCandidate;
-                  }
+                  if (greekSymbolMap.hasOwnProperty(symbolCandidate)) { bestMatch = symbolCandidate; }
                 }
-                if (bestMatch) {
-                  chunks.push({
-                    type: "normal",
-                    text: greekSymbolMap[bestMatch],
-                  });
-                  i += bestMatch.length;
-                  specialHandled = true;
-                }
+                if (bestMatch) { chunks.push({ type: "normal", text: greekSymbolMap[bestMatch] }); i += bestMatch.length; specialHandled = true; }
               }
             }
-
-            if (!specialHandled) {
-              currentText += char;
-            }
+            if (!specialHandled) { currentText += char; }
           }
           if (currentText) chunks.push({ type: "normal", text: currentText });
           return chunks;
         }
 
-        // Public entry point for parsing
-        function parseText(rawText) {
-          if (!rawText) return [];
-          return _parseInternal(rawText);
-        }
+        function parseText(rawText) { if (!rawText) return []; return _parseInternal(rawText); }
 
-        /**
-         * Recursively measures the dimensions of parsed text chunks.
-         * @param {Array} chunks - The parsed chunks from parseText.
-         * @param {number} currentFontSize - The font size for this level of recursion.
-         * @param {boolean} isItalic - Whether to use italic font.
-         * @returns {object} - An object with {width, height, ascent, descent}.
-         */
         function measureRecursive(chunks, currentFontSize, isItalic) {
-          let totalWidth = 0;
-          let maxAscent = 0;
-          let maxDescent = 0;
-          const subSuperScale = 0.85;
-          const fractionLinePadding = 4;
-          const fontStyle = isItalic ? "italic" : "normal";
+            let totalWidth = 0; let maxAscent = 0; let maxDescent = 0;
+            const subSuperScale = 0.85; const fractionLinePadding = 4;
+            const fontStyle = isItalic ? "italic" : "normal";
+            ctx.font = `${fontStyle} ${currentFontSize}px Georgia`;
+            const baselineHeight = ctx.measureText("M").width * 0.8;
 
-          ctx.font = `${fontStyle} ${currentFontSize}px Georgia`;
-          const baselineHeight = ctx.measureText("M").width * 0.8;
-
-          chunks.forEach((chunk) => {
-            if (chunk.type === "normal") {
-              ctx.font = `${fontStyle} ${currentFontSize}px Georgia`;
-              const metrics = ctx.measureText(chunk.text);
-              totalWidth += metrics.width;
-              maxAscent = Math.max(maxAscent, baselineHeight);
-              maxDescent = Math.max(maxDescent, 0);
-            } else if (
-              chunk.type === "subscript" ||
-              chunk.type === "superscript"
-            ) {
-              const subMetrics = measureRecursive(
-                chunk.content,
-                currentFontSize * subSuperScale,
-                isItalic
-              );
-              totalWidth += subMetrics.width;
-              if (chunk.type === "superscript") {
-                maxAscent = Math.max(
-                  maxAscent,
-                  subMetrics.height + baselineHeight * 0.4
-                );
-              } else {
-                maxDescent = Math.max(
-                  maxDescent,
-                  subMetrics.height - baselineHeight * 0.4
-                );
-              }
-            } else if (chunk.type === "fraction") {
-              const numMetrics = measureRecursive(
-                chunk.numerator,
-                currentFontSize,
-                isItalic
-              );
-              const denMetrics = measureRecursive(
-                chunk.denominator,
-                currentFontSize,
-                isItalic
-              );
-              const fracWidth =
-                Math.max(numMetrics.width, denMetrics.width) + 4;
-              totalWidth += fracWidth;
-
-              const fractionAscent = numMetrics.height + fractionLinePadding;
-              const fractionDescent = denMetrics.height + fractionLinePadding;
-
-              maxAscent = Math.max(maxAscent, fractionAscent);
-              maxDescent = Math.max(maxDescent, fractionDescent);
-            }
-          });
-          return {
-            width: totalWidth,
-            height: maxAscent + maxDescent,
-            ascent: maxAscent,
-            descent: maxDescent,
-          };
+            chunks.forEach((chunk) => {
+                if (chunk.type === "normal") {
+                    ctx.font = `${fontStyle} ${currentFontSize}px Georgia`;
+                    const metrics = ctx.measureText(chunk.text);
+                    totalWidth += metrics.width;
+                    maxAscent = Math.max(maxAscent, baselineHeight);
+                    maxDescent = Math.max(maxDescent, 0);
+                } else if (chunk.type === "subscript" || chunk.type === "superscript") {
+                    const subMetrics = measureRecursive(chunk.content, currentFontSize * subSuperScale, isItalic);
+                    totalWidth += subMetrics.width;
+                    if (chunk.type === "superscript") { maxAscent = Math.max(maxAscent, subMetrics.height + baselineHeight * 0.4); } 
+                    else { maxDescent = Math.max(maxDescent, subMetrics.height - baselineHeight * 0.4); }
+                } else if (chunk.type === "fraction") {
+                    const numMetrics = measureRecursive(chunk.numerator, currentFontSize, isItalic);
+                    const denMetrics = measureRecursive(chunk.denominator, currentFontSize, isItalic);
+                    const fracWidth = Math.max(numMetrics.width, denMetrics.width) + 4;
+                    totalWidth += fracWidth;
+                    const fractionAscent = numMetrics.height + fractionLinePadding;
+                    const fractionDescent = denMetrics.height + fractionLinePadding;
+                    maxAscent = Math.max(maxAscent, fractionAscent);
+                    maxDescent = Math.max(maxDescent, fractionDescent);
+                }
+            });
+            return { width: totalWidth, height: maxAscent + maxDescent, ascent: maxAscent, descent: maxDescent };
         }
 
         function measureParsedText(el) {
           if (!el.text) return { width: 0, height: textFontSize };
-          const isItalic = el.isItalic ?? true; // Backward compatibility
+          const isItalic = el.isItalic ?? true;
           const chunks = parseText(el.text);
           const metrics = measureRecursive(chunks, textFontSize, isItalic);
-          return {
-            width: metrics.width,
-            height: Math.max(textFontSize, metrics.height),
-          };
+          return { width: metrics.width, height: Math.max(textFontSize, metrics.height) };
         }
 
-        /**
-         * Recursively draws parsed text chunks.
-         * @param {Array} chunks - The parsed chunks to draw.
-         * @param {number} x - The starting X coordinate.
-         * @param {number} y - The baseline Y coordinate.
-         * @param {number} currentFontSize - The font size for this level.
-         * @param {boolean} isItalic - Whether to use italic font.
-         * @returns {number} - The new X coordinate after drawing.
-         */
         function drawRecursive(chunks, x, y, currentFontSize, isItalic) {
-          let currentX = x;
-          const subSuperScale = 0.85;
-          const subSuperYOffsetFactor = 0.4;
-          const fractionLinePadding = 4;
-          const fontStyle = isItalic ? "italic" : "normal";
+            let currentX = x;
+            const subSuperScale = 0.85; const subSuperYOffsetFactor = 0.4;
+            const fractionLinePadding = 4; const fontStyle = isItalic ? "italic" : "normal";
+            ctx.font = `${fontStyle} ${currentFontSize}px Georgia`;
 
-          ctx.font = `${fontStyle} ${currentFontSize}px Georgia`;
-
-          chunks.forEach((chunk) => {
-            if (chunk.type === "normal") {
-              ctx.font = `${fontStyle} ${currentFontSize}px Georgia`;
-              ctx.fillText(chunk.text, currentX, y);
-              currentX += ctx.measureText(chunk.text).width;
-            } else if (
-              chunk.type === "subscript" ||
-              chunk.type === "superscript"
-            ) {
-              const newFontSize = currentFontSize * subSuperScale;
-              const yOffset =
-                (chunk.type === "subscript" ? 1 : -1) *
-                currentFontSize *
-                subSuperYOffsetFactor;
-              currentX = drawRecursive(
-                chunk.content,
-                currentX,
-                y + yOffset,
-                newFontSize,
-                isItalic
-              );
-            } else if (chunk.type === "fraction") {
-              const numMetrics = measureRecursive(
-                chunk.numerator,
-                currentFontSize,
-                isItalic
-              );
-              const denMetrics = measureRecursive(
-                chunk.denominator,
-                currentFontSize,
-                isItalic
-              );
-              const fracWidth = Math.max(numMetrics.width, denMetrics.width);
-
-              const numX = currentX + (fracWidth - numMetrics.width) / 2;
-              const denX = currentX + (fracWidth - denMetrics.width) / 2;
-
-              const dividerY = y + 2;
-              const numY = dividerY - numMetrics.descent - fractionLinePadding;
-              const denY = dividerY + denMetrics.ascent + fractionLinePadding;
-
-              drawRecursive(
-                chunk.numerator,
-                numX,
-                numY,
-                currentFontSize,
-                isItalic
-              );
-              drawRecursive(
-                chunk.denominator,
-                denX,
-                denY,
-                currentFontSize,
-                isItalic
-              );
-
-              ctx.beginPath();
-              ctx.moveTo(currentX - 2, dividerY + 4);
-              ctx.lineTo(currentX + fracWidth + 2, dividerY + 4);
-              ctx.stroke();
-
-              currentX += fracWidth + 4;
-            }
-          });
-          return currentX;
+            chunks.forEach((chunk) => {
+                if (chunk.type === "normal") {
+                    ctx.font = `${fontStyle} ${currentFontSize}px Georgia`;
+                    ctx.fillText(chunk.text, currentX, y);
+                    currentX += ctx.measureText(chunk.text).width;
+                } else if (chunk.type === "subscript" || chunk.type === "superscript") {
+                    const newFontSize = currentFontSize * subSuperScale;
+                    const yOffset = (chunk.type === "subscript" ? 1 : -1) * currentFontSize * subSuperYOffsetFactor;
+                    currentX = drawRecursive(chunk.content, currentX, y + yOffset, newFontSize, isItalic);
+                } else if (chunk.type === "fraction") {
+                    const numMetrics = measureRecursive(chunk.numerator, currentFontSize, isItalic);
+                    const denMetrics = measureRecursive(chunk.denominator, currentFontSize, isItalic);
+                    const fracWidth = Math.max(numMetrics.width, denMetrics.width);
+                    const numX = currentX + (fracWidth - numMetrics.width) / 2;
+                    const denX = currentX + (fracWidth - denMetrics.width) / 2;
+                    const dividerY = y + 2;
+                    const numY = dividerY - numMetrics.descent - fractionLinePadding;
+                    const denY = dividerY + denMetrics.ascent + fractionLinePadding;
+                    drawRecursive(chunk.numerator, numX, numY, currentFontSize, isItalic);
+                    drawRecursive(chunk.denominator, denX, denY, currentFontSize, isItalic);
+                    ctx.beginPath(); ctx.moveTo(currentX - 2, dividerY + 4); ctx.lineTo(currentX + fracWidth + 2, dividerY + 4); ctx.stroke();
+                    currentX += fracWidth + 4;
+                }
+            });
+            return currentX;
         }
 
         function drawText(el, isSelected) {
-          // New lines in drawText()
           const baseColor = el.color === "red" ? "red" : "black";
           ctx.fillStyle = isSelected ? "#007bff" : baseColor;
-          ctx.strokeStyle = ctx.fillStyle; // For fraction line
-          ctx.textBaseline = "middle";
-          ctx.textAlign = "left";
-
-          const isItalic = el.isItalic ?? true; // Backward compatibility
+          ctx.strokeStyle = ctx.fillStyle; ctx.textBaseline = "middle"; ctx.textAlign = "left";
+          const isItalic = el.isItalic ?? true;
           const chunks = parseText(el.text);
-          const {
-            width: totalWidth,
-            ascent,
-            descent,
-          } = measureRecursive(chunks, textFontSize, isItalic);
+          const { width: totalWidth, ascent, descent } = measureRecursive(chunks, textFontSize, isItalic);
           const totalHeight = ascent + descent;
-
-          // Center the entire block vertically
           const startY = el.y - totalHeight / 2 + ascent;
           const startX = el.x - totalWidth / 2;
-
           drawRecursive(chunks, startX, startY, textFontSize, isItalic);
         }
 
-        // ***************************************************************
-        // END: NEW RECURSIVE TEXT PARSING, MEASURING, AND DRAWING ENGINE
-        // ***************************************************************
+        function drawManualJunction() { ctx.beginPath(); ctx.arc(0, 0, 4, 0, 2 * Math.PI); ctx.fillStyle = ctx.strokeStyle; ctx.fill(); }
+        function drawOpenTerminal() { ctx.beginPath(); ctx.arc(0, 0, 4, 0, 2 * Math.PI); ctx.fillStyle = "#fff"; ctx.fill(); ctx.strokeStyle = "#000"; ctx.stroke(); }
+        
+        // --- START: PATH WIRE FUNCTIONS ---
+                function parsePathCommandString(startPoint, commandStr) {
+            const points = [startPoint];
+            const corners = {};
+            let currentPos = { ...startPoint };
+            let hasArrow = false;
 
-        function drawManualJunction() {
-          ctx.beginPath();
-          ctx.arc(0, 0, 4, 0, 2 * Math.PI);
-          ctx.fillStyle = ctx.strokeStyle;
-          ctx.fill();
-        }
-        function drawOpenTerminal() {
-          ctx.beginPath();
-          ctx.arc(0, 0, 4, 0, 2 * Math.PI);
-          ctx.fillStyle = "#fff";
-          ctx.fill();
-          ctx.strokeStyle = "#000";
-          ctx.stroke();
+            // Pre-process the string to find and remove the 'arrow' command
+            let processedCommandStr = commandStr.trim().toLowerCase();
+            if (processedCommandStr.includes('arrow')) {
+                hasArrow = true;
+                // Remove the 'arrow' command and any surrounding whitespace
+                processedCommandStr = processedCommandStr.replace(/\s*arrow\s*/g, ' ').trim();
+            }
+
+            // This part handles h100, v50, cr20 etc. by adding a space
+            processedCommandStr = processedCommandStr.replace(/(?<!\w)(h|v|cr)([-.\d]+)/g, '$1 $2');
+            
+            // Filter out any empty tokens that might result from replacements
+            const tokens = processedCommandStr.split(/\s+/).filter(token => token.length > 0);
+            const lineRegex = /line\(([^,]+),([^)]+)\)/;
+
+            for (let i = 0; i < tokens.length; i++) {
+                const token = tokens[i];
+
+                if (token === 'h' || token === 'v' || token === 'cr') {
+                    if (i + 1 >= tokens.length) continue;
+                    
+                    const value = parseFloat(tokens[i+1]);
+                    if (isNaN(value)) continue;
+
+                    if (token === 'h') {
+                        currentPos.x += value;
+                        points.push({ ...currentPos });
+                    } else if (token === 'v') {
+                        currentPos.y += value;
+                        points.push({ ...currentPos });
+                    } else if (token === 'cr') {
+                        if (points.length > 1) {
+                           corners[points.length - 1] = value;
+                        }
+                    }
+                    i++; // Consume the value token
+
+                } else if (lineRegex.test(token)) {
+                    const match = token.match(lineRegex);
+                    const x = parseFloat(match[1]);
+                    const y = parseFloat(match[2]);
+                    if (!isNaN(x) && !isNaN(y)) { currentPos = { x, y }; points.push({ ...currentPos }); }
+                } else {
+                    throw new Error(`Unknown command or invalid value: '${token}'`);
+                }
+            }
+            // Return the hasArrow flag along with points and corners
+            return { points, corners, hasArrow };
         }
 
-        function drawResistor() {
-          const w = 18,
-            h = 9;
-          ctx.beginPath();
-          ctx.moveTo(-40, 0);
-          ctx.lineTo(-w, 0);
-          ctx.moveTo(-w, 0);
-          for (let i = 0; i < 6; i++) {
-            ctx.lineTo(-w + (i * 2 + 1) * (w / 6), i % 2 === 0 ? -h : h);
-          }
-          ctx.lineTo(w, 0);
-          ctx.lineTo(40, 0);
-          ctx.stroke();
+                 function drawPathWire(el, isSelected) {
+            setDrawingStyle(isSelected, el.color);
+            const { points, corners, hasArrow } = el;
+            if (points.length < 2) return;
+
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+
+            for (let i = 1; i < points.length - 1; i++) {
+                const p_corner = points[i];
+                const p_next = points[i + 1];
+                const radius = corners ? corners[i] : null;
+
+                if (radius && radius > 0) {
+                    ctx.arcTo(p_corner.x, p_corner.y, p_next.x, p_next.y, radius);
+                } else {
+                    ctx.lineTo(p_corner.x, p_corner.y);
+                }
+            }
+            ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+            ctx.stroke();
+
+            // Add the arrowhead if the command was given
+            if (hasArrow) {
+                const p_end = points[points.length - 1];
+                const p_before_end = points[points.length - 2];
+                const extension = 3; // The distance to extend the arrow tip for better visuals
+
+                const dx = p_end.x - p_before_end.x;
+                const dy = p_end.y - p_before_end.y;
+                const length = Math.hypot(dx, dy);
+
+                if (length > 0) { // Avoid division by zero
+                    // Get a "unit vector" pointing in the direction of the line
+                    const unit_dx = dx / length;
+                    const unit_dy = dy / length;
+
+                    // Calculate the new tip of the arrow, extended outwards from the end point
+                    const extended_tip_x = p_end.x + unit_dx * extension;
+                    const extended_tip_y = p_end.y + unit_dy * extension;
+                    
+                    // Draw the arrowhead. The "from" point (p_before_end) gives the angle,
+                    // and the "to" point (extended_tip) is where the arrow's tip is drawn.
+                    drawArrowhead(ctx, p_before_end.x, p_before_end.y, extended_tip_x, extended_tip_y);
+                }
+            }
         }
-        function drawCapacitor() {
-          const plateDist = 10,
-            plateLen = 28;
-          ctx.beginPath();
-          ctx.moveTo(-40, 0);
-          ctx.lineTo(-plateDist / 2, 0);
-          ctx.moveTo(-plateDist / 2, -plateLen / 2);
-          ctx.lineTo(-plateDist / 2, plateLen / 2);
-          ctx.moveTo(plateDist / 2, -plateLen / 2);
-          ctx.lineTo(plateDist / 2, plateLen / 2);
-          ctx.moveTo(plateDist / 2, 0);
-          ctx.lineTo(40, 0);
-          ctx.stroke();
+        // --- END: PATH WIRE FUNCTIONS ---
+        
+        // --- START: SCALE-AWARE DRAWING FUNCTIONS ---
+        function drawResistor(el) {
+            const { scale } = getDimensionsAndScale(el);
+            const w = 18 * scale, h = 9 * scale, len = 40 * scale;
+            ctx.beginPath();
+            ctx.moveTo(-len, 0); ctx.lineTo(-w, 0);
+            for (let i = 0; i < 6; i++) {
+                ctx.lineTo(-w + (i * 2 + 1) * (w / 6), i % 2 === 0 ? -h : h);
+            }
+            ctx.lineTo(w, 0); ctx.lineTo(len, 0);
+            ctx.stroke();
         }
+
+        function drawCapacitor(el) {
+            const { scale } = getDimensionsAndScale(el);
+            const plateDist = 10 * scale, plateLen = 28 * scale, leadLen = 40 * scale;
+            ctx.beginPath(); ctx.moveTo(-leadLen, 0); ctx.lineTo(-plateDist / 2, 0);
+            ctx.moveTo(-plateDist / 2, -plateLen / 2); ctx.lineTo(-plateDist / 2, plateLen / 2);
+            ctx.moveTo(plateDist / 2, -plateLen / 2); ctx.lineTo(plateDist / 2, plateLen / 2);
+            ctx.moveTo(plateDist / 2, 0); ctx.lineTo(leadLen, 0); ctx.stroke();
+        }
+        
         function drawInductor() {
           // 1. READ the desired final line width from the context.
           //    This will be '2' after setDrawingStyle(false) is called.
@@ -3329,860 +2485,337 @@
           ctx.stroke();
         }
 
+        function drawDiode(el) {
+            const { scale } = getDimensionsAndScale(el);
+            const triHeight = 22 * scale, baseX = -10 * scale, tipX = 10 * scale, leadLen = 30 * scale;
+            ctx.beginPath(); ctx.lineJoin = "round"; ctx.moveTo(-leadLen, 0); ctx.lineTo(baseX, 0); ctx.moveTo(tipX, 0); ctx.lineTo(leadLen, 0); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(baseX, -triHeight / 2); ctx.lineTo(tipX, 0); ctx.lineTo(baseX, triHeight / 2); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(tipX, -triHeight / 2); ctx.lineTo(tipX, triHeight / 2); ctx.stroke();
+        }
+        
+        function drawFWD(el) {
+            const { scale } = getDimensionsAndScale(el);
+            const triHeight = 12 * scale, baseX = -6 * scale, tipX = 6 * scale, leadLen = 30 * scale;
+            ctx.beginPath(); ctx.lineJoin = "round"; ctx.moveTo(-leadLen, 0); ctx.lineTo(baseX, 0); ctx.moveTo(tipX, 0); ctx.lineTo(leadLen, 0); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(baseX, -triHeight / 2); ctx.lineTo(tipX, 0); ctx.lineTo(baseX, triHeight / 2); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(tipX, -triHeight / 2); ctx.lineTo(tipX, triHeight / 2); ctx.stroke();
+        }
+
+        function drawZenerDiode(el) {
+            drawDiode(el);
+            const { scale } = getDimensionsAndScale(el);
+            const tipX = 10 * scale, h = 11 * scale, tick = 5 * scale; ctx.beginPath();
+            ctx.moveTo(tipX, -h); ctx.lineTo(tipX - tick, -h - tick); ctx.moveTo(tipX, h); ctx.lineTo(tipX + tick, h + tick); ctx.stroke();
+        }
+
+        function drawLED(el) {
+            drawDiode(el);
+            const { scale } = getDimensionsAndScale(el);
+            ctx.save(); ctx.lineCap = "round"; ctx.lineWidth *= 0.6; ctx.beginPath();
+            ctx.moveTo(-3 * scale, -12 * scale); ctx.lineTo(8 * scale, -24 * scale);
+            ctx.moveTo(4 * scale, -22 * scale); ctx.lineTo(8 * scale, -24 * scale); ctx.lineTo(6 * scale, -20 * scale);
+            ctx.stroke(); ctx.beginPath();
+            ctx.moveTo(2 * scale, -9 * scale); ctx.lineTo(13 * scale, -21 * scale);
+            ctx.moveTo(9 * scale, -19 * scale); ctx.lineTo(13 * scale, -21 * scale); ctx.lineTo(11 * scale, -17 * scale);
+            ctx.stroke(); ctx.restore();
+        }
+        
         function drawSwitch(el) {
-          const circleRadius = 4,
-            leftContactX = -15,
-            rightContactX = 15;
-          ctx.beginPath();
-          ctx.moveTo(-40, 0);
-          ctx.lineTo(leftContactX, 0);
-          ctx.moveTo(40, 0);
-          ctx.lineTo(rightContactX, 0);
-          if (el.state === "closed") {
-            ctx.moveTo(leftContactX, -5);
-            ctx.lineTo(rightContactX, -5);
-          } else {
-            const bladeLength = 30,
-              bladeAngle = (-30 * Math.PI) / 180;
-            ctx.moveTo(leftContactX, 0);
-            ctx.lineTo(
-              leftContactX + bladeLength * Math.cos(bladeAngle),
-              bladeLength * Math.sin(bladeAngle)
-            );
-          }
-          ctx.stroke();
-          ctx.save();
-          ctx.fillStyle = "white";
-          ctx.beginPath();
-          ctx.arc(leftContactX, 0, circleRadius, 0, 2 * Math.PI);
-          ctx.fill();
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(rightContactX, 0, circleRadius, 0, 2 * Math.PI);
-          ctx.fill();
-          ctx.stroke();
-          ctx.restore();
+            const { scale } = getDimensionsAndScale(el);
+            const circleRadius = 4 * scale, leftContactX = -15 * scale, rightContactX = 15 * scale, leadLen = 40 * scale;
+            ctx.beginPath(); ctx.moveTo(-leadLen, 0); ctx.lineTo(leftContactX, 0); ctx.moveTo(leadLen, 0); ctx.lineTo(rightContactX, 0);
+            if (el.state === "closed") { ctx.moveTo(leftContactX, -5 * scale); ctx.lineTo(rightContactX, -5 * scale); } 
+            else { const bladeLength = 30 * scale, bladeAngle = (-30 * Math.PI) / 180; ctx.moveTo(leftContactX, 0); ctx.lineTo(leftContactX + bladeLength * Math.cos(bladeAngle), bladeLength * Math.sin(bladeAngle)); }
+            ctx.stroke(); ctx.save(); ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(leftContactX, 0, circleRadius, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.arc(rightContactX, 0, circleRadius, 0, 2 * Math.PI); ctx.fill(); ctx.stroke(); ctx.restore();
         }
+
         function drawSpdtSwitch(el) {
-          const circleRadius = 4,
-            commonX = -15,
-            throwX = 15,
-            throwY1 = -20,
-            throwY2 = 20;
-
-          // Draw lead wires to external terminals
-          ctx.beginPath();
-          ctx.moveTo(-40, 0);
-          ctx.lineTo(commonX, 0);
-          ctx.moveTo(throwX, throwY1);
-          ctx.lineTo(40, throwY1);
-          ctx.moveTo(throwX, throwY2);
-          ctx.lineTo(40, throwY2);
-
-          // Draw switch blade
-          if (el.state === 2) {
-            ctx.moveTo(commonX, 0);
-            ctx.lineTo(throwX, throwY2);
-          } else {
-            // state 1 is default
-            ctx.moveTo(commonX, 0);
-            ctx.lineTo(throwX, throwY1);
-          }
-          ctx.stroke();
-
-          // Draw contact circles
-          ctx.save();
-          ctx.fillStyle = "white";
-          [
-            { x: commonX, y: 0 },
-            { x: throwX, y: throwY1 },
-            { x: throwX, y: throwY2 },
-          ].forEach((p) => {
+            const { scale } = getDimensionsAndScale(el);
+            const circleRadius = 4 * scale, commonX = -15 * scale, throwX = 15 * scale, throwY1 = -20 * scale, throwY2 = 20 * scale, leadLen = 40 * scale;
+            ctx.beginPath(); ctx.moveTo(-leadLen, 0); ctx.lineTo(commonX, 0); ctx.moveTo(throwX, throwY1); ctx.lineTo(leadLen, throwY1);
+            ctx.moveTo(throwX, throwY2); ctx.lineTo(leadLen, throwY2);
+            if (el.state === 2) { ctx.moveTo(commonX, 0); ctx.lineTo(throwX, throwY2); } 
+            else { ctx.moveTo(commonX, 0); ctx.lineTo(throwX, throwY1); }
+            ctx.stroke(); ctx.save(); ctx.fillStyle = "white";
+            [{ x: commonX, y: 0 }, { x: throwX, y: throwY1 }, { x: throwX, y: throwY2 }].forEach((p) => {
+                ctx.beginPath(); ctx.arc(p.x, p.y, circleRadius, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+            });
+            ctx.restore();
+        }
+        
+        function drawOPAMP(el) {
+            const { scale } = getDimensionsAndScale(el);
             ctx.beginPath();
-            ctx.arc(p.x, p.y, circleRadius, 0, 2 * Math.PI);
-            ctx.fill();
+            ctx.moveTo(-50 * scale, -50 * scale); ctx.lineTo(50 * scale, 0); ctx.lineTo(-50 * scale, 50 * scale); ctx.closePath();
+            ctx.moveTo(-70 * scale, -20 * scale); ctx.lineTo(-50 * scale, -20 * scale);
+            ctx.moveTo(-70 * scale, 20 * scale); ctx.lineTo(-50 * scale, 20 * scale);
+            ctx.moveTo(50 * scale, 0); ctx.lineTo(70 * scale, 0);
+            ctx.moveTo(-40 * scale, -25 * scale); ctx.lineTo(-40 * scale, -15 * scale);
+            ctx.moveTo(-45 * scale, -20 * scale); ctx.lineTo(-35 * scale, -20 * scale);
+            ctx.moveTo(-45 * scale, 20 * scale); ctx.lineTo(-35 * scale, 20 * scale);
             ctx.stroke();
-          });
-          ctx.restore();
         }
-        function drawArrowhead(ctx, fromX, fromY, toX, toY, headLength = 12) {
-          const angle = Math.atan2(toY - fromY, toX - fromX);
-          const arrowAngle = Math.PI / 7;
-
-          // Start a new path for the arrowhead so it can be filled separately
-          ctx.beginPath();
-
-          // Move to the tip of the arrow
-          ctx.moveTo(toX, toY);
-
-          // Draw a line to the first corner of the arrowhead base
-          ctx.lineTo(
-            toX - headLength * Math.cos(angle - arrowAngle),
-            toY - headLength * Math.sin(angle - arrowAngle)
-          );
-
-          // Draw a line to the second corner of the arrowhead base
-          ctx.lineTo(
-            toX - headLength * Math.cos(angle + arrowAngle),
-            toY - headLength * Math.sin(angle + arrowAngle)
-          );
-
-          // Close the path to complete the triangle
-          ctx.closePath();
-
-          // Fill the closed path
-          ctx.fill();
+        
+        function drawArrowhead(ctx, fromX, fromY, toX, toY, scale = 1, headLength = 12) {
+            const angle = Math.atan2(toY - fromY, toX - fromX); const arrowAngle = Math.PI / 7;
+            const h = headLength * scale;
+            ctx.beginPath(); ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - h * Math.cos(angle - arrowAngle), toY - h * Math.sin(angle - arrowAngle));
+            ctx.lineTo(toX - h * Math.cos(angle + arrowAngle), toY - h * Math.sin(angle + arrowAngle));
+            ctx.closePath(); ctx.fill();
         }
 
-        // --- IGBT Drawing Function ---
-        // The drawing is split into two parts: stroking the lines and filling the arrowhead.
-        function drawIGBT() {
-          // --- Part 1: Draw and stroke the main lines of the symbol ---
-          ctx.beginPath();
-
-          // Gate
-          ctx.moveTo(10 - 40, 65 - 55);
-          ctx.lineTo(38 - 40, 65 - 55); // Gate lead
-          ctx.moveTo(38 - 40, 65 - 55);
-          ctx.lineTo(38 - 40, 43 - 55); // Gate plate
-
-          // Channel (Capacitor Plate)
-          ctx.moveTo(45 - 40, 75 - 55);
-          ctx.lineTo(45 - 40, 35 - 55);
-
-          // Collector & Emitter leads
-          ctx.moveTo(70 - 40, 35 - 55);
-          ctx.lineTo(70 - 40, 5 - 55); // Collector lead
-          ctx.moveTo(70 - 40, 75 - 55);
-          ctx.lineTo(70 - 40, 105 - 55); // Emitter lead
-
-          // Slanted connections
-          ctx.moveTo(70 - 40, 35 - 55);
-          ctx.lineTo(45 - 40, 48 - 55); // Top slant
-
-          // Define start and end points for the bottom slant
-          const fromX = 45 - 40,
-            fromY = 62 - 55;
-          const toX = 70 - 40,
-            toY = 75 - 55;
-
-          // Draw the bottom slant line itself
-          ctx.moveTo(fromX, fromY);
-          ctx.lineTo(toX, toY);
-
-          // Render all the lines defined above
-          ctx.stroke();
-
-          // --- Part 2: Draw the filled arrowhead ---
-          // This is done as a separate operation to allow it to be a filled shape.
-          drawArrowhead(ctx, fromX, fromY, toX, toY);
+        function drawIGBT(el) {
+            const { scale } = getDimensionsAndScale(el);
+            ctx.beginPath();
+            ctx.moveTo(-30*scale, 10*scale); ctx.lineTo(-2*scale, 10*scale); 
+            ctx.moveTo(-2*scale, 10*scale); ctx.lineTo(-2*scale, -12*scale);
+            ctx.moveTo(5*scale, 20*scale); ctx.lineTo(5*scale, -20*scale);
+            ctx.moveTo(4*scale, 20*scale); ctx.lineTo(4*scale, -20*scale);
+            ctx.moveTo(30*scale, -20*scale); ctx.lineTo(30*scale, -50*scale);
+            ctx.moveTo(30*scale, 20*scale); ctx.lineTo(30*scale, 50*scale);
+            ctx.moveTo(30*scale, -20*scale); ctx.lineTo(5*scale, -7*scale);
+            const fromX = 5*scale, fromY = 7*scale, toX = 30*scale, toY = 20*scale;
+            ctx.moveTo(fromX, fromY); ctx.lineTo(toX, toY); ctx.stroke();
+            drawArrowhead(ctx, fromX, fromY, toX, toY, scale);
         }
 
-        function drawOPAMP() {
-          // --- Part 1: Draw and stroke the main lines of the symbol ---
-          ctx.beginPath();
+        
 
-          // 
-          ctx.moveTo(0-50,-50);
-          ctx.lineTo(100-50,0); 
-          ctx.lineTo(0-50,50); 
-          ctx.lineTo(0-50,-50); 
-
-          // Terminal leads
-          ctx.moveTo(0-50,-20);
-          ctx.lineTo(-20-50,-20); // + Terminal
-          ctx.moveTo(0-50,20);
-          ctx.lineTo(-20-50,20); // - Terminal
-          ctx.moveTo(100-50,0);
-          ctx.lineTo(120-50,0); // - Terminal
-           
-          // + - sign
-          ctx.moveTo(10-50,-20);
-          ctx.lineTo(20-50,-20); // + 
-          ctx.moveTo(15-50,-25); // + 
-          ctx.lineTo(15-50,-15); // + 
-          
-          ctx.moveTo(10-50,20);
-          ctx.lineTo(20-50,20); // - 
-
-          // Render all the lines defined above
-          ctx.stroke();
-
-          
+        function drawNFET(el) {
+            const { scale } = getDimensionsAndScale(el);
+            ctx.beginPath();
+            ctx.moveTo(-30*scale, 20*scale); ctx.lineTo(-2*scale, 20*scale);
+            ctx.moveTo(-1*scale, 20*scale); ctx.lineTo(-1*scale, -20*scale); ctx.moveTo(-2*scale, 20*scale); ctx.lineTo(-2*scale, -20*scale);
+            ctx.moveTo(5*scale, -20*scale); ctx.lineTo(5*scale, -12*scale); ctx.moveTo(5*scale, -16*scale); ctx.lineTo(30*scale, -16*scale);
+            ctx.moveTo(5*scale, -4*scale); ctx.lineTo(5*scale, 4*scale); ctx.moveTo(5*scale, 0*scale); ctx.lineTo(30*scale, 0*scale);
+            ctx.moveTo(5*scale, 12*scale); ctx.lineTo(5*scale, 20*scale); ctx.moveTo(5*scale, 16*scale); ctx.lineTo(30*scale, 16*scale);
+            ctx.moveTo(30*scale, -16*scale); ctx.lineTo(30*scale, -50*scale);
+            ctx.moveTo(30*scale, 0*scale); ctx.lineTo(30*scale, 50*scale); ctx.stroke();
+            drawArrowhead(ctx, 30*scale, 0*scale, 5*scale, 0*scale, scale);
         }
 
-        function drawNFET() {
-          // --- Part 1: Draw and stroke the main lines of the symbol ---
-          ctx.beginPath();
-
-          // Gate
-          ctx.moveTo(10 - 40, 75 - 55);
-          ctx.lineTo(38 - 40, 75 - 55); // Gate lead
-          ctx.moveTo(38 - 40, 75 - 55);
-          ctx.lineTo(38 - 40, 35 - 55); // Gate plate
-
-          // Channel (Drain Plate)
-          ctx.moveTo(45 - 40, 35 - 55);
-          ctx.lineTo(45 - 40, 43 - 55);
-          ctx.moveTo(45 - 40, 39 - 55);
-          ctx.lineTo(70 - 40, 39 - 55);
-          // Channel (Gate Plate)
-          ctx.moveTo(45 - 40, 51 - 55);
-          ctx.lineTo(45 - 40, 59 - 55);
-          ctx.moveTo(45 - 40, 55 - 55);
-          ctx.lineTo(70 - 40, 55 - 55);
-
-          // Channel (Source Plate)
-          ctx.moveTo(45 - 40, 67 - 55);
-          ctx.lineTo(45 - 40, 75 - 55);
-          ctx.moveTo(45 - 40, 71 - 55);
-          ctx.lineTo(70 - 40, 71 - 55);
-
-          // Collector & Emitter leads
-          ctx.moveTo(70 - 40, 39 - 55);
-          ctx.lineTo(70 - 40, 5 - 55); // Drain lead
-          ctx.moveTo(70 - 40, 55 - 55);
-          ctx.lineTo(70 - 40, 105 - 55); // Source lead
-
-          // Render all the lines defined above
-          ctx.stroke();
-
-          // --- Part 2: Draw the filled arrowhead ---
-          // This is done as a separate operation to allow it to be a filled shape.
-          drawArrowhead(ctx, 70 - 40, 55 - 55, 45 - 40, 55 - 55);
+        function drawPFET(el) {
+            const { scale } = getDimensionsAndScale(el);
+            ctx.beginPath();
+            ctx.moveTo(-30*scale, 20*scale); ctx.lineTo(-2*scale, 20*scale);
+            ctx.moveTo(-1*scale, 20*scale); ctx.lineTo(-1*scale, -20*scale); ctx.moveTo(-2*scale, 20*scale); ctx.lineTo(-2*scale, -20*scale);
+            ctx.moveTo(5*scale, -20*scale); ctx.lineTo(5*scale, -12*scale); ctx.moveTo(5*scale, -16*scale); ctx.lineTo(30*scale, -16*scale);
+            ctx.moveTo(5*scale, -4*scale); ctx.lineTo(5*scale, 4*scale); ctx.moveTo(5*scale, 0*scale); ctx.lineTo(30*scale, 0*scale);
+            ctx.moveTo(5*scale, 12*scale); ctx.lineTo(5*scale, 20*scale); ctx.moveTo(5*scale, 16*scale); ctx.lineTo(30*scale, 16*scale);
+            ctx.moveTo(30*scale, -16*scale); ctx.lineTo(30*scale, -50*scale);
+            ctx.moveTo(30*scale, 0*scale); ctx.lineTo(30*scale, 50*scale); ctx.stroke();
+            drawArrowhead(ctx,  5*scale, 0*scale, 30*scale, 0*scale, scale);
+        }
+        
+        function drawNPN(el) {
+            const { scale } = getDimensionsAndScale(el);
+            ctx.beginPath();
+            ctx.moveTo(-30*scale, 0); ctx.lineTo(2*scale, 0);
+            ctx.moveTo(3*scale, 20*scale); ctx.lineTo(3*scale, -20*scale); ctx.moveTo(2*scale, 20*scale); ctx.lineTo(2*scale, -20*scale);
+            ctx.moveTo(30*scale, -20*scale); ctx.lineTo(30*scale, -52.5*scale);
+            ctx.moveTo(30*scale, 20*scale); ctx.lineTo(30*scale, 52.5*scale);
+            ctx.moveTo(30*scale, -20*scale); ctx.lineTo(2*scale, -7*scale);
+            const fromX = 2*scale, fromY = 7*scale, toX = 30*scale, toY = 20*scale;
+            ctx.moveTo(fromX, fromY); ctx.lineTo(toX, toY); ctx.stroke();
+            drawArrowhead(ctx, fromX, fromY, toX, toY, scale, 10);
         }
 
-        function drawPFET() {
-          // --- Part 1: Draw and stroke the main lines of the symbol ---
-          ctx.beginPath();
-
-          // Gate
-          ctx.moveTo(10 - 40, 75 - 55);
-          ctx.lineTo(38 - 40, 75 - 55); // Gate lead
-          ctx.moveTo(38 - 40, 75 - 55);
-          ctx.lineTo(38 - 40, 35 - 55); // Gate plate
-
-          // Channel (Drain Plate)
-          ctx.moveTo(45 - 40, 35 - 55);
-          ctx.lineTo(45 - 40, 43 - 55);
-          ctx.moveTo(45 - 40, 39 - 55);
-          ctx.lineTo(70 - 40, 39 - 55);
-          // Channel (Gate Plate)
-          ctx.moveTo(45 - 40, 51 - 55);
-          ctx.lineTo(45 - 40, 59 - 55);
-          ctx.moveTo(45 - 40, 55 - 55);
-          ctx.lineTo(70 - 40, 55 - 55);
-
-          // Channel (Source Plate)
-          ctx.moveTo(45 - 40, 67 - 55);
-          ctx.lineTo(45 - 40, 75 - 55);
-          ctx.moveTo(45 - 40, 71 - 55);
-          ctx.lineTo(70 - 40, 71 - 55);
-
-          // Collector & Emitter leads
-          ctx.moveTo(70 - 40, 39 - 55);
-          ctx.lineTo(70 - 40, 5 - 55); // Drain lead
-          ctx.moveTo(70 - 40, 55 - 55);
-          ctx.lineTo(70 - 40, 105 - 55); // Source lead
-
-          // Render all the lines defined above
-          ctx.stroke();
-
-          // --- Part 2: Draw the filled arrowhead ---
-          // This is done as a separate operation to allow it to be a filled shape.
-          drawArrowhead(ctx, 45 - 40, 55 - 55, 70 - 40, 55 - 55);
-        }
-        function drawNPN() {
-          // --- Part 1: Draw and stroke the main lines of the symbol ---
-          ctx.beginPath();
-
-          // Base
-          ctx.moveTo(10 - 40, 55 - 55);
-          ctx.lineTo(42 - 40, 55 - 55); // Base lead
-          ctx.moveTo(42 - 40, 75 - 55);
-          ctx.lineTo(42 - 40, 35 - 55); // Base plate
-
-          // Collector & Emitter leads
-          ctx.moveTo(70 - 40, 35 - 55);
-          ctx.lineTo(70 - 40, 5 - 55); // Collector lead
-          ctx.moveTo(70 - 40, 75 - 55);
-          ctx.lineTo(70 - 40, 105 - 55); // Emitter lead
-
-          // Slanted connections
-          ctx.moveTo(70 - 40, 35 - 55);
-          ctx.lineTo(42 - 40, 48 - 55); // Top slant
-
-          // Define start and end points for the bottom slant
-          const fromX = 42 - 40,
-            fromY = 62 - 55;
-          const toX = 70 - 40,
-            toY = 75 - 55;
-
-          // Draw the bottom slant line itself
-          ctx.moveTo(fromX, fromY);
-          ctx.lineTo(toX, toY);
-
-          // Render all the lines defined above
-          ctx.stroke();
-
-          // --- Part 2: Draw the filled arrowhead ---
-          // This is done as a separate operation to allow it to be a filled shape.
-          drawArrowhead(ctx, fromX, fromY, toX, toY);
+        function drawPNP(el) {
+            const { scale } = getDimensionsAndScale(el);
+            ctx.beginPath();
+            ctx.moveTo(-30*scale, 0); ctx.lineTo(2*scale, 0);
+            ctx.moveTo(3*scale, 20*scale); ctx.lineTo(3*scale, -20*scale); ctx.moveTo(2*scale, 20*scale); ctx.lineTo(2*scale, -20*scale);
+            ctx.moveTo(30*scale, -20*scale); ctx.lineTo(30*scale, -52.5*scale);
+            ctx.moveTo(30*scale, 20*scale); ctx.lineTo(30*scale, 52.5*scale);
+            const fromX = 30*scale, fromY = -20*scale, toX = 2*scale, toY = -7*scale;
+            ctx.moveTo(fromX, fromY); ctx.lineTo(toX, toY);
+            ctx.moveTo(2*scale, 7*scale); ctx.lineTo(30*scale, 20*scale); ctx.stroke();
+            drawArrowhead(ctx, fromX, fromY, toX, toY, scale, 10);
         }
 
-        function drawPNP() {
-          // --- Part 1: Draw and stroke the main lines of the symbol ---
-          ctx.beginPath();
-
-          // Base
-          ctx.moveTo(10 - 40, 55 - 55);
-          ctx.lineTo(42 - 40, 55 - 55); // Base lead
-          ctx.moveTo(42 - 40, 75 - 55);
-          ctx.lineTo(42 - 40, 35 - 55); // Base plate
-
-          // Collector & Emitter leads
-          ctx.moveTo(70 - 40, 35 - 55);
-          ctx.lineTo(70 - 40, 5 - 55); // Collector lead
-          ctx.moveTo(70 - 40, 75 - 55);
-          ctx.lineTo(70 - 40, 105 - 55); // Emitter lead
-
-          // Slanted connections
-          ctx.moveTo(70 - 40, 35 - 55);
-          ctx.lineTo(42 - 40, 48 - 55); // Top slant
-
-          // Define start and end points for the bottom slant
-          const fromX = 70 - 40,
-            fromY = 75 - 55;
-          const toX = 42 - 40,
-            toY = 62 - 55;
-
-          // Draw the bottom slant line itself
-          ctx.moveTo(fromX, fromY);
-          ctx.lineTo(toX, toY);
-
-          // Render all the lines defined above
-          ctx.stroke();
-
-          // --- Part 2: Draw the filled arrowhead ---
-          // This is done as a separate operation to allow it to be a filled shape.
-          drawArrowhead(ctx, 70 - 40, 35 - 55, 42 - 40, 48 - 55);
+        function drawVoltageSource(el) {
+            const { scale } = getDimensionsAndScale(el);
+            const r = 16 * scale; ctx.beginPath(); ctx.arc(0, 0, r, 0, 2 * Math.PI);
+            ctx.moveTo(0, -30 * scale); ctx.lineTo(0, -r); ctx.moveTo(0, r); ctx.lineTo(0, 30 * scale);
+            ctx.moveTo(-r / 4, -r / 2); ctx.lineTo(r / 4, -r / 2);
+            ctx.moveTo(0, -r / 2 - 5*scale); ctx.lineTo(0, -r / 2 + 5*scale);
+            ctx.moveTo(-r / 4, r / 2); ctx.lineTo(r / 4, r / 2); ctx.stroke();
         }
 
-        function drawDiode() {
-          const triHeight = 22,
-            baseX = -10,
-            tipX = 10;
-          ctx.beginPath();
-          ctx.lineJoin = "round";
-          ctx.moveTo(-30, 0);
-          ctx.lineTo(baseX, 0);
-          ctx.moveTo(tipX, 0);
-          ctx.lineTo(30, 0);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(baseX, -triHeight / 2);
-          ctx.lineTo(tipX, 0);
-          ctx.lineTo(baseX, triHeight / 2);
-          ctx.closePath();
-          ctx.fill();
-          ctx.beginPath();
-          ctx.moveTo(tipX, -triHeight / 2);
-          ctx.lineTo(tipX, triHeight / 2);
-          ctx.stroke();
+        function drawACVoltageSource(el) {
+            const { scale } = getDimensionsAndScale(el);
+            const r = 16 * scale; ctx.beginPath(); ctx.arc(0, 0, r, 0, 2 * Math.PI);
+            ctx.moveTo(0, -30 * scale); ctx.lineTo(0, -r); ctx.moveTo(0, r); ctx.lineTo(0, 30 * scale);
+            const waveStartX = -10 * scale, waveEndX = 10 * scale, waveAmplitude = 8 * scale;
+            ctx.moveTo(waveStartX, 0); ctx.quadraticCurveTo(waveStartX / 2, -waveAmplitude, 0, 0);
+            ctx.quadraticCurveTo(waveEndX / 2, waveAmplitude, waveEndX, 0); ctx.stroke();
         }
 
-        function drawFWD() {
-          const triHeight = 12,
-            baseX = -6,
-            tipX = 6;
-          ctx.beginPath();
-          ctx.lineJoin = "round";
-          ctx.moveTo(-30, 0);
-          ctx.lineTo(baseX, 0);
-          ctx.moveTo(tipX, 0);
-          ctx.lineTo(30, 0);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(baseX, -triHeight / 2);
-          ctx.lineTo(tipX, 0);
-          ctx.lineTo(baseX, triHeight / 2);
-          ctx.closePath();
-          ctx.fill();
-          ctx.beginPath();
-          ctx.moveTo(tipX, -triHeight / 2);
-          ctx.lineTo(tipX, triHeight / 2);
-          ctx.stroke();
+        function drawCurrentSource(el) {
+            const { scale } = getDimensionsAndScale(el);
+            const r = 16 * scale, arrowY_start = -10 * scale, arrowY_end = 10 * scale, arrowHeadSize = 6 * scale;
+            ctx.beginPath(); ctx.arc(0, 0, r, 0, 2 * Math.PI);
+            ctx.moveTo(0, -30 * scale); ctx.lineTo(0, -r); ctx.moveTo(0, r); ctx.lineTo(0, 30 * scale);
+            ctx.moveTo(-arrowHeadSize / 2, arrowY_start + arrowHeadSize);
+            ctx.lineTo(0, arrowY_start); ctx.lineTo(arrowHeadSize / 2, arrowY_start + arrowHeadSize);
+            ctx.moveTo(0, arrowY_end); ctx.lineTo(0, 0); ctx.lineTo(0, -5 * scale); ctx.stroke();
         }
 
-        function drawZenerDiode() {
-          drawDiode();
-          const tipX = 10,
-            h = 11,
-            tick = 5;
-          ctx.beginPath();
-          ctx.moveTo(tipX, -h);
-          ctx.lineTo(tipX - tick, -h - tick);
-          ctx.moveTo(tipX, h);
-          ctx.lineTo(tipX + tick, h + tick);
-          ctx.stroke();
+        function drawDependentVoltageSource(el) {
+            const { scale } = getDimensionsAndScale(el);
+            const w = 20 * scale, h = 20 * scale; ctx.beginPath();
+            ctx.moveTo(0, -30 * scale); ctx.lineTo(0, -h); ctx.moveTo(0, h); ctx.lineTo(0, 30 * scale);
+            ctx.moveTo(0, -h); ctx.lineTo(w, 0); ctx.lineTo(0, h); ctx.lineTo(-w, 0); ctx.closePath();
+            const signSize = 4 * scale;
+            ctx.moveTo(-signSize, -h * 0.5 + 2*scale); ctx.lineTo(signSize, -h * 0.5 + 2*scale);
+            ctx.moveTo(0, -h * 0.5 - signSize + 2*scale); ctx.lineTo(0, -h * 0.5 + signSize + 2*scale);
+            ctx.moveTo(-signSize, h * 0.5 - 2*scale); ctx.lineTo(signSize, h * 0.5 - 2*scale); ctx.stroke();
         }
-        function drawLED() {
-          drawDiode();
-          ctx.save();
-          ctx.lineCap = "round";
-          ctx.lineWidth = ctx.lineWidth * 0.6;
-          ctx.beginPath();
-          ctx.moveTo(-3, -12);
-          ctx.lineTo(8, -24);
-          ctx.moveTo(4, -22);
-          ctx.lineTo(8, -24);
-          ctx.lineTo(6, -20);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(2, -9);
-          ctx.lineTo(13, -21);
-          ctx.moveTo(9, -19);
-          ctx.lineTo(13, -21);
-          ctx.lineTo(11, -17);
-          ctx.stroke();
-          ctx.restore();
+        
+        function drawDependentCurrentSource(el) {
+            const { scale } = getDimensionsAndScale(el);
+            const w = 20 * scale, h = 20 * scale; ctx.beginPath();
+            ctx.moveTo(0, -30 * scale); ctx.lineTo(0, -h); ctx.moveTo(0, h); ctx.lineTo(0, 30 * scale);
+            ctx.moveTo(0, -h); ctx.lineTo(w, 0); ctx.lineTo(0, h); ctx.lineTo(-w, 0); ctx.closePath();
+            const arrowY_start = -h * 0.7, arrowY_end = h * 0.7, arrowHeadSize = 6 * scale;
+            ctx.moveTo(0, arrowY_end); ctx.lineTo(0, arrowY_start);
+            ctx.moveTo(-arrowHeadSize / 2, arrowY_start + arrowHeadSize);
+            ctx.lineTo(0, arrowY_start); ctx.lineTo(arrowHeadSize / 2, arrowY_start + arrowHeadSize); ctx.stroke();
         }
-        function drawVoltageSource() {
-          const r = 16;
-          ctx.beginPath();
-          ctx.arc(0, 0, r, 0, 2 * Math.PI);
-          ctx.moveTo(0, -30);
-          ctx.lineTo(0, -r);
-          ctx.moveTo(0, r);
-          ctx.lineTo(0, 30);
-          ctx.moveTo(-r / 4, -r / 2);
-          ctx.lineTo(r / 4, -r / 2);
-          ctx.moveTo(0, -r / 2 - 5);
-          ctx.lineTo(0, -r / 2 + 5);
-          ctx.moveTo(-r / 4, r / 2);
-          ctx.lineTo(r / 4, r / 2);
-          ctx.stroke();
+        
+        function drawBattery(el) {
+            const { scale } = getDimensionsAndScale(el);
+            const longPlateW = 34 * scale, shortPlateW = 14 * scale, plateY1 = -5 * scale, plateY2 = 5 * scale;
+            const plusSignX = 10 * scale, plusSignY = -16 * scale, plusSignSize = 4 * scale;
+            ctx.beginPath(); ctx.moveTo(0, -30 * scale); ctx.lineTo(0, plateY1); ctx.moveTo(0, plateY2); ctx.lineTo(0, 30 * scale);
+            ctx.moveTo(-longPlateW / 2, plateY1); ctx.lineTo(longPlateW / 2, plateY1);
+            ctx.moveTo(plusSignX - plusSignSize, plusSignY); ctx.lineTo(plusSignX + plusSignSize, plusSignY);
+            ctx.moveTo(plusSignX, plusSignY - plusSignSize); ctx.lineTo(plusSignX, plusSignY + plusSignSize);
+            ctx.stroke(); ctx.save(); ctx.lineWidth = ctx.lineWidth * 2; ctx.beginPath();
+            ctx.moveTo(-shortPlateW / 2, plateY2); ctx.lineTo(shortPlateW / 2, plateY2); ctx.stroke(); ctx.restore();
         }
-        function drawACVoltageSource() {
-          const r = 16;
-          ctx.beginPath();
-          ctx.arc(0, 0, r, 0, 2 * Math.PI);
-          ctx.moveTo(0, -30);
-          ctx.lineTo(0, -r);
-          ctx.moveTo(0, r);
-          ctx.lineTo(0, 30);
-          const waveStartX = -10,
-            waveEndX = 10,
-            waveAmplitude = 8;
-          ctx.moveTo(waveStartX, 0);
-          ctx.quadraticCurveTo(waveStartX / 2, -waveAmplitude, 0, 0);
-          ctx.quadraticCurveTo(waveEndX / 2, waveAmplitude, waveEndX, 0);
-          ctx.stroke();
+
+        function drawGround(el) {
+            const { scale } = getDimensionsAndScale(el);
+            ctx.beginPath(); ctx.moveTo(0, -10 * scale); ctx.lineTo(0, 0); ctx.moveTo(-15 * scale, 0); ctx.lineTo(15 * scale, 0);
+            ctx.moveTo(-10 * scale, 6 * scale); ctx.lineTo(10 * scale, 6 * scale); ctx.moveTo(-5 * scale, 12 * scale); ctx.lineTo(5 * scale, 12 * scale); ctx.stroke();
         }
-        function drawCurrentSource() {
-          const r = 16,
-            arrowY_start = -10,
-            arrowY_end = 10,
-            arrowHeadSize = 6;
-          ctx.beginPath();
-          ctx.arc(0, 0, r, 0, 2 * Math.PI);
-          ctx.moveTo(0, -30);
-          ctx.lineTo(0, -r);
-          ctx.moveTo(0, r);
-          ctx.lineTo(0, 30);
-          ctx.moveTo(-arrowHeadSize / 2, arrowY_start + arrowHeadSize);
-          ctx.lineTo(0, arrowY_start);
-          ctx.lineTo(arrowHeadSize / 2, arrowY_start + arrowHeadSize);
-          ctx.moveTo(0, arrowY_end);
-          ctx.lineTo(0, 0);
-          ctx.lineTo(0, -5);
-          ctx.stroke();
-        }
-        function drawDependentVoltageSource() {
-          const w = 20,
-            h = 20; // half-width and half-height of the diamond
-          ctx.beginPath();
-          // Draw leads
-          ctx.moveTo(0, -30);
-          ctx.lineTo(0, -h);
-          ctx.moveTo(0, h);
-          ctx.lineTo(0, 30);
-          // Draw diamond
-          ctx.moveTo(0, -h);
-          ctx.lineTo(w, 0);
-          ctx.lineTo(0, h);
-          ctx.lineTo(-w, 0);
-          ctx.closePath();
-          // Draw '+' and '-' signs
-          const signSize = 4;
-          // Plus sign at top
-          ctx.moveTo(-signSize, -h * 0.5 + 2);
-          ctx.lineTo(signSize, -h * 0.5 + 2);
-          ctx.moveTo(0, -h * 0.5 - signSize + 2);
-          ctx.lineTo(0, -h * 0.5 + signSize + 2);
-          // Minus sign at bottom
-          ctx.moveTo(-signSize, h * 0.5 - 2);
-          ctx.lineTo(signSize, h * 0.5 - 2);
-          ctx.stroke();
-        }
-        function drawDependentCurrentSource() {
-          const w = 20,
-            h = 20; // half-width and half-height of the diamond
-          ctx.beginPath();
-          // Draw leads
-          ctx.moveTo(0, -30);
-          ctx.lineTo(0, -h);
-          ctx.moveTo(0, h);
-          ctx.lineTo(0, 30);
-          // Draw diamond
-          ctx.moveTo(0, -h);
-          ctx.lineTo(w, 0);
-          ctx.lineTo(0, h);
-          ctx.lineTo(-w, 0);
-          ctx.closePath();
-          // Draw arrow inside (pointing up)
-          const arrowY_start = -h * 0.7,
-            arrowY_end = h * 0.7,
-            arrowHeadSize = 6;
-          ctx.moveTo(0, arrowY_end); // Start from bottom of arrow shaft
-          ctx.lineTo(0, arrowY_start); // Draw up to top
-          // Arrow head
-          ctx.moveTo(-arrowHeadSize / 2, arrowY_start + arrowHeadSize);
-          ctx.lineTo(0, arrowY_start);
-          ctx.lineTo(arrowHeadSize / 2, arrowY_start + arrowHeadSize);
-          ctx.stroke();
-        }
-        function drawBattery() {
-          const longPlateW = 34,
-            shortPlateW = 14,
-            plateY1 = -5,
-            plateY2 = 5;
-          const plusSignX = 10,
-            plusSignY = -16,
-            plusSignSize = 4;
-          ctx.beginPath();
-          ctx.moveTo(0, -30);
-          ctx.lineTo(0, plateY1);
-          ctx.moveTo(0, plateY2);
-          ctx.lineTo(0, 30);
-          ctx.moveTo(-longPlateW / 2, plateY1);
-          ctx.lineTo(longPlateW / 2, plateY1);
-          ctx.moveTo(plusSignX - plusSignSize, plusSignY);
-          ctx.lineTo(plusSignX + plusSignSize, plusSignY);
-          ctx.moveTo(plusSignX, plusSignY - plusSignSize);
-          ctx.lineTo(plusSignX, plusSignY + plusSignSize);
-          ctx.stroke();
-          ctx.save();
-          ctx.lineWidth = ctx.lineWidth * 2;
-          ctx.beginPath();
-          ctx.moveTo(-shortPlateW / 2, plateY2);
-          ctx.lineTo(shortPlateW / 2, plateY2);
-          ctx.stroke();
-          ctx.restore();
-        }
-        function drawGround() {
-          ctx.beginPath();
-          ctx.moveTo(0, -10);
-          ctx.lineTo(0, 0);
-          ctx.moveTo(-15, 0);
-          ctx.lineTo(15, 0);
-          ctx.moveTo(-10, 6);
-          ctx.lineTo(10, 6);
-          ctx.moveTo(-5, 12);
-          ctx.lineTo(5, 12);
-          ctx.stroke();
-        }
+
         function drawArrowMarker(el) {
-          ctx.fillStyle = el.color || "black";
-          ctx.beginPath();
-          // A small arrow head. Let's say 12px long, 8px wide.
-          // Tip points along the positive x-axis.
-          const length = 16;
-          const width = 10;
-          ctx.moveTo(length / 2, 0); // Tip
-          ctx.lineTo(-length / 2, -width / 2);
-          ctx.lineTo(-length / 2, width / 2);
-          ctx.closePath();
-          ctx.fill();
+            const { scale } = getDimensionsAndScale(el);
+            ctx.fillStyle = el.color || "black"; ctx.beginPath();
+            const length = 16 * scale; const width = 10 * scale;
+            ctx.moveTo(length / 2, 0); ctx.lineTo(-length / 2, -width / 2); ctx.lineTo(-length / 2, width / 2); ctx.closePath(); ctx.fill();
         }
+        // --- END: SCALE-AWARE DRAWING FUNCTIONS ---
+
         function calculateBoundingBox() {
           if (circuitElements.length === 0) return null;
-          let minX = Infinity,
-            minY = Infinity,
-            maxX = -Infinity,
-            maxY = -Infinity;
+          let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+          
+          const expandBounds = (p) => {
+              minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x);
+              minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y);
+          };
+
           circuitElements.forEach((el) => {
             if (el.type === "wire") {
-              const path = getWirePath(el);
-              path.forEach((p) => {
-                minX = Math.min(minX, p.x);
-                maxX = Math.max(maxX, p.x);
-                minY = Math.min(minY, p.y);
-                maxY = Math.max(maxY, p.y);
-              });
+              expandBounds(el.start); expandBounds(el.end);
+            } else if (el.type === "path-wire") {
+                el.points.forEach(p => expandBounds(p));
             } else if (el.type === "text") {
               const { width, height } = measureParsedText(el);
-              minX = Math.min(minX, el.x - width / 2);
-              maxX = Math.max(maxX, el.x + width / 2);
-              minY = Math.min(minY, el.y - height / 2);
-              maxY = Math.max(maxY, el.y + height / 2);
+              minX = Math.min(minX, el.x - width / 2); maxX = Math.max(maxX, el.x + width / 2);
+              minY = Math.min(minY, el.y - height / 2); maxY = Math.max(maxY, el.y + height / 2);
             } else if (el.type === "junction" || el.type === "open_terminal") {
-              minX = Math.min(minX, el.x);
-              maxX = Math.max(maxX, el.x);
-              minY = Math.min(minY, el.y);
-              maxY = Math.max(maxY, el.y);
+              expandBounds(el);
             } else {
-              const data = componentData[el.type];
-              const w = data.width, h = data.height;
-
-              // Get bounding box of terminals which already accounts for rotation and flip
-              const terminals = getAbsoluteTerminals(el);
-              const cornerMultipliers = [
-                  {x: -0.5, y: -0.5}, {x: 0.5, y: -0.5},
-                  {x: 0.5, y: 0.5},  {x: -0.5, y: 0.5}
-              ];
-              const scaleX = el.flipH ? -1 : 1;
-              const scaleY = el.flipV ? -1 : 1;
+              const { width, height } = getDimensionsAndScale(el);
+              const cornerMultipliers = [{x: -0.5, y: -0.5}, {x: 0.5, y: -0.5}, {x: 0.5, y: 0.5},  {x: -0.5, y: 0.5}];
+              const scaleX = el.flipH ? -1 : 1, scaleY = el.flipV ? -1 : 1;
               const angle = (el.rotation * Math.PI) / 180;
               const cos = Math.cos(angle), sin = Math.sin(angle);
-              
               cornerMultipliers.forEach(m => {
-                  const localX = m.x * data.width;
-                  const localY = m.y * data.height;
-
-                  // Apply flip
-                  const flippedX = localX * scaleX;
-                  const flippedY = localY * scaleY;
-                  
-                  // Apply rotation
-                  const rotatedX = flippedX * cos - flippedY * sin;
-                  const rotatedY = flippedX * sin + flippedY * cos;
-                  
-                  // Apply translation
-                  const finalX = el.x + rotatedX;
-                  const finalY = el.y + rotatedY;
-                  
-                  minX = Math.min(minX, finalX);
-                  maxX = Math.max(maxX, finalX);
-                  minY = Math.min(minY, finalY);
-                  maxY = Math.max(maxY, finalY);
+                  const localX = m.x * width; const localY = m.y * height;
+                  const flippedX = localX * scaleX, flippedY = localY * scaleY;
+                  const rotatedX = flippedX * cos - flippedY * sin, rotatedY = flippedX * sin + flippedY * cos;
+                  expandBounds({x: el.x + rotatedX, y: el.y + rotatedY});
               });
             }
           });
           return { minX, minY, maxX, maxY };
         }
 
-        /**
-         * Universal function to parse a circuit JSON string and append it to the canvas.
-         * @param {string} jsonString - The string containing the circuit data.
-         * @param {string} successMessage - The message to show in the alert on success.
-         * @returns {boolean} - True if appending was successful, false otherwise.
-         */
-        function appendCircuitFromJSON(
-          jsonString,
-          successMessage = "Circuit appended successfully!"
-        ) {
+        function appendCircuitFromJSON(jsonString, successMessage = "Circuit appended successfully!") {
           try {
             const data = JSON.parse(jsonString);
             if (data && data.elements && data.nextId !== undefined) {
               const currentBounds = calculateBoundingBox();
               const yOffset = currentBounds ? currentBounds.maxY + 100 : 0;
-
               const elementsToAppend = [];
               data.elements.forEach((el) => {
                 const newEl = JSON.parse(JSON.stringify(el));
                 newEl.id = nextId++;
-                if (newEl.type === "wire") {
-                  newEl.start.y += yOffset;
-                  newEl.end.y += yOffset;
-                } else {
-                  if (newEl.y !== undefined) newEl.y += yOffset;
-                }
+                if (newEl.type === "wire") { newEl.start.y += yOffset; newEl.end.y += yOffset; }
+                else if (newEl.type === "path-wire") { newEl.points.forEach(p => p.y += yOffset); }
+                else { if (newEl.y !== undefined) newEl.y += yOffset; }
                 elementsToAppend.push(newEl);
               });
-
-              if (elementsToAppend.length > 0) {
-                circuitElements.push(...elementsToAppend);
-              }
-
+              if (elementsToAppend.length > 0) { circuitElements.push(...elementsToAppend); }
               const finalBounds = calculateBoundingBox();
-              if (finalBounds) {
-                resizeCanvas(finalBounds.maxX + 50, finalBounds.maxY + 50);
-              }
-
-              saveState();
-              redrawCanvas();
-              alert(successMessage);
+              if (finalBounds) { resizeCanvas(finalBounds.maxX + 50, finalBounds.maxY + 50); }
+              saveState(); redrawCanvas(); alert(successMessage);
               return true;
-            } else {
-              alert(
-                "Operation failed: Invalid circuit data structure in the JSON."
-              );
-              return false;
-            }
-          } catch (e) {
-            console.error("Could not parse input as circuit JSON.", e);
-            alert(
-              "Operation failed: Could not parse JSON. See console for details."
-            );
-            return false;
-          }
+            } else { alert("Operation failed: Invalid circuit data structure in the JSON."); return false; }
+          } catch (e) { console.error("Could not parse input as circuit JSON.", e); alert("Operation failed: Could not parse JSON. See console for details."); return false; }
         }
 
-        /**
-         * Prompts user for description, calls Gemini API, and appends the resulting circuit.
-         */
         async function handleAIGenerate() {
-          const description = prompt(
-            "Describe the circuit you want to generate:",
-            "A 9V battery in series with a 470 ohm resistor and a red LED, connected to ground."
-          );
+          const description = prompt("Describe the circuit you want to generate:", "A 9V battery in series with a 470 ohm resistor and a red LED, connected to ground.");
           if (!description) return;
-
-          // --- ⚠️ IMPORTANT SECURITY WARNING ⚠️ ---
-          // In a real-world application, NEVER expose your API key on the client-side like this.
-          // An attacker could steal your key and use your account.
-          // This key should be stored in a secure backend server that makes the API call.
-          // For this demonstration, replace the placeholder with your key.
           const API_KEY = "YOUR_GEMINI_API_KEY";
-
-          if (API_KEY === "YOUR_GEMINI_API_KEY") {
-            alert(
-              "ERROR: Please open the HTML file, find the 'handleAIGenerate' function in the script, and replace 'YOUR_GEMINI_API_KEY' with your actual Gemini API key."
-            );
-            return;
-          }
-
+          if (API_KEY === "YOUR_GEMINI_API_KEY") { alert("ERROR: Please open the HTML file, find 'handleAIGenerate', and replace 'YOUR_GEMINI_API_KEY' with your actual Gemini API key."); return; }
           const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`;
-
           document.body.style.cursor = "wait";
-          alert(
-            "Generating circuit with AI... Please wait. This may take a moment."
-          );
-
-          const system_prompt = `You are a circuit design assistant for 'Circuit Drafter'. Your ONLY task is to generate a valid JSON object representing a circuit from a user's description. Your output MUST be a single, raw JSON object and nothing else. Do not include explanations or markdown formatting.
-
-The JSON structure must be:
-{
-  "version": "0.40a",
-  "elements": [ ... element objects ... ],
-  "nextId": <number>
-}
-
-Valid element types and properties:
-1. Component: {"id":<int>, "type":<string>, "x":<int>, "y":<int>, "rotation":<int>, "flipH":false, "flipV":false}
-   - types: "resistor", "capacitor", "inductor", "diode", "zener", "led", "switch", "spdtSwitch", "voltage", "acvoltage", "currentsource", "battery", "gnd", "npn", "pnp", "nfet", "pfet", "opamp", "igbt"
-2. Wire: {"id":<int>, "type":"wire", "start":{"x":<int>,"y":<int>}, "end":{"x":<int>,"y":<int>}, "routing":"manhattan"}
-3. Text Label: {"id":<int>, "type":"text", "text":<string>, "x":<int>, "y":<int>, "rotation":0, "isItalic":true}
-
-RULES:
-- Every element needs a unique integer 'id', starting from 0.
-- 'nextId' must be one greater than the highest 'id'.
-- Wires must connect to component terminals. A standard horizontal resistor at (x,y) has terminals at (x-40, y) and (x+40, y). A standard vertical voltage source has terminals at (x, y-30) and (x, y+30). Adhere to these dimensions.
-- Create clean, logical layouts within a 1000x700 canvas area.
-- Add labels for component names (e.g., "R_{1}") and values (e.g., "10k\\\\Omega", "5V"). Use LaTeX for subscripts and symbols.
-
-Example Output for "A 5V DC source, a 1k resistor, and ground":
-{
-  "version": "0.40a",
-  "elements": [
-    { "id": 0, "type": "voltage", "x": 200, "y": 150, "rotation": 0, "flipH":false, "flipV":false },
-    { "id": 1, "type": "resistor", "x": 200, "y": 250, "rotation": 0, "flipH":false, "flipV":false },
-    { "id": 2, "type": "gnd", "x": 200, "y": 350, "rotation": 0, "flipH":false, "flipV":false },
-    { "id": 3, "type": "wire", "start": { "x": 200, "y": 120 }, "end": { "x": 200, "y": 210 }, "routing": "manhattan" },
-    { "id": 4, "type": "wire", "start": { "x": 200, "y": 290 }, "end": { "x": 200, "y": 340 }, "routing": "manhattan" },
-    { "id": 5, "type": "text", "text": "V_{in}", "x": 150, "y": 150, "rotation": 0, "isItalic": true },
-    { "id": 6, "type": "text", "text": "5V", "x": 250, "y": 150, "rotation": 0, "isItalic": true },
-    { "id": 7, "type": "text", "text": "R_{1}", "x": 150, "y": 250, "rotation": 0, "isItalic": true },
-    { "id": 8, "type": "text", "text": "1k\\\\Omega", "x": 250, "y": 250, "rotation": 0, "isItalic": true }
-  ],
-  "nextId": 9
-}`;
-
+          alert("Generating circuit with AI... Please wait.");
+          const system_prompt = `You are a circuit design assistant for 'Circuit Drafter'. Your ONLY task is to generate a valid JSON object representing a circuit from a user's description. Your output MUST be a single, raw JSON object and nothing else. Do not include explanations or markdown formatting. The JSON structure must be: { "version": "0.42a", "elements": [ ... ], "nextId": <number> }. Valid types: "resistor", "capacitor", "inductor", "diode", "zener", "led", "switch", "spdtSwitch", "voltage", "acvoltage", "currentsource", "battery", "gnd", "npn", "pnp", "nfet", "pfet", "opamp", "igbt", "wire", "text". RULES: Unique integer 'id' starting from 0. 'nextId' is highest 'id' + 1. Wires must connect to component terminals. Use LaTeX for labels (e.g., "R_{1}", "10k\\\\Omega").`;
           try {
             const response = await fetch(API_URL, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                contents: [
-                  {
-                    parts: [
-                      { text: system_prompt },
-                      { text: `\n\n**User Request**: "${description}"` },
-                    ],
-                  },
-                ],
-              }),
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ contents: [{ parts: [{ text: system_prompt }, { text: `\n\n**User Request**: "${description}"` }] }] }),
             });
-
-            if (!response.ok) {
-              const errorBody = await response.json();
-              throw new Error(
-                `API Error: ${response.status}. ${errorBody.error.message}`
-              );
-            }
-
+            if (!response.ok) { const errorBody = await response.json(); throw new Error(`API Error: ${response.status}. ${errorBody.error.message}`); }
             const responseData = await response.json();
             const jsonString = responseData.candidates[0].content.parts[0].text;
-            const cleanedJsonString = jsonString.replace(
-              /^```json\s*|```\s*$/g,
-              ""
-            );
-
-            appendCircuitFromJSON(
-              cleanedJsonString,
-              "Circuit generated by AI and appended successfully!"
-            );
-          } catch (error) {
-            console.error("AI Generation Error:", error);
-            alert(
-              `An error occurred while generating the circuit: ${error.message}`
-            );
-          } finally {
-            document.body.style.cursor = "default";
-          }
+            const cleanedJsonString = jsonString.replace(/^```json\s*|```\s*$/g, "");
+            appendCircuitFromJSON(cleanedJsonString, "Circuit generated by AI and appended successfully!");
+          } catch (error) { console.error("AI Generation Error:", error); alert(`An error occurred: ${error.message}`); } 
+          finally { document.body.style.cursor = "default"; }
         }
 
         geminiAIBtn.addEventListener("click", handleAIGenerate);
 
         function handleSaveExport() {
-          const choiceRaw = prompt(
-            "Save as project file (json) or export as image (png)?",
-            "json"
-          );
+          const choiceRaw = prompt("Save as project file (json) or export as image (png)?", "json");
           if (!choiceRaw) return;
           const choice = choiceRaw.toLowerCase().trim();
-
-          if (choice === "json" || choice === "j") {
-            saveCircuit();
-          } else if (choice === "png" || choice === "p") {
-            exportCircuit();
-          } else {
-            alert("Invalid choice. Please enter 'json' or 'png'.");
-          }
+          if (choice === "json" || choice === "j") saveCircuit();
+          else if (choice === "png" || choice === "p") exportCircuit();
+          else alert("Invalid choice. Please enter 'json' or 'png'.");
         }
 
         function saveCircuit() {
-          const filename = prompt(
-            "Enter filename for project file:",
-            "circuit.json"
-          );
+          const filename = prompt("Enter filename for project file:", "circuit.json");
           if (!filename) return;
-          const dataToSave = {
-            version: "0.40a",
-            elements: circuitElements,
-            nextId: nextId,
-          };
+          const dataToSave = { version: "0.43a", elements: circuitElements, nextId: nextId };
           const dataStr = JSON.stringify(dataToSave, null, 2);
           const blob = new Blob([dataStr], { type: "application/json" });
           const link = document.createElement("a");
-          link.download = filename.endsWith(".json")
-            ? filename
-            : filename + ".json";
+          link.download = filename.endsWith(".json") ? filename : filename + ".json";
           link.href = URL.createObjectURL(blob);
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
+          document.body.appendChild(link); link.click(); document.body.removeChild(link);
           URL.revokeObjectURL(link.href);
         }
 
@@ -4194,81 +2827,44 @@ Example Output for "A 5V DC source, a 1k resistor, and ground":
             try {
               const data = JSON.parse(e.target.result);
               if (data && data.elements && data.nextId !== undefined) {
-                // Load the new elements from the file
-                circuitElements = data.elements;
-                nextId = data.nextId;
-
-                // --- START: New auto-resize logic for loaded files ---
+                circuitElements = data.elements; nextId = data.nextId;
                 const bounds = calculateBoundingBox();
                 if (bounds) {
-                  const padding = 50; // Add some visual space around the loaded circuit
-                  const requiredWidth = bounds.maxX + padding;
-                  const requiredHeight = bounds.maxY + padding;
+                  const padding = 50;
+                  const requiredWidth = bounds.maxX + padding; const requiredHeight = bounds.maxY + padding;
                   resizeCanvas(requiredWidth, requiredHeight);
                 }
-                // --- END: New auto-resize logic for loaded files ---
-
-                // Reset the application state for the newly loaded circuit
-                history = [];
-                historyIndex = -1;
-                selectedElements = [];
-                recalculateAutoLabelCounters(); // Recalculate counters based on loaded text elements
-                saveState();
-                redrawCanvas();
+                history = []; historyIndex = -1; selectedElements = [];
+                recalculateAutoLabelCounters();
+                saveState(); redrawCanvas();
                 alert("Circuit loaded successfully!");
-              } else {
-                alert("Invalid or corrupted circuit file.");
-              }
-            } catch (error) {
-              console.error("Error parsing JSON file:", error);
-              alert(
-                "Error reading file. Make sure it is a valid JSON circuit file."
-              );
-            }
-            fileInput.value = ""; // Clear the input to allow reloading the same file
+              } else { alert("Invalid or corrupted circuit file."); }
+            } catch (error) { console.error("Error parsing JSON file:", error); alert("Error reading file. Make sure it is a valid JSON circuit file."); }
+            fileInput.value = "";
           };
           reader.readAsText(file);
         }
 
         function exportCircuit() {
-          selectedElements = [];
-          redrawCanvas();
-          const scaleFactorStr = prompt(
-            "Enter resolution scale factor for PNG (e.g., 2 for 2x resolution):",
-            "2"
-          );
+          selectedElements = []; redrawCanvas();
+          const scaleFactorStr = prompt("Enter resolution scale factor for PNG (e.g., 2 for 2x resolution):", "2");
           const scaleFactor = parseFloat(scaleFactorStr);
-          if (isNaN(scaleFactor) || scaleFactor <= 0) {
-            alert("Invalid scale factor.");
-            return;
-          }
+          if (isNaN(scaleFactor) || scaleFactor <= 0) { alert("Invalid scale factor."); return; }
           const bounds = calculateBoundingBox();
-          if (!bounds) {
-            alert("Canvas is empty!");
-            return;
-          }
+          if (!bounds) { alert("Canvas is empty!"); return; }
           const padding = 30;
           const exportCanvas = document.createElement("canvas");
           const exportCtx = exportCanvas.getContext("2d");
-          exportCanvas.width =
-            (bounds.maxX - bounds.minX + padding * 2) * scaleFactor;
-          exportCanvas.height =
-            (bounds.maxY - bounds.minY + padding * 2) * scaleFactor;
-
-          const originalCtx = ctx;
-          ctx = exportCtx;
-
-          ctx.save();
-          ctx.fillStyle = "white";
-          ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+          exportCanvas.width = (bounds.maxX - bounds.minX + padding * 2) * scaleFactor;
+          exportCanvas.height = (bounds.maxY - bounds.minY + padding * 2) * scaleFactor;
+          const originalCtx = ctx; ctx = exportCtx;
+          ctx.save(); ctx.fillStyle = "white"; ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
           ctx.scale(scaleFactor, scaleFactor);
           ctx.translate(-bounds.minX + padding, -bounds.minY + padding);
           circuitElements.forEach((el) => drawElement(el));
           drawJunctions();
           ctx.restore();
-
           ctx = originalCtx;
-
           const link = document.createElement("a");
           link.download = "circuit-diagram.png";
           link.href = exportCanvas.toDataURL("image/png");
