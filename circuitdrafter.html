@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -452,7 +451,7 @@
         class="logo"
       />
       <div>
-        <h1>Circuit Drafter (V0.43a)</h1>
+        <h1>Circuit Drafter (V0.48b)</h1>
         <p id="tagline">Effortless circuit schematics.</p>
       </div>
     </div>
@@ -1100,7 +1099,9 @@
 
     <script>
       /****************************************************************************
-       * Circuit Drafter - V0.43a (Date: 2025-08-07)
+      * Circuit Drafter - V0.48b (Date: 2025-08-11)
+       *   - Path Wire tool is able to draw box triangle and circle. 
+      * Circuit Drafter - V0.43a (Date: 2025-08-07)
        *   - Add Path Wire tool for command-based wire drawing.
        * Circuit Drafter - V0.42aR (Date: 2025-08-07)
        *   - Apply scaling transform to components.
@@ -1740,7 +1741,7 @@
                 wireStartPoint = getSnappingPoint(mousePos.x, mousePos.y);
             } else if (selectedTool === "path-wire") {
                 const startPoint = getSnappingPoint(mousePos.x, mousePos.y);
-                const commandStr = prompt("Enter path commands (e.g., h100 v50 cr 20 h-40 line(200,100))", "h100 v80");
+                const commandStr = prompt("Enter path commands (e.g., h 100 arrow box 60 40 h 100)", "h 100 v 80");
                 if (commandStr) {
                     try {
                         const pathData = parsePathCommandString(startPoint, commandStr);
@@ -1784,7 +1785,7 @@
           hoveredWireSegment = null;
           for (const wire of circuitElements) {
             if (wire.type !== "wire" && wire.type !== "path-wire") continue;
-            const path = wire.type === 'wire' ? getWirePath(wire) : wire.points;
+            const path = wire.type === 'wire' ? getWirePath(wire) : (wire.points || []);
             for (let i = 0; i < path.length - 1; i++) {
               const p1 = path[i];
               const p2 = path[i + 1];
@@ -1850,7 +1851,7 @@
           redrawCanvas();
         }
 
-                function handleDoubleClick(e) {
+        function handleDoubleClick(e) {
             e.preventDefault();
             const mousePos = getMousePos(e);
             const clickedElement = getElementAtPos(mousePos.x, mousePos.y);
@@ -1860,11 +1861,10 @@
                 circuitElements.push(newTerminal);
                 saveState(); redrawCanvas(); return;
             }
-
-            // START: ADDED LOGIC FOR PATH WIRE
-                        if (clickedElement.type === "path-wire") {
+ 
+            if (clickedElement.type === "path-wire") {
                 const oldCommandStr = clickedElement.commandStr || "";
-                const newCommandStr = prompt("Edit path commands (e.g., h100 v80 arrow):", oldCommandStr);
+                const newCommandStr = prompt("Edit path commands (e.g., h 100 arrow box 60 40):", oldCommandStr);
 
                 if (newCommandStr === null) {
                     return; // User cancelled
@@ -1880,8 +1880,10 @@
                         // Update the existing element with new data
                         clickedElement.points = newPathData.points;
                         clickedElement.corners = newPathData.corners;
+                        clickedElement.shapes = newPathData.shapes;
+                        clickedElement.arrows = newPathData.arrows;
                         clickedElement.commandStr = newCommandStr;
-                        clickedElement.hasArrow = newPathData.hasArrow; // Update the arrow property
+                        delete clickedElement.hasArrow; // remove obsolete property
 
                         saveState();
                         redrawCanvas();
@@ -1893,7 +1895,6 @@
                 }
                 return; // Stop further processing for this element
             }
-            // END: ADDED LOGIC
 
             if (clickedElement.type === "switch") { clickedElement.state = clickedElement.state === "closed" ? "open" : "closed"; saveState(); redrawCanvas(); return; }
             if (clickedElement.type === "spdtSwitch") { clickedElement.state = clickedElement.state === 1 ? 2 : 1; saveState(); redrawCanvas(); return; }
@@ -1938,7 +1939,7 @@
         function getWireSegmentSnapPoint(pos) {
           for (const wire of circuitElements) {
             if (wire.type !== "wire" && wire.type !== "path-wire") continue;
-            const path = wire.type === 'wire' ? getWirePath(wire) : wire.points;
+            const path = wire.type === 'wire' ? getWirePath(wire) : (wire.points || []);
             for (let i = 0; i < path.length - 1; i++) {
               const p1 = path[i];
               const p2 = path[i + 1];
@@ -1974,7 +1975,7 @@
             if (el.type === "wire") {
               if (Math.hypot(x - el.start.x, y - el.start.y) < snapTolerance) return { x: el.start.x, y: el.start.y };
               if (Math.hypot(x - el.end.x, y - el.end.y) < snapTolerance) return { x: el.end.x, y: el.end.y };
-            } else if (el.type === "path-wire" && el.points.length > 0) {
+            } else if (el.type === "path-wire" && el.points && el.points.length > 0) {
               const start = el.points[0];
               const end = el.points[el.points.length - 1];
               if (Math.hypot(x - start.x, y - start.y) < snapTolerance) return { ...start };
@@ -2063,7 +2064,7 @@
         }
 
         function isPointOnWire(point, wire) {
-            const path = wire.type === 'wire' ? getWirePath(wire) : wire.points;
+            const path = wire.type === 'wire' ? getWirePath(wire) : (wire.points || []);
             for (let i = 0; i < path.length - 1; i++) {
                 if (distToSegment(point, path[i], path[i + 1]) < snapTolerance) return true;
             }
@@ -2075,7 +2076,7 @@
              return (el.start.x >= rect.x1 && el.start.x <= rect.x2 && el.start.y >= rect.y1 && el.start.y <= rect.y2) &&
                     (el.end.x >= rect.x1 && el.end.x <= rect.x2 && el.end.y >= rect.y1 && el.end.y <= rect.y2);
           }
-          if (el.type === "path-wire") {
+          if (el.type === "path-wire" && el.points) {
               return el.points.every(p => p.x >= rect.x1 && p.x <= rect.x2 && p.y >= rect.y1 && p.y <= rect.y2);
           }
           return (el.x >= rect.x1 && el.x <= rect.x2 && el.y >= rect.y1 && el.y <= rect.y2);
@@ -2143,7 +2144,7 @@
             const addPoint = (p) => { const key = `${p.x},${p.y}`; connectionPoints.set(key, (connectionPoints.get(key) || 0) + 1); };
             circuitElements.forEach((el) => {
                 if (el.type === "wire") { addPoint(el.start); addPoint(el.end); } 
-                else if (el.type === "path-wire") { el.points.forEach(p => addPoint(p)); }
+                else if (el.type === "path-wire" && el.points) { el.points.forEach(p => addPoint(p)); }
                 else if (el.type === "junction" || el.type === "open_terminal") { addPoint(el); } 
                 else if (el.type !== "text") { getAbsoluteTerminals(el).forEach((term) => addPoint(term)); }
             });
@@ -2158,8 +2159,8 @@
         }
 
         const greekSymbolMap = {
-          alpha: "α", beta: "β", gamma: "γ", Delta: "Δ", delta: "δ", epsilon: "ε", eta: "η", theta: "θ", lambda: "λ", mu: "μ",
-          pi: "π", rho: "ρ", Sigma: "Σ", sigma: "σ", tau: "τ", Phi: "Φ", phi: "φ", Omega: "Ω", omega: "ω", times: "×",
+          alpha: "α", beta: "β", gamma: "γ", Delta: "Δ", delta: "δ", epsilon: "ε", eta: "η", theta: "θ", lambda: "λ", Lambda:"Λ", mu: "μ", nu:"ν",xi:"ξ",
+          pi: "π", rho: "ρ", Sigma: "Σ", sigma: "σ", tau: "τ", Phi: "Φ", phi: "φ", Omega: "Ω", omega: "ω", times: "×", zeta: "ζ",chi:"χ", Psi:"Ψ", psi:"ψ"
         };
 
         function findMatchingBrace(text, startIndex) {
@@ -2307,111 +2308,191 @@
         function drawManualJunction() { ctx.beginPath(); ctx.arc(0, 0, 4, 0, 2 * Math.PI); ctx.fillStyle = ctx.strokeStyle; ctx.fill(); }
         function drawOpenTerminal() { ctx.beginPath(); ctx.arc(0, 0, 4, 0, 2 * Math.PI); ctx.fillStyle = "#fff"; ctx.fill(); ctx.strokeStyle = "#000"; ctx.stroke(); }
         
-        // --- START: PATH WIRE FUNCTIONS ---
-                function parsePathCommandString(startPoint, commandStr) {
+        // --- START: NEW/MODIFIED PATH WIRE FUNCTIONS ---
+        function parsePathCommandString(startPoint, commandStr) {
             const points = [startPoint];
             const corners = {};
+            const shapes = {};
+            const arrows = [];
+
             let currentPos = { ...startPoint };
-            let hasArrow = false;
-
-            // Pre-process the string to find and remove the 'arrow' command
-            let processedCommandStr = commandStr.trim().toLowerCase();
-            if (processedCommandStr.includes('arrow')) {
-                hasArrow = true;
-                // Remove the 'arrow' command and any surrounding whitespace
-                processedCommandStr = processedCommandStr.replace(/\s*arrow\s*/g, ' ').trim();
-            }
-
-            // This part handles h100, v50, cr20 etc. by adding a space
-            processedCommandStr = processedCommandStr.replace(/(?<!\w)(h|v|cr)([-.\d]+)/g, '$1 $2');
-            
-            // Filter out any empty tokens that might result from replacements
-            const tokens = processedCommandStr.split(/\s+/).filter(token => token.length > 0);
-            const lineRegex = /line\(([^,]+),([^)]+)\)/;
+            let lastDirection = 'h'; // Keep track of the last line direction
+            const tokens = commandStr.trim().toLowerCase().split(/\s+/).filter(Boolean);
 
             for (let i = 0; i < tokens.length; i++) {
                 const token = tokens[i];
+                let val1, val2;
 
-                if (token === 'h' || token === 'v' || token === 'cr') {
-                    if (i + 1 >= tokens.length) continue;
-                    
-                    const value = parseFloat(tokens[i+1]);
-                    if (isNaN(value)) continue;
-
-                    if (token === 'h') {
-                        currentPos.x += value;
-                        points.push({ ...currentPos });
-                    } else if (token === 'v') {
-                        currentPos.y += value;
-                        points.push({ ...currentPos });
-                    } else if (token === 'cr') {
-                        if (points.length > 1) {
-                           corners[points.length - 1] = value;
+                const peek = (offset = 1) => (i + offset < tokens.length) ? tokens[i + offset] : null;
+                const isNumeric = (str) => str !== null && !isNaN(parseFloat(str));
+                
+                switch (token) {
+                    case 'h':
+                        if (isNumeric(peek())) {
+                            val1 = parseFloat(tokens[++i]);
+                            currentPos.x += val1;
+                            points.push({ ...currentPos });
                         }
-                    }
-                    i++; // Consume the value token
-
-                } else if (lineRegex.test(token)) {
-                    const match = token.match(lineRegex);
-                    const x = parseFloat(match[1]);
-                    const y = parseFloat(match[2]);
-                    if (!isNaN(x) && !isNaN(y)) { currentPos = { x, y }; points.push({ ...currentPos }); }
-                } else {
-                    throw new Error(`Unknown command or invalid value: '${token}'`);
+                        lastDirection = 'h';
+                        break;
+                    case 'v':
+                        if (isNumeric(peek())) {
+                            val1 = parseFloat(tokens[++i]);
+                            currentPos.y += val1;
+                            points.push({ ...currentPos });
+                        }
+                        lastDirection = 'v';
+                        break;
+                    case 'box':
+                        if (isNumeric(peek(1)) && isNumeric(peek(2))) {
+                            val1 = parseFloat(tokens[++i]); // width
+                            val2 = parseFloat(tokens[++i]); // height
+                            const segIdx = points.length - 1;
+                            shapes[segIdx] = { type: 'box', w: val1, h: val2, direction: lastDirection };
+                            if (lastDirection === 'h') { currentPos.x += val1; } 
+                            else { currentPos.y += val2; }
+                            points.push({ ...currentPos });
+                        }
+                        break;
+                    case 'triangle':
+                        if (isNumeric(peek(1)) && isNumeric(peek(2))) {
+                            val1 = parseFloat(tokens[++i]); // base
+                            val2 = parseFloat(tokens[++i]); // height
+                            const segIdx = points.length - 1;
+                            shapes[segIdx] = { type: 'triangle', base: val1, h: val2, direction: lastDirection };
+                            if (lastDirection === 'h') { currentPos.x += val1; }
+                            else { currentPos.y += val2; }
+                            points.push({ ...currentPos });
+                        }
+                        break;
+                    case 'circle':
+                        if (isNumeric(peek())) {
+                            val1 = parseFloat(tokens[++i]); // radius
+                            const segIdx = points.length - 1;
+                            shapes[segIdx] = { type: 'circle', r: val1, direction: lastDirection };
+                            if (lastDirection === 'h') { currentPos.x += 2 * val1; }
+                            else { currentPos.y += 2 * val1; }
+                            points.push({ ...currentPos });
+                        }
+                        break;
+                    case 'arrow':
+                        if (points.length > 1) {
+                            arrows.push(points.length - 2);
+                        }
+                        break;
+                    case 'cr': // Fillet corner
+                        if (isNumeric(peek()) && points.length > 1) {
+                            val1 = parseFloat(tokens[++i]);
+                            corners[points.length - 1] = val1;
+                        }
+                        break;
+                    default:
+                         // Silently ignore unknown commands
+                        break;
                 }
             }
-            // Return the hasArrow flag along with points and corners
-            return { points, corners, hasArrow };
+            return { points, corners, shapes, arrows };
         }
 
-                 function drawPathWire(el, isSelected) {
+        function drawPathWire(el, isSelected) {
             setDrawingStyle(isSelected, el.color);
-            const { points, corners, hasArrow } = el;
-            if (points.length < 2) return;
+            const { points, corners, shapes, arrows } = el;
+            if (!points || points.length < 2) return;
 
+            // --- 1. Draw all line segments (respecting fillets and interruptions from shapes) ---
             ctx.beginPath();
             ctx.moveTo(points[0].x, points[0].y);
+            for (let i = 1; i < points.length; i++) {
+                if (shapes?.[i - 1]) { // If the segment leading to this point was a shape
+                    ctx.moveTo(points[i].x, points[i].y);
+                    continue;
+                }
 
-            for (let i = 1; i < points.length - 1; i++) {
                 const p_corner = points[i];
-                const p_next = points[i + 1];
-                const radius = corners ? corners[i] : null;
+                const p_next = (i + 1 < points.length) ? points[i + 1] : null;
+                const radius = corners?.[i];
 
-                if (radius && radius > 0) {
+                if (radius && p_next && !shapes?.[i]) { // Fillet at this corner
                     ctx.arcTo(p_corner.x, p_corner.y, p_next.x, p_next.y, radius);
                 } else {
                     ctx.lineTo(p_corner.x, p_corner.y);
                 }
             }
-            ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
             ctx.stroke();
 
-            // Add the arrowhead if the command was given
-            if (hasArrow) {
-                const p_end = points[points.length - 1];
-                const p_before_end = points[points.length - 2];
-                const extension = 3; // The distance to extend the arrow tip for better visuals
+            // --- 2. Draw the shapes ---
+            if (shapes) {
+                for (const segIdxStr in shapes) {
+                    const segIdx = parseInt(segIdxStr, 10);
+                    const shapeInfo = shapes[segIdx];
+                    const p_start = points[segIdx];
+                    const p_end = points[segIdx + 1];
 
-                const dx = p_end.x - p_before_end.x;
-                const dy = p_end.y - p_before_end.y;
-                const length = Math.hypot(dx, dy);
+                    const isVertical = shapeInfo.direction === 'v';
 
-                if (length > 0) { // Avoid division by zero
-                    // Get a "unit vector" pointing in the direction of the line
-                    const unit_dx = dx / length;
-                    const unit_dy = dy / length;
-
-                    // Calculate the new tip of the arrow, extended outwards from the end point
-                    const extended_tip_x = p_end.x + unit_dx * extension;
-                    const extended_tip_y = p_end.y + unit_dy * extension;
-                    
-                    // Draw the arrowhead. The "from" point (p_before_end) gives the angle,
-                    // and the "to" point (extended_tip) is where the arrow's tip is drawn.
-                    drawArrowhead(ctx, p_before_end.x, p_before_end.y, extended_tip_x, extended_tip_y);
+                    switch(shapeInfo.type) {
+                        case 'box':
+                            if (isVertical) {
+                                // Draw vertical box, advancing along Y
+                                ctx.strokeRect(p_start.x - shapeInfo.w / 2, p_start.y, shapeInfo.w, shapeInfo.h);
+                            } else {
+                                // Draw horizontal box (original)
+                                ctx.strokeRect(p_start.x, p_start.y - shapeInfo.h / 2, shapeInfo.w, shapeInfo.h);
+                            }
+                            break;
+                        case 'triangle':
+                            ctx.beginPath();
+                            if (isVertical) {
+                                // Draw vertical triangle (pointing down)
+                                ctx.moveTo(p_start.x - shapeInfo.base / 2, p_start.y); // Top-left corner
+                                ctx.lineTo(p_start.x + shapeInfo.base / 2, p_start.y); // Top-right corner
+                                ctx.lineTo(p_end.x, p_end.y);                         // Bottom tip
+                            } else {
+                                // Draw horizontal triangle (original, pointing right)
+                                ctx.moveTo(p_start.x, p_start.y + shapeInfo.h / 2); // Bottom-left corner
+                                ctx.lineTo(p_start.x, p_start.y - shapeInfo.h / 2); // Top-left corner
+                                ctx.lineTo(p_end.x, p_end.y);                         // Right tip
+                            }
+                            ctx.closePath();
+                            ctx.stroke();
+                            break;
+                        case 'circle':
+                            let centerX, centerY;
+                            if (isVertical) {
+                                centerX = p_start.x;
+                                centerY = p_start.y + shapeInfo.r;
+                            } else {
+                                centerX = p_start.x + shapeInfo.r;
+                                centerY = p_start.y;
+                            }
+                            ctx.beginPath();
+                            ctx.arc(centerX, centerY, shapeInfo.r, 0, 2 * Math.PI);
+                            ctx.stroke();
+                            break;
+                    }
                 }
             }
+            
+            // --- 3. Draw the arrows ---
+            if (arrows) {
+                arrows.forEach(segIdx => {
+                    if (segIdx < points.length - 1) {
+                        const p_from = points[segIdx];
+                        const p_to = points[segIdx + 1];
+                        // Draw the arrowhead so its tip lands exactly at the destination point.
+                        const dx = p_to.x - p_from.x;
+                        const dy = p_to.y - p_from.y;
+                        const len = Math.hypot(dx, dy);
+                        if (len > 0) {
+    const extended_x = p_to.x + (dx/len)*1.5 ; // This line pushes the tip forward
+    const extended_y = p_to.y + (dy/len) *1.5; // This line pushes the tip forward
+    drawArrowhead(ctx, p_from.x, p_from.y, extended_x, extended_y);
+}
+                    }
+                });
+            }
         }
-        // --- END: PATH WIRE FUNCTIONS ---
+        // --- END: NEW/MODIFIED PATH WIRE FUNCTIONS ---
         
         // --- START: SCALE-AWARE DRAWING FUNCTIONS ---
         function drawResistor(el) {
@@ -2723,7 +2804,7 @@
           circuitElements.forEach((el) => {
             if (el.type === "wire") {
               expandBounds(el.start); expandBounds(el.end);
-            } else if (el.type === "path-wire") {
+            } else if (el.type === "path-wire" && el.points) {
                 el.points.forEach(p => expandBounds(p));
             } else if (el.type === "text") {
               const { width, height } = measureParsedText(el);
@@ -2809,7 +2890,7 @@
         function saveCircuit() {
           const filename = prompt("Enter filename for project file:", "circuit.json");
           if (!filename) return;
-          const dataToSave = { version: "0.43a", elements: circuitElements, nextId: nextId };
+          const dataToSave = { version: "0.48b", elements: circuitElements, nextId: nextId };
           const dataStr = JSON.stringify(dataToSave, null, 2);
           const blob = new Blob([dataStr], { type: "application/json" });
           const link = document.createElement("a");
