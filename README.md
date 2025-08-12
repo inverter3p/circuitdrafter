@@ -16,6 +16,7 @@ A simple, dependency-free, in-browser tool for quickly drafting electronic circu
 ### V0.48b (2025-08-11)
 *   **Block Diagram Shapes**: The Path Wire tool is now a powerful block diagram creator! Use commands like `box`, `triangle`, and `circle` to draw shapes directly within a path. Shapes are automatically oriented based on the path's direction (horizontal or vertical).
 *   **Example Command**: `h 100 arrow box 60 40 h 100 arrow` creates a complete block diagram element.
+    mg width="563" height="484" alt="Screenshot_410" src="https://github.com/user-attachments/assets/4850e1c5-1d19-4e2c-8874-07c8561b207c" />
 
 ### V0.43a (2025-08-07)
 *   **Path Wire Tool**: Introduced the "Path Wire" tool (`P` key) for creating complex, multi-segment wires and diagrams using simple text commands (e.g., `h 100 cr 20 v 50 `).
@@ -91,6 +92,9 @@ The easiest way to use Circuit Drafter is to visit the **[Live Demo link](https:
 | Add Manual Arrow | `Alt` + `Click` | Places an arrowhead on the canvas. |
 | Change Color | `Alt` + `C` | Change component color to 'Red'. |
 | **Path Commands** | `h 100`, `v 50`, `box 60 40` | Examples for drawing horizontal/vertical lines and shapes. |
+
+
+
 
 <img width="800"  alt="Example circuit diagram" src="https://github.com/user-attachments/assets/a0d6743d-8c30-48fa-bb09-aa8d223a1312" />
 
