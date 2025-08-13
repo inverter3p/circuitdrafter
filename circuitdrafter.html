@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -441,6 +442,29 @@
       }
       /* --- END: Component Transform Modal Styles --- */
       /* --- END: Modal Styles --- */
+
+      /* --- START: Text Command Bar Styles --- */
+      #command-bar {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+        width: 100%;
+        max-width: 1040px; /* Match canvas width + padding */
+        align-items: center;
+      }
+      #command-input {
+        flex-grow: 1;
+        padding: 10px;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-family: inherit; /* Use the same font as the body */
+      }
+      #command-execute-btn {
+        padding: 10px 20px;
+        flex-shrink: 0; /* Prevent the button from shrinking */
+      }
+      /* --- END: Text Command Bar Styles --- */
     </style>
   </head>
   <body>
@@ -451,7 +475,7 @@
         class="logo"
       />
       <div>
-        <h1>Circuit Drafter (V0.48b)</h1>
+        <h1>Circuit Drafter (V0.50c)</h1>
         <p id="tagline">Effortless circuit schematics.</p>
       </div>
     </div>
@@ -954,6 +978,19 @@
       <!-- END: File Operations Dropdown -->
     </div>
 
+    <!-- START: Text Command Input -->
+    <div id="command-bar">
+      <input
+        type="text"
+        id="command-input"
+        placeholder="e.g., h 50 r1 v 40 d h -50 vdc1"
+      />
+      <button id="command-execute-btn" class="modal-button primary">
+        Place
+      </button>
+    </div>
+    <!-- END: Text Command Input -->
+
     <canvas id="circuitCanvas" width="1000" height="700"></canvas>
     <input type="file" id="fileInput" accept=".json" style="display: none" />
 
@@ -1099,6 +1136,8 @@
 
     <script>
       /****************************************************************************
+      * Circuit Drafter - V0.50c (Date: 2025-08-13)
+       *   - Add text command input to place circuit and block diagram components.
       * Circuit Drafter - V0.48b (Date: 2025-08-11)
        *   - Path Wire tool is able to draw box triangle and circle. 
       * Circuit Drafter - V0.43a (Date: 2025-08-07)
@@ -1158,6 +1197,8 @@
         const transformWidthInput = document.getElementById("transform-width-input");
         const transformModalOkBtn = document.getElementById("transform-modal-ok-btn");
         const transformModalCancelBtn = document.getElementById("transform-modal-cancel-btn");
+        const commandInput = document.getElementById("command-input");
+        const commandExecuteBtn = document.getElementById("command-execute-btn");
 
         let autoLabelCounters = {};
         const shortNameToType = {
@@ -1324,6 +1365,14 @@
         bulkTextModalClose.addEventListener("click", closeBulkTextModal);
         bulkTextCancelBtn.addEventListener("click", closeBulkTextModal);
         bulkTextPlaceBtn.addEventListener("click", handleBulkTextPlace);
+
+        commandExecuteBtn.addEventListener("click", handleVHWireCommand);
+        commandInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                handleVHWireCommand();
+            }
+        });
 
         window.addEventListener("click", (event) => {
           if (event.target == bulkAddModal) closeBulkAddModal();
@@ -1550,6 +1599,126 @@
 
           if (textsToAdd.length > 0) { circuitElements.push(...textsToAdd); saveState(); redrawCanvas(); }
           closeBulkTextModal();
+        }
+
+        function handleVHWireCommand() {
+            const commandStr = commandInput.value.trim();
+            if (!commandStr) return;
+
+            const bounds = calculateBoundingBox();
+            let currentPos = {
+                x: 50,
+                y: bounds ? Math.floor((bounds.maxY + 100) / gridSize) * gridSize : 100,
+            };
+            const elementsToAdd = [];
+            let lastDirection = 'h';
+            let currentPathCommand = '';
+
+            const commandToComponentMap = {
+                'r': { type: 'resistor', prefix: 'R' }, 'c': { type: 'capacitor', prefix: 'C' },
+                'l': { type: 'inductor', prefix: 'L' }, 'd': { type: 'diode', prefix: 'D' },
+                'zd': { type: 'zener', prefix: 'ZD' }, 'led': { type: 'led', prefix: 'LED' },
+                'fwd': {type: 'fwd', prefix: 'D'}, 'sw': { type: 'switch', prefix: 'SW' },
+                'vdc': { type: 'voltage', prefix: 'V' }, 'vac': { type: 'acvoltage', prefix: 'V' },
+                'idc': { type: 'currentsource', prefix: 'I' }, 'batt': { type: 'battery', prefix: 'BATT' },
+                'dvs': {type: 'dependent_voltage', prefix: 'V'}, 'dcs': {type: 'dependent_current', prefix: 'I'}
+            };
+            const componentCommandKeys = Object.keys(commandToComponentMap).join('|');
+            const componentRegex = new RegExp(`^(${componentCommandKeys})(\\d*)$`, 'i');
+            const pathCommands = new Set(['h', 'v', 'cr', 'box', 'triangle', 'circle', 'arrow']);
+            const tokens = commandStr.toLowerCase().split(/\s+/).filter(Boolean);
+
+            const processPath = () => {
+                if (currentPathCommand.trim()) {
+                    try {
+                        const pathData = parsePathCommandString({...currentPos}, currentPathCommand);
+                        if (pathData && pathData.points.length > 1) {
+                            elementsToAdd.push({ id: nextId++, type: "path-wire", commandStr: currentPathCommand, ...pathData });
+                            const p1 = pathData.points[pathData.points.length - 2];
+                            const p2 = pathData.points[pathData.points.length - 1];
+                            currentPos = { ...p2 };
+                            if (p1.x !== p2.x) lastDirection = 'h';
+                            else if (p1.y !== p2.y) lastDirection = 'v';
+                        }
+                    } catch (error) {
+                        alert(`Error parsing path segment: ${currentPathCommand}\n${error.message}`);
+                        throw error;
+                    }
+                }
+                currentPathCommand = '';
+            };
+
+            try {
+                for (let i = 0; i < tokens.length; i++) {
+                    const token = tokens[i];
+                    const componentMatch = token.match(componentRegex);
+                    const isPathCommand = pathCommands.has(token);
+                    const isNumericArg = !isNaN(parseFloat(token));
+
+                    if (componentMatch) {
+                        processPath();
+                        
+                        const compCommand = componentMatch[1];
+                        const compLabelNum = componentMatch[2];
+                        const componentInfo = commandToComponentMap[compCommand];
+                        if (!componentInfo) continue;
+
+                        const componentType = componentInfo.type;
+                        const data = componentData[componentType];
+                        const isIntrinsicallyVertical = data.terminals.length > 1 && data.terminals[0].y !== data.terminals[1].y;
+                        const intrinsicLength = isIntrinsicallyVertical ? data.height : data.width;
+                        const intrinsicCrossDim = isIntrinsicallyVertical ? data.width : data.height;
+                        
+                        let rotation = 0;
+                        let center, endPos;
+                        const startPos = { ...currentPos };
+
+                        if (lastDirection === 'h') {
+                            rotation = isIntrinsicallyVertical ? 90 : 0;
+                            center = { x: startPos.x + intrinsicLength / 2, y: startPos.y };
+                            endPos = { x: startPos.x + intrinsicLength, y: startPos.y };
+                        } else { // 'v'
+                            rotation = isIntrinsicallyVertical ? 0 : 90;
+                            center = { x: startPos.x, y: startPos.y + intrinsicLength / 2 };
+                            endPos = { x: startPos.x, y: startPos.y + intrinsicLength };
+                        }
+
+                        const newComp = { id: nextId++, type: componentType, x: center.x, y: center.y, rotation, flipH: false, flipV: false };
+                        if (newComp.type === 'switch') newComp.state = 'open';
+                        elementsToAdd.push(newComp);
+
+                        if (compLabelNum) {
+                            const labelPrefix = componentInfo.prefix;
+                            let labelPos = { x: center.x, y: center.y };
+                            const isPlacedVertically = (rotation === 0 && isIntrinsicallyVertical) || (rotation === 90 && !isIntrinsicallyVertical);
+                            if (isPlacedVertically) {
+                                labelPos.x += intrinsicCrossDim / 2 + 25;
+                            } else {
+                                labelPos.y += intrinsicCrossDim / 2 + 25;
+                            }
+                            elementsToAdd.push({ id: nextId++, type: "text", text: `${labelPrefix}_{${compLabelNum}}`, x: labelPos.x, y: labelPos.y, rotation: 0, isItalic: true });
+                        }
+                        currentPos = endPos;
+                    } else if (isPathCommand || isNumericArg) {
+                        currentPathCommand += token + ' ';
+                    } else {
+                        alert(`Unknown command: '${token}'.`);
+                        return;
+                    }
+                }
+                processPath();
+            } catch (e) { return; }
+
+            if (elementsToAdd.length > 0) {
+                circuitElements.push(...elementsToAdd);
+                const finalBounds = calculateBoundingBox();
+                if (finalBounds) {
+                    resizeCanvas(finalBounds.maxX + 100, finalBounds.maxY + 100);
+                }
+                saveState();
+                redrawCanvas();
+                commandInput.value = '';
+            }
         }
 
         function showTextInputModal(initialText = "", initialItalic = true) {
@@ -2890,7 +3059,7 @@
         function saveCircuit() {
           const filename = prompt("Enter filename for project file:", "circuit.json");
           if (!filename) return;
-          const dataToSave = { version: "0.48b", elements: circuitElements, nextId: nextId };
+          const dataToSave = { version: "0.50c", elements: circuitElements, nextId: nextId };
           const dataStr = JSON.stringify(dataToSave, null, 2);
           const blob = new Blob([dataStr], { type: "application/json" });
           const link = document.createElement("a");
