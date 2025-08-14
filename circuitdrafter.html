@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -212,7 +211,8 @@
         font-size: 28px;
         color: #007bff;
       }
-      .title-container {
+      
+       .title-container {
         display: flex;
         align-items: center;
         gap: 15px;
@@ -983,7 +983,7 @@
       <input
         type="text"
         id="command-input"
-        placeholder="e.g., h 50 r1 v 40 d h -50 vdc1"
+        placeholder="e.g., vdc1 h 50 r1 v 100 l1"
       />
       <button id="command-execute-btn" class="modal-button primary">
         Place
@@ -1136,8 +1136,8 @@
 
     <script>
       /****************************************************************************
-      * Circuit Drafter - V0.50c (Date: 2025-08-13)
-       *   - Add text command input to place circuit and block diagram components.
+      * Circuit Drafter - V0.50c (Date: 2025-08-11)
+       *   - Text command box to place sequence of components and connections. 
       * Circuit Drafter - V0.48b (Date: 2025-08-11)
        *   - Path Wire tool is able to draw box triangle and circle. 
       * Circuit Drafter - V0.43a (Date: 2025-08-07)
@@ -1627,6 +1627,7 @@
             const componentRegex = new RegExp(`^(${componentCommandKeys})(\\d*)$`, 'i');
             const pathCommands = new Set(['h', 'v', 'cr', 'box', 'triangle', 'circle', 'arrow']);
             const tokens = commandStr.toLowerCase().split(/\s+/).filter(Boolean);
+            let isFirstElement = true;
 
             const processPath = () => {
                 if (currentPathCommand.trim()) {
@@ -1682,6 +1683,12 @@
                             center = { x: startPos.x, y: startPos.y + intrinsicLength / 2 };
                             endPos = { x: startPos.x, y: startPos.y + intrinsicLength };
                         }
+                        
+                        if (isFirstElement && isIntrinsicallyVertical) {
+                            // If the first component is vertical, start from its top terminal for clockwise flow
+                            rotation = isIntrinsicallyVertical ? 0 : 90; 
+                            endPos = { x: center.x, y: center.y - intrinsicLength / 2 };
+                        }
 
                         const newComp = { id: nextId++, type: componentType, x: center.x, y: center.y, rotation, flipH: false, flipV: false };
                         if (newComp.type === 'switch') newComp.state = 'open';
@@ -1699,8 +1706,11 @@
                             elementsToAdd.push({ id: nextId++, type: "text", text: `${labelPrefix}_{${compLabelNum}}`, x: labelPos.x, y: labelPos.y, rotation: 0, isItalic: true });
                         }
                         currentPos = endPos;
+                        isFirstElement = false;
+
                     } else if (isPathCommand || isNumericArg) {
                         currentPathCommand += token + ' ';
+                        isFirstElement = false;
                     } else {
                         alert(`Unknown command: '${token}'.`);
                         return;
@@ -2864,8 +2874,8 @@
             ctx.beginPath();
             ctx.moveTo(-30*scale, 0); ctx.lineTo(2*scale, 0);
             ctx.moveTo(3*scale, 20*scale); ctx.lineTo(3*scale, -20*scale); ctx.moveTo(2*scale, 20*scale); ctx.lineTo(2*scale, -20*scale);
-            ctx.moveTo(30*scale, -20*scale); ctx.lineTo(30*scale, -52.5*scale);
-            ctx.moveTo(30*scale, 20*scale); ctx.lineTo(30*scale, 52.5*scale);
+            ctx.moveTo(30*scale, -20*scale); ctx.lineTo(30*scale, -50*scale);
+            ctx.moveTo(30*scale, 20*scale); ctx.lineTo(30*scale, 50*scale);
             ctx.moveTo(30*scale, -20*scale); ctx.lineTo(2*scale, -7*scale);
             const fromX = 2*scale, fromY = 7*scale, toX = 30*scale, toY = 20*scale;
             ctx.moveTo(fromX, fromY); ctx.lineTo(toX, toY); ctx.stroke();
@@ -2877,8 +2887,8 @@
             ctx.beginPath();
             ctx.moveTo(-30*scale, 0); ctx.lineTo(2*scale, 0);
             ctx.moveTo(3*scale, 20*scale); ctx.lineTo(3*scale, -20*scale); ctx.moveTo(2*scale, 20*scale); ctx.lineTo(2*scale, -20*scale);
-            ctx.moveTo(30*scale, -20*scale); ctx.lineTo(30*scale, -52.5*scale);
-            ctx.moveTo(30*scale, 20*scale); ctx.lineTo(30*scale, 52.5*scale);
+            ctx.moveTo(30*scale, -20*scale); ctx.lineTo(30*scale, -50*scale);
+            ctx.moveTo(30*scale, 20*scale); ctx.lineTo(30*scale, 50*scale);
             const fromX = 30*scale, fromY = -20*scale, toX = 2*scale, toY = -7*scale;
             ctx.moveTo(fromX, fromY); ctx.lineTo(toX, toY);
             ctx.moveTo(2*scale, 7*scale); ctx.lineTo(30*scale, 20*scale); ctx.stroke();
