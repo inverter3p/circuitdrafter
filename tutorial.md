@@ -1,4 +1,4 @@
-<img width="418" height="273" alt="image" src="https://github.com/user-attachments/assets/c5ac9d8a-64b9-4f21-b0c4-b765f1d0cc66" /># Circuit Drafter: Quick Start Guide
+# Circuit Drafter: Quick Start Guide
 
 Welcome to Circuit Drafter! This guide will get you drawing professional schematics in minutes. The interface is designed to be fast and intuitive.
 
