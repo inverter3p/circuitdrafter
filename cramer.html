@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cramer's Rule Solver</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .latex-img {
+            /* The background is now transparent, but we can add padding if needed */
+            padding: 10px;
+            border-radius: 8px;
+            display: inline-block;
+            max-width: 100%;
+            height: auto;
+        }
+        .matrix-input {
+            width: 60px;
+            text-align: center;
+        }
+        /* Custom styles for better visual feedback */
+        .btn {
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .input-field {
+             transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .input-field:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            outline: none;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .latex-container:hover .copy-btn {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900">Cramer's Rule Solver</h1>
+            <p class="text-lg text-gray-600 mt-2">Solve systems of linear equations step-by-step.</p>
+        </header>
+
+        <main>
+            <!-- Step 1: Input number of variables -->
+            <div id="step1" class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h2 class="text-2xl font-semibold mb-4">Step 1: Define Your System</h2>
+                <label for="numVariables" class="block text-md font-medium text-gray-700 mb-2">How many variables are in your system?</label>
+                <div class="flex items-center space-x-4">
+                    <input type="number" id="numVariables" min="2" max="10" value="3" class="input-field block w-24 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    <button id="generateMatrixBtn" class="btn bg-indigo-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-indigo-700">Generate Matrix</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Matrix Input -->
+            <div id="step2" class="hidden bg-white p-6 rounded-lg shadow-md mb-6">
+                <h2 class="text-2xl font-semibold mb-4">Step 2: Enter Matrix Values</h2>
+                <p class="text-gray-600 mb-4">Enter the coefficients for the equation [A][Y] = [X].</p>
+                <div id="matrixContainer" class="overflow-x-auto"></div>
+                <button id="solveBtn" class="btn mt-4 bg-green-600 text-white font-semibold py-2 px-6 rounded-md hover:bg-green-700">Solve System</button>
+            </div>
+
+            <!-- Step 3: Results -->
+            <div id="results" class="hidden bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold mb-4">Solution</h2>
+                <div id="resultsContent" class="space-y-6"></div>
+            </div>
+        </main>
+
+        <!-- Message Box for copy feedback -->
+        <div id="messageBox" class="fixed bottom-5 right-5 bg-gray-800 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 transition-opacity duration-300">
+            Copied to clipboard!
+        </div>
+    </div>
+
+    <script>
+        // DOM element references
+        const generateMatrixBtn = document.getElementById('generateMatrixBtn');
+        const solveBtn = document.getElementById('solveBtn');
+        const numVariablesInput = document.getElementById('numVariables');
+        const step2Div = document.getElementById('step2');
+        const resultsDiv = document.getElementById('results');
+        const matrixContainer = document.getElementById('matrixContainer');
+        const resultsContent = document.getElementById('resultsContent');
+        const messageBox = document.getElementById('messageBox');
+
+        // Event Listeners
+        generateMatrixBtn.addEventListener('click', generateMatrixUI);
+        solveBtn.addEventListener('click', solveSystem);
+
+        /**
+         * Generates the UI for matrix input based on the number of variables.
+         */
+        function generateMatrixUI() {
+            const n = parseInt(numVariablesInput.value);
+            if (isNaN(n) || n < 2 || n > 10) {
+                showMessage("Please enter a number of variables between 2 and 10.");
+                return;
+            }
+
+            let tableHTML = '<table class="table-auto border-collapse">';
+            
+            // Generate table header
+            let header = '<thead><tr>';
+            header += `<th colspan="${n}" class="px-4 py-2 text-center font-medium text-gray-600">Matrix A</th>`;
+            header += `<th class="px-4 py-2 text-center font-medium text-gray-600">Variables Y</th>`;
+            header += `<th class="px-2"></th>`; // For equals sign
+            header += `<th class="px-4 py-2 text-center font-medium text-gray-600">Vector X</th>`;
+            header += '</tr></thead>';
+            tableHTML += header;
+            
+            // Generate input fields for the matrix equation
+            tableHTML += '<tbody>';
+            for (let i = 0; i < n; i++) {
+                tableHTML += '<tr>';
+                // Coefficient matrix A
+                for (let j = 0; j < n; j++) {
+                    tableHTML += `<td class="p-1"><input type="number" class="input-field matrix-input p-2 border border-gray-300 rounded-md" id="cell_${i}_${j}" value="${Math.floor(Math.random() * 10)}"></td>`;
+                }
+                // Variable vector Y
+                tableHTML += `<td class="p-1"><input type="text" class="input-field matrix-input p-2 border border-gray-300 rounded-md" id="var_${i}" value="y${i + 1}"></td>`;
+                // Separator
+                tableHTML += '<td class="px-2 text-2xl text-gray-400 font-light">=</td>';
+                // Constant vector X
+                tableHTML += `<td class="p-1"><input type="number" class="input-field matrix-input p-2 border border-gray-300 rounded-md" id="cell_${i}_${n}" value="${Math.floor(Math.random() * 10)}"></td>`;
+                tableHTML += '</tr>';
+            }
+            tableHTML += '</tbody></table>';
+
+            matrixContainer.innerHTML = tableHTML;
+            step2Div.classList.remove('hidden');
+            resultsDiv.classList.add('hidden');
+        }
+
+        /**
+         * Main function to trigger the solving process.
+         */
+        function solveSystem() {
+            const n = parseInt(numVariablesInput.value);
+            const matrix = readMatrixFromUI(n);
+            const variableNames = readVariableNames(n);
+            const A = matrix.map(row => row.slice(0, n));
+            const X = matrix.map(row => row[n]);
+
+            resultsContent.innerHTML = ''; // Clear previous results
+            resultsDiv.classList.remove('hidden');
+
+            // 1. Display the initial augmented matrix
+            displayLatexMatrix('Initial System [A][Y] = [X]', A, X, variableNames);
+
+            // 2. Calculate determinant of A
+            const detA = determinant(A);
+            const detALatex = `det(A) = ${detA}`;
+            const matrixALatex = `A = ${matrixToLatex(A)}`;
+            displayLatexCalculation(`Determinant of A, det(A)`, null, detALatex, matrixALatex);
+
+
+            if (detA === 0) {
+                resultsContent.innerHTML += `<p class="text-red-600 font-semibold">The determinant of the coefficient matrix is 0. Cramer's rule is not applicable. The system may have no solution or infinitely many solutions.</p>`;
+                return;
+            }
+
+            // 3. Solve for each variable
+            const solutions = [];
+            for (let i = 0; i < n; i++) {
+                const Ai = createSubMatrix(A, X, i);
+                const detAi = determinant(Ai);
+                const solution = detAi / detA;
+                solutions.push(solution);
+                
+                const explanation = `To solve for ${variableNames[i]}, we create a new matrix A<sub>${i + 1}</sub> by replacing the <strong>${ordinalSuffix(i + 1)} column</strong> of matrix A with the constant vector X.`;
+                const matrixAndDetLatex = `A_{${i+1}} = ${matrixToLatex(Ai)}, \\quad det(A_{${i+1}}) = ${detAi}`;
+                const calculationLatex = `${variableNames[i]} = \\frac{det(A_{${i+1}})}{det(A)} = \\frac{${detAi}}{${detA}} = ${solution.toFixed(4)}`;
+
+                displayLatexCalculation(
+                    `Solving for ${variableNames[i]}`,
+                    explanation,
+                    calculationLatex,
+                    matrixAndDetLatex
+                );
+            }
+            
+            // 4. Display final solution vector
+            const variableMatrix = matrixToLatex(variableNames.map(v => [v]));
+            const solutionMatrix = matrixToLatex(solutions.map(s => [s.toFixed(4)]));
+            const solutionLatex = `${variableMatrix} = ${solutionMatrix}`;
+            displayLatexResult('Final Solution', solutionLatex);
+        }
+
+        /**
+         * Reads the matrix values from the input fields.
+         * @param {number} n - The number of variables.
+         * @returns {number[][]} The augmented matrix.
+         */
+        function readMatrixFromUI(n) {
+            const matrix = [];
+            for (let i = 0; i < n; i++) {
+                const row = [];
+                for (let j = 0; j <= n; j++) {
+                    const cellValue = document.getElementById(`cell_${i}_${j}`).value;
+                    row.push(parseFloat(cellValue) || 0);
+                }
+                matrix.push(row);
+            }
+            return matrix;
+        }
+        
+        /**
+         * Reads the variable names from the input fields.
+         * @param {number} n - The number of variables.
+         * @returns {string[]} The array of variable names.
+         */
+        function readVariableNames(n) {
+            const names = [];
+            for (let i = 0; i < n; i++) {
+                const varName = document.getElementById(`var_${i}`).value;
+                names.push(varName || `y_{${i+1}}`); // Fallback if empty
+            }
+            return names;
+        }
+
+        /**
+         * Calculates the determinant of a square matrix using recursion.
+         * @param {number[][]} matrix - The input matrix.
+         * @returns {number} The determinant.
+         */
+        function determinant(matrix) {
+            const n = matrix.length;
+            if (n === 0) return 1;
+            if (n === 1) return matrix[0][0];
+            if (n === 2) return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+            
+            let det = 0;
+            for (let j = 0; j < n; j++) {
+                const sign = j % 2 === 0 ? 1 : -1;
+                const subMatrix = matrix.slice(1).map(row => row.filter((_, colIndex) => colIndex !== j));
+                det += sign * matrix[0][j] * determinant(subMatrix);
+            }
+            return det;
+        }
+
+        /**
+         * Creates a new matrix for Cramer's rule by replacing a column with the constant vector.
+         * @param {number[][]} A - The original coefficient matrix.
+         * @param {number[]} X - The constant vector.
+         * @param {number} colIndex - The index of the column to replace.
+         * @returns {number[][]} The new matrix Ai.
+         */
+        function createSubMatrix(A, X, colIndex) {
+            return A.map((row, i) => {
+                const newRow = [...row];
+                newRow[colIndex] = X[i];
+                return newRow;
+            });
+        }
+
+        // --- LaTeX and Display Functions ---
+
+        /**
+         * Converts a 2D array into a LaTeX matrix string using bmatrix.
+         * @param {number[][]} matrix - The matrix to convert.
+         * @returns {string} The LaTeX string.
+         */
+        function matrixToLatex(matrix) {
+            return `\\begin{bmatrix} ${matrix.map(row => row.join(' & ')).join('\\\\ ')} \\end{bmatrix}`;
+        }
+        
+        /**
+         * Converts the system AY=X into a LaTeX string.
+         * @param {number[][]} A - Coefficient matrix.
+         * @param {number[]} X - Constant vector.
+         * @param {string[]} Y - Variable names vector.
+         * @returns {string} The LaTeX string.
+         */
+        function systemToLatex(A, X, Y) {
+            const matrixA = matrixToLatex(A);
+            const matrixY = matrixToLatex(Y.map(v => [v]));
+            const matrixX = matrixToLatex(X.map(v => [v]));
+            return `${matrixA} ${matrixY} = ${matrixX}`;
+        }
+
+
+        /**
+         * Creates a container with a title, a LaTeX image, and a copy button.
+         * @param {string} title - The title for the section.
+         * @param {string} latex - The LaTeX code to render.
+         * @returns {string} The HTML string for the container.
+         */
+        function createLatexContainer(title, latex) {
+            // Add commands for DPI and transparent background to the LaTeX string itself.
+            const fullLatex = `\\dpi{150} \\bg{transparent} ${latex}`;
+            const encodedLatex = encodeURIComponent(fullLatex);
+            
+            // Construct the final URL.
+            const imageUrl = `https://latex.codecogs.com/png.image?${encodedLatex}`;
+            
+            const uniqueId = `latex-text-${Math.random().toString(36).substr(2, 9)}`;
+
+            return `
+                <div class="mt-4 p-4 border rounded-lg bg-gray-50 relative latex-container">
+                    <h4 class="font-semibold text-gray-700 mb-2">${title}</h4>
+                    <img src="${imageUrl}" class="latex-img" alt="LaTeX rendering of: ${latex}">
+                    <textarea id="${uniqueId}" style="position: absolute; left: -9999px;">${latex}</textarea>
+                    <button onclick="copyToClipboard('${uniqueId}')" class="copy-btn btn bg-gray-200 text-gray-600 p-1.5 rounded-full hover:bg-gray-300" title="Copy LaTeX">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                            <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zM-1 7a.5.5 0 0 1 .5-.5h15a.5.5 0 0 1 0 1H-.5A.5.5 0 0 1-1 7z"/>
+                        </svg>
+                    </button>
+                </div>
+            `;
+        }
+
+        /**
+         * Displays a rendered matrix equation.
+         * @param {string} title - The section title.
+         * @param {number[][]} A - Coefficient matrix.
+         * @param {number[]} X - Constant vector.
+         * @param {string[]} Y - Variable names.
+         */
+        function displayLatexMatrix(title, A, X, Y) {
+            const latex = systemToLatex(A, X, Y);
+            resultsContent.innerHTML += createLatexContainer(title, latex);
+        }
+        
+        /**
+         * Displays a calculation step with the formula and the matrix used.
+         * @param {string} title - The section title.
+         * @param {string|null} explanation - An optional explanation text.
+         * @param {string} calculationLatex - The LaTeX for the calculation/formula.
+         * @param {string} matrixLatex - The LaTeX for the matrix involved.
+         */
+        function displayLatexCalculation(title, explanation, calculationLatex, matrixLatex) {
+            let html = `<div class="p-4 border-t"><h3 class="text-lg font-semibold text-indigo-700">${title}</h3>`;
+            if (explanation) {
+                html += `<p class="text-gray-600 mt-2 mb-2">${explanation}</p>`;
+            }
+            html += createLatexContainer('Matrix Used & Determinant', matrixLatex);
+            html += createLatexContainer('Calculation', calculationLatex);
+            html += `</div>`;
+            resultsContent.innerHTML += html;
+        }
+
+        /**
+         * Displays the final result.
+         * @param {string} title - The section title.
+         * @param {string} latex - The LaTeX for the final result.
+         */
+        function displayLatexResult(title, latex) {
+            let html = `<div class="p-4 border-t"><h3 class="text-xl font-bold text-green-700">${title}</h3>`;
+            html += createLatexContainer('Result', latex);
+            html += `</div>`;
+            resultsContent.innerHTML += html;
+        }
+
+        /**
+         * Copies text from a hidden textarea to the clipboard.
+         * @param {string} elementId - The ID of the textarea element.
+         */
+        window.copyToClipboard = function(elementId) {
+            const textarea = document.getElementById(elementId);
+            textarea.select();
+            document.execCommand('copy');
+            showMessage("LaTeX copied to clipboard!");
+        }
+        
+        /**
+         * Displays a short-lived message on the screen.
+         * @param {string} text - The message to display.
+         */
+        function showMessage(text) {
+            messageBox.textContent = text;
+            messageBox.classList.remove('opacity-0');
+            setTimeout(() => {
+                messageBox.classList.add('opacity-0');
+            }, 2000);
+        }
+
+        /**
+         * Returns the ordinal suffix for a number (e.g., 1st, 2nd, 3rd).
+         * @param {number} i - The number.
+         * @returns {string} The number with its ordinal suffix.
+         */
+        function ordinalSuffix(i) {
+            const j = i % 10,
+                k = i % 100;
+            if (j === 1 && k !== 11) {
+                return i + "st";
+            }
+            if (j === 2 && k !== 12) {
+                return i + "nd";
+            }
+            if (j === 3 && k !== 13) {
+                return i + "rd";
+            }
+            return i + "th";
+        }
+        
+        // Generate a default 3x3 matrix on page load for demonstration
+        window.onload = () => {
+             generateMatrixUI();
+        };
+
+    </script>
+</body>
+</html>
