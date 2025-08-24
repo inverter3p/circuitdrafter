@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok VJ Bingo</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for a nice, clean font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Confetti library for celebration effect -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <style>
+        /* Custom styles for the application */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+        }
+        /* Style for the bingo card grid */
+        #bingo-card {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.75rem; /* 12px */
+            max-width: 400px;
+            margin: 1rem auto 0;
+        }
+        /* Style for each cell in the bingo card */
+        .cell {
+            aspect-ratio: 1 / 1;
+            border: 2px solid #4a4a4a;
+            border-radius: 0.75rem; /* 12px */
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #2a2a2a;
+        }
+        /* Style for a cell when it's selected (clicked) with a neon green glow */
+        .cell.selected {
+            border-color: #34d399; /* Emerald-400 */
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(52, 211, 153, 0.7), 0 0 25px rgba(16, 185, 129, 0.5);
+        }
+        /* Style for the gift options */
+        .gift-option {
+            border: 2px solid #4a4a4a;
+            transition: all 0.3s ease;
+        }
+        /* Style for a gift option when it's selected */
+        .gift-option.selected {
+            border-color: #a855f7;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+        }
+        /* Style for the prize wheel canvas */
+        #wheel {
+            transition: transform 5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        /* Simple animation for the BINGO! text */
+        @keyframes tada {
+            from { transform: scale3d(1, 1, 1); }
+            10%, 20% { transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg); }
+            30%, 50%, 70%, 90% { transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg); }
+            40%, 60%, 80% { transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg); }
+            to { transform: scale3d(1, 1, 1); }
+        }
+        .animate-tada {
+            animation: tada 1s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="w-full max-w-md mx-auto bg-gray-900/50 backdrop-blur-sm p-6 rounded-2xl shadow-lg border border-gray-700">
+        <header class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">TikTok VJ Bingo</h1>
+            <p class="text-gray-400 mt-1">Set up your game and hit Start!</p>
+        </header>
+
+        <!-- Setup Container: Holds both gift and prize selection -->
+        <div id="setup-container">
+            <!-- Gift Selection Section -->
+            <div id="gift-selection" class="mb-6">
+                <h2 class="text-lg font-semibold mb-3 text-center">Choose 4 Gifts</h2>
+                <div class="grid grid-cols-5 gap-3">
+                    <!-- Gift options will be dynamically inserted here by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Prize Customization Section -->
+            <div id="prize-customization" class="mb-6">
+                 <h2 class="text-lg font-semibold mb-3 text-center">Customize 4 Prizes</h2>
+                 <div id="prize-inputs" class="space-y-2">
+                     <!-- Prize input fields will be generated here -->
+                 </div>
+            </div>
+        </div>
+
+
+        <!-- Start Game Button -->
+        <button id="start-button" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-lg disabled:bg-gray-500 disabled:cursor-not-allowed disabled:transform-none">
+            Select 4 Gifts
+        </button>
+
+        <!-- Bingo Card Container -->
+        <div id="bingo-card-container" class="hidden">
+             <div id="bingo-card"></div>
+             <!-- "Randomize Card" and "Reset Gift" buttons -->
+             <div class="grid grid-cols-2 gap-4 mt-4">
+                <button id="randomize-card-button" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Randomize Card</button>
+                <button id="reset-button" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Reset Gift</button>
+             </div>
+        </div>
+    </div>
+
+    <!-- Prize Modal -->
+    <div id="prize-modal" class="fixed inset-0 bg-black bg-opacity-75 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl p-6 w-full max-w-lg text-center relative">
+            <button id="close-modal-button" class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">&times;</button>
+            <h2 id="bingo-title" class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-400 mb-4">BINGO!</h2>
+            <p class="text-gray-300 mb-6">Spin the wheel to see what you'll do!</p>
+            
+            <!-- Prize Wheel Container with Arrow -->
+            <div id="wheel-container" class="relative flex justify-center items-center mb-6">
+                <!-- Arrow pointing to the winning prize -->
+                <div class="absolute w-8 h-8 -top-2 z-10" style="clip-path: polygon(50% 100%, 0 0, 100% 0);">
+                    <div class="w-full h-full bg-yellow-400"></div>
+                </div>
+                <canvas id="wheel" width="350" height="350"></canvas>
+            </div>
+            <button id="spin-button" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg">
+                SPIN THE WHEEL!
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Element References ---
+            const giftSelectionContainer = document.querySelector('#gift-selection .grid');
+            const setupContainer = document.getElementById('setup-container');
+            const startButton = document.getElementById('start-button');
+            const resetButton = document.getElementById('reset-button');
+            const randomizeCardButton = document.getElementById('randomize-card-button');
+            const bingoCardContainer = document.getElementById('bingo-card-container');
+            const bingoCard = document.getElementById('bingo-card');
+            const prizeModal = document.getElementById('prize-modal');
+            const closeModalButton = document.getElementById('close-modal-button');
+            const spinButton = document.getElementById('spin-button');
+            const wheelCanvas = document.getElementById('wheel');
+            const bingoTitle = document.getElementById('bingo-title');
+            const prizeInputsContainer = document.getElementById('prize-inputs');
+            const ctx = wheelCanvas.getContext('2d');
+
+            // --- State Variables ---
+            const GIFTS_TO_SELECT = 4;
+            let selectedGifts = new Set();
+            let prizes = ["Sing a Song", "Dance Break!", "Tell a Joke", "Shoutout a Follower"];
+            let isSpinning = false;
+            let rotation = 0;
+
+            // --- Gift Data with Coin Values ---
+            const allGifts = [
+                { name: 'Rose', img: 'https://placehold.co/100x100/FF6B6B/FFFFFF?text=Rose&font=Inter', value: 1 },
+                { name: 'Ice Cream', img: 'https://placehold.co/100x100/A0C4FF/FFFFFF?text=Ice+Cream&font=Inter', value: 5 },
+                { name: 'Heart', img: 'https://placehold.co/100x100/FFC0CB/000000?text=Heart&font=Inter', value: 10 },
+                { name: 'Corgi', img: 'https://placehold.co/100x100/FFD166/FFFFFF?text=Corgi&font=Inter', value: 20 },
+                { name: 'GG', img: 'https://placehold.co/100x100/06D6A0/FFFFFF?text=GG&font=Inter', value: 30 },
+                { name: 'Donut', img: 'https://placehold.co/100x100/9B5DE5/FFFFFF?text=Donut&font=Inter', value: 50 },
+                { name: 'Diamond', img: 'https://placehold.co/100x100/4ECDC4/FFFFFF?text=Diamond&font=Inter', value: 80 },
+                { name: 'Crown', img: 'https://placehold.co/100x100/F9C74F/FFFFFF?text=Crown&font=Inter', value: 99 },
+                { name: 'Rocket', img: 'https://placehold.co/100x100/F8961E/FFFFFF?text=Rocket&font=Inter', value: 150 },
+                { name: 'Unicorn', img: 'https://placehold.co/100x100/F3722C/FFFFFF?text=Unicorn&font=Inter', value: 200 },
+            ];
+
+            // --- Initialization ---
+            function initialize() {
+                populateGiftSelection();
+                populatePrizeInputs();
+                drawWheel();
+                updateStartButton();
+            }
+
+            function populateGiftSelection() {
+                allGifts.forEach(gift => {
+                    const option = document.createElement('div');
+                    option.className = 'gift-option cursor-pointer p-2 rounded-lg text-center';
+                    option.dataset.giftName = gift.name;
+                    option.innerHTML = `
+                        <img src="${gift.img}" alt="${gift.name}" class="w-12 h-12 mx-auto rounded-md" onerror="this.onerror=null;this.src='https://placehold.co/100x100/CCCCCC/FFFFFF?text=Error';">
+                        <p class="text-xs mt-1 truncate">${gift.name}</p>
+                    `;
+                    option.addEventListener('click', () => handleGiftSelection(gift.name, option));
+                    giftSelectionContainer.appendChild(option);
+                });
+            }
+
+            function populatePrizeInputs() {
+                prizeInputsContainer.innerHTML = '';
+                prizes.forEach((prize, index) => {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = prize;
+                    input.className = 'w-full bg-gray-700 border border-gray-600 rounded-md p-2 text-sm focus:ring-purple-500 focus:border-purple-500';
+                    input.addEventListener('change', (e) => {
+                        prizes[index] = e.target.value;
+                        drawWheel();
+                    });
+                    prizeInputsContainer.appendChild(input);
+                });
+            }
+
+            // --- Event Handlers ---
+            function handleGiftSelection(giftName, element) {
+                if (selectedGifts.has(giftName)) {
+                    selectedGifts.delete(giftName);
+                    element.classList.remove('selected');
+                } else {
+                    if (selectedGifts.size < GIFTS_TO_SELECT) {
+                        selectedGifts.add(giftName);
+                        element.classList.add('selected');
+                    } else {
+                        showCustomAlert(`You can only select up to ${GIFTS_TO_SELECT} gifts.`);
+                    }
+                }
+                updateStartButton();
+            }
+
+            function updateStartButton() {
+                const remaining = GIFTS_TO_SELECT - selectedGifts.size;
+                if (remaining === 0) {
+                    startButton.disabled = false;
+                    startButton.textContent = 'Start Game!';
+                } else {
+                    startButton.disabled = true;
+                    startButton.textContent = `Select ${remaining} more gift(s)`;
+                }
+            }
+            
+            function startGame() {
+                setupContainer.classList.add('hidden');
+                startButton.classList.add('hidden');
+                bingoCardContainer.classList.remove('hidden');
+                generateBingoCard();
+            }
+
+            function resetGame() {
+                setupContainer.classList.remove('hidden');
+                startButton.classList.remove('hidden');
+                bingoCardContainer.classList.add('hidden');
+                bingoCard.innerHTML = '';
+                selectedGifts.clear();
+                document.querySelectorAll('.gift-option').forEach(el => el.classList.remove('selected'));
+                updateStartButton();
+            }
+            
+            startButton.addEventListener('click', startGame);
+            resetButton.addEventListener('click', resetGame);
+            randomizeCardButton.addEventListener('click', generateBingoCard);
+            closeModalButton.addEventListener('click', () => prizeModal.classList.add('hidden'));
+            spinButton.addEventListener('click', spinWheel);
+
+            // --- Game Logic ---
+            function generateBingoCard() {
+                bingoCard.innerHTML = '';
+                
+                let gridGifts = [...selectedGifts];
+                
+                const normalValueGifts = [...selectedGifts].filter(name => {
+                    const giftData = allGifts.find(g => g.name === name);
+                    return giftData && giftData.value <= 100;
+                });
+
+                const fillPool = normalValueGifts.length > 0 ? normalValueGifts : [...selectedGifts];
+
+                while (gridGifts.length < 9) {
+                    const randomGift = fillPool[Math.floor(Math.random() * fillPool.length)];
+                    gridGifts.push(randomGift);
+                }
+
+                for (let i = gridGifts.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [gridGifts[i], gridGifts[j]] = [gridGifts[j], gridGifts[i]];
+                }
+
+                if (Math.random() < 0.5) {
+                    gridGifts[4] = 'FREE';
+                }
+
+                gridGifts.forEach((giftName) => {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.dataset.giftName = giftName;
+                    
+                    if (giftName === 'FREE') {
+                        cell.innerHTML = `<span class="font-bold text-xl text-yellow-400">FREE</span>`;
+                        cell.classList.add('selected');
+                    } else {
+                        const giftData = allGifts.find(g => g.name === giftName);
+                        if(giftData) {
+                             cell.style.backgroundImage = `url(${giftData.img})`;
+                        }
+                    }
+
+                    cell.addEventListener('click', () => {
+                        if (giftName !== 'FREE' && !cell.classList.contains('selected')) {
+                            cell.classList.add('selected');
+                            checkBingo();
+                        }
+                    });
+                    bingoCard.appendChild(cell);
+                });
+            }
+
+            function checkBingo() {
+                const cells = Array.from(document.querySelectorAll('.cell'));
+                const isSelected = cells.map(cell => cell.classList.contains('selected'));
+                
+                const winningCombos = [
+                    [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                    [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                    [0, 4, 8], [2, 4, 6]
+                ];
+
+                for (const combo of winningCombos) {
+                    if (combo.every(index => isSelected[index])) {
+                        prizeModal.classList.remove('hidden');
+                        bingoTitle.classList.add('animate-tada');
+                        triggerConfetti();
+                        playWinSound();
+                        setTimeout(() => bingoTitle.classList.remove('animate-tada'), 1000);
+                        return;
+                    }
+                }
+            }
+
+            // --- Effects Logic ---
+            function triggerConfetti() {
+                confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+                confetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0 } });
+                confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1 } });
+            }
+
+            function playWinSound() {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.type = 'triangle';
+                gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+                const now = audioCtx.currentTime;
+                const totalDuration = 2.0;
+                gainNode.gain.linearRampToValueAtTime(0.5, now + 0.05);
+                oscillator.frequency.setValueAtTime(523.25, now + 0.0);
+                oscillator.frequency.setValueAtTime(659.25, now + 0.15);
+                oscillator.frequency.setValueAtTime(783.99, now + 0.30);
+                oscillator.frequency.setValueAtTime(1046.50, now + 0.45);
+                oscillator.frequency.setValueAtTime(1046.50, now + 1.0); 
+                oscillator.frequency.setValueAtTime(783.99, now + 1.1);
+                oscillator.frequency.setValueAtTime(1046.50, now + 1.3);
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, now + totalDuration - 0.1);
+                oscillator.start(now);
+                oscillator.stop(now + totalDuration);
+            }
+
+            /**
+             * Plays a short sound when the prize wheel lands.
+             */
+            function playLandingSound() {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.type = 'sine';
+                const now = audioCtx.currentTime;
+                gainNode.gain.setValueAtTime(0.6, now);
+                oscillator.frequency.setValueAtTime(900, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, now + 0.5);
+                oscillator.start(now);
+                oscillator.stop(now + 0.5);
+            }
+
+            // --- Prize Wheel Logic ---
+            function drawWheel() {
+                const numPrizes = prizes.length;
+                if (numPrizes === 0) return;
+                const arcSize = (2 * Math.PI) / numPrizes;
+                const radius = wheelCanvas.width / 2;
+                const colors = ["#a855f7", "#ec4899", "#f97316", "#eab308"];
+
+                ctx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
+                ctx.save();
+                ctx.translate(radius, radius);
+
+                for (let i = 0; i < numPrizes; i++) {
+                    const angle = i * arcSize;
+                    ctx.beginPath();
+                    ctx.fillStyle = colors[i % colors.length];
+                    ctx.moveTo(0, 0);
+                    ctx.arc(0, 0, radius - 5, angle, angle + arcSize, false);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+
+                    ctx.save();
+                    ctx.fillStyle = 'white';
+                    ctx.font = '700 18px Inter';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    const textAngle = angle + arcSize / 2;
+                    ctx.rotate(textAngle);
+                    ctx.fillText(prizes[i], radius * 0.6, 0);
+                    ctx.restore();
+                }
+                ctx.restore();
+            }
+            
+            function spinWheel() {
+                if (isSpinning) return;
+                isSpinning = true;
+
+                const degrees = Math.floor(Math.random() * 360) + 360 * 5;
+                const newRotation = rotation + degrees;
+                
+                wheelCanvas.style.transform = `rotate(${newRotation}deg)`;
+                
+                setTimeout(() => {
+                    const actualRotation = newRotation % 360;
+                    const segmentAngle = 360 / prizes.length;
+                    const winningAngle = (270 - actualRotation + 360) % 360;
+                    const winningIndex = Math.floor(winningAngle / segmentAngle);
+                    
+                    showCustomAlert(`The wheel landed on: ${prizes[winningIndex]}`);
+                    playLandingSound(); // Play sound on landing
+
+                    isSpinning = false;
+                    rotation = newRotation;
+                }, 5000);
+            }
+
+            function showCustomAlert(message) {
+                 const alertBox = document.createElement('div');
+                 alertBox.style.cssText = `
+                    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+                    background-color: #2a2a2a; color: white; padding: 15px 25px;
+                    border-radius: 12px; border: 1px solid #4a4a4a;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 100;
+                    font-size: 1.1rem; opacity: 0; transition: opacity 0.5s;
+                 `;
+                 alertBox.textContent = message;
+                 document.body.appendChild(alertBox);
+
+                 setTimeout(() => alertBox.style.opacity = 1, 10);
+                 setTimeout(() => {
+                     alertBox.style.opacity = 0;
+                     setTimeout(() => alertBox.remove(), 500);
+                 }, 4000);
+            }
+
+            // --- Start the App ---
+            initialize();
+        });
+    </script>
+</body>
+</html>
