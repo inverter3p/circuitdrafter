@@ -2893,7 +2893,7 @@
           const finalColor = color || "black";
           ctx.strokeStyle = isSelected ? "#007bff" : finalColor;
           ctx.fillStyle = isSelected ? "#007bff" : finalColor;
-          ctx.lineWidth = isSelected ? 2.5 : 1.75;
+          ctx.lineWidth = isSelected ? 2.5 : 1.5;
           ctx.lineCap = "round";
           ctx.lineJoin = "round";
         }
@@ -4717,7 +4717,7 @@
           ctx.lineTo(plusSignX, plusSignY + plusSignSize);
           ctx.stroke();
           ctx.save();
-          ctx.lineWidth = ctx.lineWidth * 1.5;
+          ctx.lineWidth = ctx.lineWidth * 1.75;
           ctx.beginPath();
           ctx.moveTo(-shortPlateW / 2, plateY2);
           ctx.lineTo(shortPlateW / 2, plateY2);
