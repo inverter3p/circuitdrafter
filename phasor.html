@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AC Sinusoidal Waveform Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- KaTeX for LaTeX rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" xintegrity="sha384-n8MVd4RsNIU0KOVEMVIhbCwHMAq2EVqFlyhKtxDMTBtVHFcW4yEVgHYXBQeBQCZR" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" xintegrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZYPo8" crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .control-panel label {
+            font-weight: 500;
+        }
+        .output-box {
+            background-color: #f8fafc; /* gray-50 */
+            border: 1px solid #e2e8f0; /* gray-200 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: 'monospace';
+            font-size: 1.1rem; 
+            color: #1e293b; /* gray-800 */
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .phasor-output-box {
+             background-color: #f8fafc; /* gray-50 */
+            border: 1px solid #e2e8f0; /* gray-200 */
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-family: 'monospace';
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #1e293b; /* gray-800 */
+        }
+        #waveformCanvas {
+            cursor: crosshair;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">AC Sinusoidal Waveform Simulator</h1>
+            <p class="text-lg text-gray-600 mt-2">Visualize AC waveforms, phasors, and their mathematical representations.</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <!-- Left Column: Controls -->
+            <div class="lg:col-span-2">
+                <!-- Controls Section -->
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-2xl font-semibold mb-6 border-b pb-3">Parameters</h2>
+                    <!-- Common Controls -->
+                    <div class="mb-6 control-panel">
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">Common</h3>
+                        <div>
+                            <label for="frequency" class="block mb-1 text-gray-600">Frequency (f)</label>
+                            <div class="flex items-center space-x-3">
+                                <input type="range" id="frequency" min="1" max="120" value="60" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                <span id="frequencyValue" class="font-semibold text-indigo-600 w-16 text-center">60 Hz</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Voltage Controls -->
+                    <div class="mb-6 control-panel">
+                        <h3 class="text-xl font-semibold text-blue-600 mb-4">Voltage (V)</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="v_amplitude" class="block mb-1 text-gray-600">Peak Amplitude (Vp)</label>
+                                <div class="flex items-center space-x-3">
+                                    <input type="range" id="v_amplitude" min="1" max="200" value="120" class="w-full h-2 bg-blue-100 rounded-lg appearance-none cursor-pointer">
+                                    <span id="v_amplitudeValue" class="font-semibold text-blue-600 w-16 text-center">120 V</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="v_phase" class="block mb-1 text-gray-600">Phase Shift (φV)</label>
+                                <div class="flex items-center space-x-3">
+                                    <input type="range" id="v_phase" min="-180" max="180" value="0" class="w-full h-2 bg-blue-100 rounded-lg appearance-none cursor-pointer">
+                                    <span id="v_phaseValue" class="font-semibold text-blue-600 w-16 text-center">0°</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Current Controls -->
+                    <div class="control-panel">
+                        <h3 class="text-xl font-semibold text-red-600 mb-4">Current (I)</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="i_amplitude" class="block mb-1 text-gray-600">Peak Amplitude (Ip)</label>
+                                <div class="flex items-center space-x-3">
+                                    <input type="range" id="i_amplitude" min="1" max="50" value="10" class="w-full h-2 bg-red-100 rounded-lg appearance-none cursor-pointer">
+                                    <span id="i_amplitudeValue" class="font-semibold text-red-600 w-16 text-center">10 A</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="i_phase" class="block mb-1 text-gray-600">Phase Shift (φI)</label>
+                                <div class="flex items-center space-x-3">
+                                    <input type="range" id="i_phase" min="-180" max="180" value="-30" class="w-full h-2 bg-red-100 rounded-lg appearance-none cursor-pointer">
+                                    <span id="i_phaseValue" class="font-semibold text-red-600 w-16 text-center">-30°</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Plot and Outputs -->
+            <div class="lg:col-span-3 space-y-8">
+                <!-- Canvas for Plot -->
+                <div class="bg-white p-4 rounded-xl shadow-lg">
+                    <canvas id="waveformCanvas"></canvas>
+                </div>
+
+                <!-- Outputs Grid -->
+                <div class="grid grid-cols-1 gap-6">
+                     <!-- Equations -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-semibold mb-4 text-gray-700">Waveform Equations</h3>
+                        <div class="space-y-4">
+                            <div id="v_equation_display" class="output-box text-blue-700"></div>
+                            <div id="i_equation_display" class="output-box text-red-700"></div>
+                        </div>
+                    </div>
+                    <!-- RMS and Phasor Values -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h3 class="text-xl font-semibold mb-3 text-gray-700">RMS Values</h3>
+                            <div class="space-y-2">
+                                <p id="v_rms_display" class="output-box text-blue-700"></p>
+                                <p id="i_rms_display" class="output-box text-red-700"></p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h3 class="text-xl font-semibold mb-3 text-gray-700">Phasor Representation</h3>
+                            <div class="space-y-3">
+                                <div id="v_phasor_display" class="phasor-output-box text-blue-700"></div>
+                                <div id="i_phasor_display" class="phasor-output-box text-red-700"></div>
+                            </div>
+                        </div>
+                    </div>
+                     <!-- Phasor Diagram -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-2xl font-semibold mb-4 text-gray-700 text-center">Phasor Diagram</h3>
+                        <canvas id="phasorCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Element Selection ---
+            const waveformCanvas = document.getElementById('waveformCanvas');
+            const w_ctx = waveformCanvas.getContext('2d');
+            const phasorCanvas = document.getElementById('phasorCanvas');
+            const p_ctx = phasorCanvas.getContext('2d');
+
+            const sliders = { f: document.getElementById('frequency'), vp: document.getElementById('v_amplitude'), vphi: document.getElementById('v_phase'), ip: document.getElementById('i_amplitude'), iphi: document.getElementById('i_phase') };
+            const values = { f: document.getElementById('frequencyValue'), vp: document.getElementById('v_amplitudeValue'), vphi: document.getElementById('v_phaseValue'), ip: document.getElementById('i_amplitudeValue'), iphi: document.getElementById('i_phaseValue') };
+            const outputs = { v_rms: document.getElementById('v_rms_display'), i_rms: document.getElementById('i_rms_display'), v_phasor: document.getElementById('v_phasor_display'), i_phasor: document.getElementById('i_phasor_display'), v_eq: document.getElementById('v_equation_display'), i_eq: document.getElementById('i_equation_display') };
+            
+            let animationFrameId;
+            let mousePos = null; // To store mouse position for tooltip
+
+            // --- Helper Functions ---
+            function gcd(a, b) {
+                return b === 0 ? a : gcd(b, a % b);
+            }
+
+            function getPiFraction(degrees) {
+                if (degrees === 0) return "";
+                const sign = degrees > 0 ? '+' : '-';
+                const absDegrees = Math.abs(degrees);
+                const commonDivisor = gcd(absDegrees, 180);
+                const num = absDegrees / commonDivisor;
+                const den = 180 / commonDivisor;
+                
+                if (den === 1) {
+                    return num === 1 ? `${sign} \\pi` : `${sign} ${num}\\pi`;
+                }
+                const numStr = num === 1 ? "" : num;
+                return `${sign} \\frac{${numStr}\\pi}{${den}}`;
+            }
+
+            // --- Main Drawing Function ---
+            function draw() {
+                if (animationFrameId) cancelAnimationFrame(animationFrameId);
+                animationFrameId = requestAnimationFrame(() => {
+                    const params = updateUIAndGetParams();
+                    plotWaveforms(params);
+                    plotPhasorDiagram(params);
+                });
+            }
+
+            // --- UI Update & Parameter Calculation ---
+            function updateUIAndGetParams() {
+                const params = {
+                    f: parseFloat(sliders.f.value),
+                    v_peak: parseFloat(sliders.vp.value),
+                    v_phase_deg: parseFloat(sliders.vphi.value),
+                    i_peak: parseFloat(sliders.ip.value),
+                    i_phase_deg: parseFloat(sliders.iphi.value)
+                };
+
+                params.w = 2 * Math.PI * params.f; // Angular frequency
+                params.T = 1 / params.f; // Time period
+                params.v_phase_rad = params.v_phase_deg * Math.PI / 180;
+                params.i_phase_rad = params.i_phase_deg * Math.PI / 180;
+                params.v_rms = params.v_peak / Math.sqrt(2);
+                params.i_rms = params.i_peak / Math.sqrt(2);
+                params.v_real = params.v_rms * Math.cos(params.v_phase_rad);
+                params.v_imag = params.v_rms * Math.sin(params.v_phase_rad);
+                params.i_real = params.i_rms * Math.cos(params.i_phase_rad);
+                params.i_imag = params.i_rms * Math.sin(params.i_phase_rad);
+                
+                values.f.textContent = `${params.f.toFixed(0)} Hz`;
+                values.vp.textContent = `${params.v_peak.toFixed(0)} V`;
+                values.vphi.textContent = `${params.v_phase_deg.toFixed(0)}°`;
+                values.ip.textContent = `${params.i_peak.toFixed(0)} A`;
+                values.iphi.textContent = `${params.i_phase_deg.toFixed(0)}°`;
+
+                outputs.v_rms.innerHTML = `V<sub>RMS</sub> = ${params.v_rms.toFixed(2)} V`;
+                outputs.i_rms.innerHTML = `I<sub>RMS</sub> = ${params.i_rms.toFixed(2)} A`;
+
+                const v_imag_sign = params.v_imag >= 0 ? '+' : '-';
+                outputs.v_phasor.innerHTML = `<b>Polar:</b> ${params.v_rms.toFixed(2)} &ang;${params.v_phase_deg.toFixed(1)}° V<br><b>Rect:</b> ${params.v_real.toFixed(2)} ${v_imag_sign} j${Math.abs(params.v_imag).toFixed(2)} V`;
+                const i_imag_sign = params.i_imag >= 0 ? '+' : '-';
+                outputs.i_phasor.innerHTML = `<b>Polar:</b> ${params.i_rms.toFixed(2)} &ang;${params.i_phase_deg.toFixed(1)}° A<br><b>Rect:</b> ${params.i_real.toFixed(2)} ${i_imag_sign} j${Math.abs(params.i_imag).toFixed(2)} A`;
+
+                // Generate KaTeX strings with phase as fraction of pi, using COSINE
+                const v_phase_pi_frac = getPiFraction(params.v_phase_deg);
+                const i_phase_pi_frac = getPiFraction(params.i_phase_deg);
+                const v_eq_str = `v(t) = ${params.v_peak.toFixed(1)}\\cos(${params.w.toFixed(0)}t ${v_phase_pi_frac})`;
+                const i_eq_str = `i(t) = ${params.i_peak.toFixed(1)}\\cos(${params.w.toFixed(0)}t ${i_phase_pi_frac})`;
+                
+                if (window.katex) {
+                    katex.render(v_eq_str, outputs.v_eq, { throwOnError: false });
+                    katex.render(i_eq_str, outputs.i_eq, { throwOnError: false });
+                }
+
+                return params;
+            }
+
+            // --- Waveform Plotting Function ---
+            function plotWaveforms(params) {
+                const { f, v_peak, v_phase_rad, i_peak, i_phase_rad, v_rms, i_rms, w, T } = params;
+                const parentWidth = waveformCanvas.parentElement.clientWidth;
+                waveformCanvas.width = parentWidth;
+                waveformCanvas.height = parentWidth * 0.7;
+                const { width, height } = waveformCanvas;
+                
+                const padding = { top: 20, right: 20, bottom: 40, left: 60 };
+                const graphWidth = width - padding.left - padding.right;
+                const graphHeight = height - padding.top - padding.bottom;
+                const midY = padding.top + graphHeight / 2;
+                
+                // **FIX:** Set Y-axis scale based on the maximum possible slider value, not the current value.
+                // This makes the axis static, showing the true change in amplitude.
+                const max_amplitude = Math.max(parseFloat(sliders.vp.max), parseFloat(sliders.ip.max));
+                const scaleY = (graphHeight / 2) * 0.9 / max_amplitude;
+
+                w_ctx.clearRect(0, 0, width, height);
+                w_ctx.font = "12px Inter";
+
+                // --- Draw Grid ---
+                w_ctx.strokeStyle = '#e2e8f0'; // gray-200
+                w_ctx.lineWidth = 1;
+                // Vertical grid lines
+                for (let i = 0; i <= 4; i++) {
+                    const x = padding.left + (graphWidth * i / 4);
+                    w_ctx.beginPath(); w_ctx.moveTo(x, padding.top); w_ctx.lineTo(x, height - padding.bottom); w_ctx.stroke();
+                }
+                // Horizontal grid lines
+                for (let i = 0; i <= 4; i++) {
+                    const y = padding.top + (graphHeight * i / 4);
+                    w_ctx.beginPath(); w_ctx.moveTo(padding.left, y); w_ctx.lineTo(width - padding.right, y); w_ctx.stroke();
+                }
+
+                // --- Draw Axes and Labels ---
+                w_ctx.strokeStyle = '#94a3b8'; w_ctx.lineWidth = 1.5;
+                w_ctx.fillStyle = '#64748b';
+                w_ctx.beginPath(); w_ctx.moveTo(padding.left, padding.top); w_ctx.lineTo(padding.left, height - padding.bottom); w_ctx.stroke();
+                w_ctx.beginPath(); w_ctx.moveTo(padding.left, midY); w_ctx.lineTo(width - padding.right, midY); w_ctx.stroke();
+                w_ctx.textAlign = "right";
+                w_ctx.fillText(max_amplitude.toFixed(0), padding.left - 8, padding.top + 5);
+                w_ctx.fillText("0", padding.left - 8, midY + 5);
+                w_ctx.fillText(`-${max_amplitude.toFixed(0)}`, padding.left - 8, height - padding.bottom + 5);
+                w_ctx.save();
+                w_ctx.rotate(-Math.PI / 2);
+                w_ctx.textAlign = "center";
+                w_ctx.fillText("Amplitude (V, A)", -height / 2, 15);
+                w_ctx.restore();
+
+                const time_total = 2 * T;
+                w_ctx.textAlign = "center";
+                for (let i = 0; i <= 4; i++) {
+                    const x = padding.left + (graphWidth * i / 4);
+                    const timeLabel = (i * time_total / 4).toExponential(1);
+                    w_ctx.fillText(timeLabel, x, height - padding.bottom + 15);
+                }
+                w_ctx.fillText("Time (s)", padding.left + graphWidth / 2, height - 5);
+
+                // --- Plot Waveforms using COSINE ---
+                const time_per_pixel = time_total / graphWidth;
+                w_ctx.beginPath(); w_ctx.strokeStyle = '#2563eb'; w_ctx.lineWidth = 2.5;
+                for (let i = 0; i < graphWidth; i++) {
+                    const t = i * time_per_pixel;
+                    const y = midY - scaleY * v_peak * Math.cos(w * t + v_phase_rad);
+                    if (i === 0) w_ctx.moveTo(padding.left + i, y); else w_ctx.lineTo(padding.left + i, y);
+                }
+                w_ctx.stroke();
+                w_ctx.beginPath(); w_ctx.strokeStyle = '#dc2626'; w_ctx.lineWidth = 2.5;
+                for (let i = 0; i < graphWidth; i++) {
+                    const t = i * time_per_pixel;
+                    const y = midY - scaleY * i_peak * Math.cos(w * t + i_phase_rad);
+                    if (i === 0) w_ctx.moveTo(padding.left + i, y); else w_ctx.lineTo(padding.left + i, y);
+                }
+                w_ctx.stroke();
+
+                // --- Draw Tooltip using COSINE ---
+                if (mousePos && mousePos.x > padding.left && mousePos.x < width - padding.right) {
+                    const x = mousePos.x;
+                    const t = (x - padding.left) * time_per_pixel;
+                    const v_inst = v_peak * Math.cos(w * t + v_phase_rad);
+                    const i_inst = i_peak * Math.cos(w * t + i_phase_rad);
+                    const v_y = midY - scaleY * v_inst;
+                    const i_y = midY - scaleY * i_inst;
+
+                    w_ctx.strokeStyle = '#475569'; w_ctx.lineWidth = 1;
+                    w_ctx.beginPath(); w_ctx.moveTo(x, padding.top); w_ctx.lineTo(x, height - padding.bottom); w_ctx.stroke();
+                    w_ctx.fillStyle = '#2563eb'; w_ctx.beginPath(); w_ctx.arc(x, v_y, 5, 0, 2 * Math.PI); w_ctx.fill();
+                    w_ctx.fillStyle = '#dc2626'; w_ctx.beginPath(); w_ctx.arc(x, i_y, 5, 0, 2 * Math.PI); w_ctx.fill();
+
+                    const text1 = `t: ${t.toExponential(2)} s`;
+                    const text2 = `v(t): ${v_inst.toFixed(2)} V`;
+                    const text3 = `i(t): ${i_inst.toFixed(2)} A`;
+                    const boxX = x > width / 2 ? x - 150 : x + 15;
+                    w_ctx.fillStyle = 'rgba(241, 245, 249, 0.9)';
+                    w_ctx.strokeStyle = '#94a3b8';
+                    w_ctx.fillRect(boxX, padding.top + 5, 135, 65);
+                    w_ctx.strokeRect(boxX, padding.top + 5, 135, 65);
+                    w_ctx.fillStyle = '#1e293b'; w_ctx.textAlign = 'left';
+                    w_ctx.fillText(text1, boxX + 10, padding.top + 25);
+                    w_ctx.fillText(text2, boxX + 10, padding.top + 45);
+                    w_ctx.fillText(text3, boxX + 10, padding.top + 65);
+                }
+            }
+
+            // --- Phasor Diagram Plotting Function ---
+            function plotPhasorDiagram({ v_rms, v_phase_rad, i_rms, i_phase_rad }) {
+                const parentWidth = phasorCanvas.parentElement.clientWidth;
+                phasorCanvas.width = parentWidth;
+                phasorCanvas.height = parentWidth;
+                const { width, height } = phasorCanvas;
+                const centerX = width / 2;
+                const centerY = height / 2;
+                const max_rms_possible = 200 / Math.sqrt(2);
+                const scale = (Math.min(width, height) / 2) * 0.9 / max_rms_possible;
+                p_ctx.clearRect(0, 0, width, height);
+                p_ctx.strokeStyle = '#e2e8f0'; p_ctx.lineWidth = 1;
+                [0.25, 0.5, 0.75, 1].forEach(r => { p_ctx.beginPath(); p_ctx.arc(centerX, centerY, r * (max_rms_possible * scale), 0, 2 * Math.PI); p_ctx.stroke(); });
+                p_ctx.strokeStyle = '#94a3b8'; p_ctx.lineWidth = 1.5;
+                p_ctx.beginPath(); p_ctx.moveTo(0, centerY); p_ctx.lineTo(width, centerY); p_ctx.stroke();
+                p_ctx.beginPath(); p_ctx.moveTo(centerX, 0); p_ctx.lineTo(centerX, height); p_ctx.stroke();
+                p_ctx.fillStyle = '#64748b'; p_ctx.font = '12px Inter';
+                p_ctx.fillText('Re', width - 20, centerY - 5);
+                p_ctx.fillText('Im', centerX + 5, 12);
+                drawArrow(p_ctx, centerX, centerY, centerX + v_rms * scale * Math.cos(v_phase_rad), centerY - v_rms * scale * Math.sin(v_phase_rad), '#2563eb', 'V');
+                drawArrow(p_ctx, centerX, centerY, centerX + i_rms * scale * Math.cos(i_phase_rad), centerY - i_rms * scale * Math.sin(i_phase_rad), '#dc2626', 'I');
+            }
+            
+            function drawArrow(ctx, fromx, fromy, tox, toy, color, label) {
+                const headlen = 10;
+                const dx = tox - fromx;
+                const dy = toy - fromy;
+                const angle = Math.atan2(dy, dx);
+                ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 3;
+                ctx.beginPath(); ctx.moveTo(fromx, fromy); ctx.lineTo(tox, toy); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(tox, toy); ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6)); ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6)); ctx.closePath(); ctx.fill();
+                ctx.font = 'bold 16px Inter'; ctx.fillText(label, tox + 10, toy + 5);
+            }
+
+            // --- Event Listeners ---
+            Object.values(sliders).forEach(slider => slider.addEventListener('input', draw));
+            window.addEventListener('resize', draw);
+            waveformCanvas.addEventListener('mousemove', (e) => {
+                const rect = waveformCanvas.getBoundingClientRect();
+                mousePos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+                draw();
+            });
+            waveformCanvas.addEventListener('mouseout', () => {
+                mousePos = null;
+                draw();
+            });
+
+            // --- Initial Call ---
+            draw();
+        });
+    </script>
+</body>
+</html>
