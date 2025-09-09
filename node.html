@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Advanced Interactive Nodal Analysis Tutor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=drag_pan"
+    />
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .math-container {
+        transition: all 0.3s ease-in-out;
+      }
+      #circuitCanvas {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        background-color: #fff;
+      }
+      .node-marker {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        background-color: #3b82f6;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        cursor: pointer;
+        border: 2px solid white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        user-select: none;
+        pointer-events: none;
+        transition: all 0.2s ease-out;
+      }
+      .node-marker.reference {
+        background-color: #16a34a;
+      }
+      .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        border-radius: 0.5rem;
+        background-color: #2d3748;
+        color: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transform: translateX(120%);
+        transition: transform 0.5s ease-in-out;
+        z-index: 1000;
+      }
+      .toast.show {
+        transform: translateX(0);
+      }
+      .matrix-input {
+        width: 60px;
+        text-align: center;
+        border-radius: 0.375rem;
+        border: 1px solid #d1d5db;
+      }
+      #toolbar {
+        margin-bottom: 1rem;
+        background: #ffffff;
+        padding: 10px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e9ecef;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .tool-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .tool-btn,
+      .action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border: 1px solid #ced4da;
+        background-color: #ffffff;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease-out;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        font-size: 24px;
+        color: #495057;
+      }
+      .tool-btn:hover,
+      .action-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-color: #adb5bd;
+      }
+      .tool-btn.selected {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+        color: white;
+        box-shadow: 0 2px 5px rgba(59, 130, 246, 0.4);
+      }
+      .action-btn:disabled {
+        color: #adb5bd;
+        background-color: #e9ecef;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+        border-color: #ced4da;
+      }
+      .tool-btn svg {
+        width: 28px;
+        height: 28px;
+        stroke-width: 1.5;
+        stroke: #495057;
+      }
+      .tool-btn.selected svg,
+      .tool-btn.selected .material-icons {
+        stroke: white;
+        color: white;
+      }
+      .divider {
+        width: 1px;
+        height: 35px;
+        background-color: #e9ecef;
+        margin: 0 8px;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 text-gray-800">
+    <div id="toast-container" class="toast"></div>
+
+    <div class="container mx-auto p-4 lg:p-8">
+      <header class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-gray-800">
+          Advanced Nodal Analysis Tutor
+        </h1>
+        <p class="text-lg text-gray-600 mt-2">
+          Draw your circuit, define nodes, and get a step-by-step solution.
+        </p>
+      </header>
+
+      <div class="flex flex-col lg:flex-row gap-8">
+        <div class="lg:w-2/3 bg-white p-6 rounded-xl shadow-lg">
+          <h2
+            id="instruction-title"
+            class="text-2xl font-semibold mb-4 text-gray-700"
+          ></h2>
+          <p id="instruction-text" class="text-gray-600 mb-4"></p>
+
+          <div id="toolbar">
+            <div class="tool-group">
+              <button class="tool-btn" id="tool-select" title="Select/Move (S)">
+                <span class="material-symbols-outlined"> drag_pan </span>
+              </button>
+              <button
+                class="tool-btn"
+                id="tool-wire"
+                title="Wire (W, Shift for direct line)"
+              >
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M4 12 L20 12"
+                    fill="none"
+                    stroke-linejoin="round"
+                    stroke-linecap="round"
+                  ></path>
+                  <circle cx="4" cy="12" r="2" stroke="red" fill="red" />
+                  <circle cx="20" cy="12" r="2" stroke="red" fill="red" />
+                </svg>
+              </button>
+            </div>
+            <div class="divider"></div>
+            <div class="tool-group">
+              <button class="tool-btn" id="tool-resistor" title="Resistor (R)">
+                <svg viewBox="-2 -10 34 20">
+                  <path
+                    d="M0,0 H4 L6,-6 L10,6 L14,-6 L18,6 L22,-6 L26,6 L28,0 H32"
+                    fill="none"
+                    stroke-linejoin="round"
+                    stroke-linecap="round"
+                  ></path>
+                </svg>
+              </button>
+              <button
+                class="tool-btn"
+                id="tool-voltage"
+                title="Voltage Source (VDC)"
+              >
+                <svg viewBox="-12 -12 24 24">
+                  <circle cx="0" cy="0" r="10" fill="none"></circle>
+                  <path d="M-3,-3 H4 M0,-7 V1, M-3,3 H4" fill="none"></path>
+                </svg>
+              </button>
+              <button
+                class="tool-btn"
+                id="tool-currentsource"
+                title="Current Source (IDC)"
+              >
+                <svg viewBox="-12 -12 24 24">
+                  <circle cx="0" cy="0" r="10" fill="none"></circle>
+                  <path
+                    d="M0,7 L0,-7 M-4,-2 L0,-7 L4,-2"
+                    fill="none"
+                    stroke-linecap="round"
+                  ></path>
+                </svg>
+              </button>
+              <button class="tool-btn" id="tool-gnd" title="Ground">
+                <svg viewBox="-10 -2 20 14">
+                  <path
+                    d="M0,0 V8 M-8,8 H8 M-5,11 H5 M-2,14 H2"
+                    fill="none"
+                    stroke-linecap="round"
+                  ></path>
+                </svg>
+              </button>
+            </div>
+            <div class="divider"></div>
+            <div class="tool-group">
+              <button
+                class="action-btn"
+                id="undoBtn"
+                title="Undo (Ctrl+Z)"
+                disabled
+              >
+                <i class="material-icons">undo</i>
+              </button>
+              <button
+                class="action-btn"
+                id="redoBtn"
+                title="Redo (Ctrl+Y)"
+                disabled
+              >
+                <i class="material-icons">redo</i>
+              </button>
+              <button
+                class="action-btn"
+                id="rotateBtn"
+                title="Rotate Selected (Ctrl+R)"
+              >
+                <i class="material-icons">rotate_right</i>
+              </button>
+              <button
+                class="action-btn"
+                id="deleteBtn"
+                title="Delete Selected (Del)"
+              >
+                <i class="material-icons">delete</i>
+              </button>
+            </div>
+          </div>
+
+          <div class="relative">
+            <canvas id="circuitCanvas" width="800" height="500"></canvas>
+            <div
+              id="node-marker-container"
+              class="absolute top-0 left-0 w-full h-full pointer-events-none"
+            ></div>
+          </div>
+
+          <div class="mt-4 flex flex-wrap gap-2">
+            <button
+              id="reset-button"
+              class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
+            >
+              Reset Everything
+            </button>
+            <button
+              id="undo-node-button"
+              class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 hidden"
+            >
+              Undo Last Node
+            </button>
+          </div>
+        </div>
+
+        <div class="lg:w-1/3 bg-white p-6 rounded-xl shadow-lg flex flex-col">
+          <div id="workflow-panel">
+            <h2 id="workflow-title" class="text-2xl font-semibold mb-2"></h2>
+            <p id="workflow-text" class="text-gray-600 mb-4"></p>
+            <div id="node-list" class="space-y-2 mb-4"></div>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <button
+                id="back-to-draw-button"
+                class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg hidden"
+              >
+                Back to Draw
+              </button>
+              <button
+                id="workflow-button"
+                class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
+              ></button>
+            </div>
+          </div>
+
+          <div id="matrix-panel" class="hidden">
+            <h2 class="text-2xl font-semibold mb-2">
+              Step 3: Create Matrix from Equations
+            </h2>
+            <p class="text-gray-600 mb-2">
+              Based on the derived KCL/KVL equations, fill or verify the matrix
+              coefficients.
+            </p>
+            <div
+              id="equations-display"
+              class="p-4 border rounded-lg bg-gray-50 mb-4 text-sm space-y-2"
+            ></div>
+            <div
+              id="matrix-input-container"
+              class="p-4 border rounded-lg bg-gray-50 overflow-x-auto"
+            ></div>
+            <div id="matrix-preview" class="mt-4 flex justify-center"></div>
+            <div class="mt-4 flex flex-col sm:flex-row gap-2">
+              <button
+                id="back-to-nodes-button"
+                class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg"
+              >
+                Back to Nodes
+              </button>
+              <button
+                id="solve-button"
+                class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg"
+              >
+                Solve with Cramer's Rule
+              </button>
+            </div>
+          </div>
+
+          <div id="results-panel" class="hidden">
+            <h2 class="text-2xl font-semibold mb-2">
+              Step 4: Nodal Analysis Solution
+            </h2>
+            <p class="text-gray-600 mb-4">
+              Here is the step-by-step solution using Cramer's Rule based on
+              your matrix.
+            </p>
+            <div id="math-output" class="space-y-6 text-lg"></div>
+            <button
+              id="back-to-matrix-button"
+              class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg"
+            >
+              Back to Node Matrix
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // --- DOM Elements ---
+        const instructionTitle = document.getElementById("instruction-title"),
+          instructionText = document.getElementById("instruction-text");
+        const workflowPanel = document.getElementById("workflow-panel"),
+          matrixPanel = document.getElementById("matrix-panel"),
+          resultsPanel = document.getElementById("results-panel");
+        const workflowTitle = document.getElementById("workflow-title"),
+          workflowText = document.getElementById("workflow-text"),
+          workflowButton = document.getElementById("workflow-button");
+        const nodeList = document.getElementById("node-list"),
+          equationsDisplay = document.getElementById("equations-display"),
+          matrixInputContainer = document.getElementById(
+            "matrix-input-container"
+          );
+        const solveButton = document.getElementById("solve-button"),
+          resetButton = document.getElementById("reset-button"),
+          undoNodeButton = document.getElementById("undo-node-button");
+        const mathOutput = document.getElementById("math-output"),
+          toastContainer = document.getElementById("toast-container"),
+          matrixPreview = document.getElementById("matrix-preview");
+        const backToNodesButton = document.getElementById(
+            "back-to-nodes-button"
+          ),
+          backToDrawButton = document.getElementById("back-to-draw-button");
+        backToMatrixButton = document.getElementById("back-to-matrix-button");
+        const nodeMarkerContainer = document.getElementById(
+          "node-marker-container"
+        );
+        const canvas = document.getElementById("circuitCanvas"),
+          ctx = canvas.getContext("2d");
+        const toolbar = document.getElementById("toolbar"),
+          deleteBtn = document.getElementById("deleteBtn"),
+          rotateBtn = document.getElementById("rotateBtn");
+        const undoBtn = document.getElementById("undoBtn"),
+          redoBtn = document.getElementById("redoBtn");
+
+        // --- App State ---
+        let state = {
+          nodes: [],
+          components: [],
+          equations: [],
+          currentStep: "draw",
+          nodeCounter: 0,
+        };
+
+        let circuitElements = [],
+          selectedElements = [],
+          nextId = 0;
+        let history = [],
+          historyIndex = -1; // For Undo/Redo
+        let selectedTool = "select";
+        let isDrawingWire = false,
+          isDragging = false,
+          isShiftDown = false;
+        let wireStartPoint = null,
+          dragStartPoint = null,
+          currentMousePos = { x: 0, y: 0 };
+        let dragTarget = null;
+        const gridSize = 20,
+          snapTolerance = 12,
+          textFontSize = 14;
+        let connectivityGraph = new Map();
+
+        const componentData = {
+          resistor: {
+            width: 80,
+            height: 30,
+            terminals: [
+              { x: -40, y: 0 },
+              { x: 40, y: 0 },
+            ],
+            name: "Resistor",
+            unit: "Ω",
+            defaultLabelOffset: { x: 0, y: -20 },
+          },
+          voltage: {
+            width: 35,
+            height: 60,
+            terminals: [
+              { x: 0, y: -30 },
+              { x: 0, y: 30 },
+            ],
+            name: "Voltage Source",
+            unit: "V",
+            defaultLabelOffset: { x: 28, y: 0 },
+          },
+          currentsource: {
+            width: 35,
+            height: 60,
+            terminals: [
+              { x: 0, y: -30 },
+              { x: 0, y: 30 },
+            ],
+            name: "Current Source",
+            unit: "A",
+            defaultLabelOffset: { x: 28, y: 0 },
+          },
+          gnd: {
+            width: 30,
+            height: 25,
+            terminals: [{ x: 0, y: -10 }],
+            name: "Ground",
+          },
+          wire: { name: "Wire" },
+        };
+
+        // --- Utility Functions ---
+        function showToast(message) {
+          toastContainer.textContent = message;
+          toastContainer.classList.add("show");
+          setTimeout(() => {
+            toastContainer.classList.remove("show");
+          }, 3000);
+        }
+        function toFrac(x, tol = 1.0e-6) {
+          if (x === 0) return "0";
+          if (Math.abs(x - Math.round(x)) < tol) return `${Math.round(x)}`;
+          let h1 = 1,
+            h2 = 0,
+            k1 = 0,
+            k2 = 1,
+            b = x;
+          do {
+            let a = Math.floor(b);
+            let aux = h1;
+            h1 = a * h1 + h2;
+            h2 = aux;
+            aux = k1;
+            k1 = a * k1 + k2;
+            k2 = aux;
+            b = 1 / (b - a);
+          } while (Math.abs(x - h1 / k1) > Math.abs(x) * tol);
+          return `${h1}/${k1}`;
+        }
+
+        const siPrefixes = {
+          p: 1e-12,
+          n: 1e-9,
+          u: 1e-6,
+          m: 1e-3,
+          k: 1e3,
+          M: 1e6,
+          G: 1e9,
+        };
+        function parseValueWithPrefix(strValue) {
+          if (!strValue) return NaN;
+          strValue = String(strValue).trim();
+          const lastChar = strValue.slice(-1);
+          const multiplier = siPrefixes[lastChar.toLowerCase()];
+          if (multiplier) {
+            const numPart = parseFloat(strValue.slice(0, -1));
+            return isNaN(numPart) ? NaN : numPart * multiplier;
+          }
+          return parseFloat(strValue);
+        }
+
+        function formatValueWithPrefix(num) {
+          if (num === undefined || isNaN(num)) return "";
+          if (num === 0) return "0";
+          const absNum = Math.abs(num);
+          if (absNum >= 1e9) return (num / 1e9).toPrecision(3) + "G";
+          if (absNum >= 1e6) return (num / 1e6).toPrecision(3) + "M";
+          if (absNum >= 1e3) return (num / 1e3).toPrecision(3) + "k";
+          if (absNum < 1 && absNum >= 1e-3)
+            return (num * 1e3).toPrecision(3) + "m";
+          if (absNum < 1e-3 && absNum >= 1e-6)
+            return (num * 1e6).toPrecision(3) + "u";
+          if (absNum < 1e-6 && absNum >= 1e-9)
+            return (num * 1e9).toPrecision(3) + "n";
+          if (absNum < 1e-9) return (num * 1e12).toPrecision(3) + "p";
+          return num.toPrecision(3);
+        }
+
+        // --- Undo/Redo System ---
+        function saveState() {
+          history = history.slice(0, historyIndex + 1);
+          const cleanState = JSON.parse(
+            JSON.stringify(circuitElements, (key, value) =>
+              key === "dragInitialState" ? undefined : value
+            )
+          );
+          history.push(cleanState);
+          historyIndex++;
+          updateToolbarStates();
+        }
+
+        function loadStateFromHistory() {
+          if (history[historyIndex]) {
+            circuitElements = JSON.parse(JSON.stringify(history[historyIndex]));
+            selectedElements = [];
+            nextId =
+              (circuitElements.reduce((max, el) => Math.max(max, el.id), -1) ||
+                0) + 1;
+            redrawCanvas();
+            updateToolbarStates();
+          }
+        }
+        function undo() {
+          if (historyIndex > 0) {
+            historyIndex--;
+            loadStateFromHistory();
+          }
+        }
+        function redo() {
+          if (historyIndex < history.length - 1) {
+            historyIndex++;
+            loadStateFromHistory();
+          }
+        }
+
+        function updateToolbarStates() {
+          undoBtn.disabled = historyIndex <= 0;
+          redoBtn.disabled = historyIndex >= history.length - 1;
+        }
+
+        // --- UI Update Functions ---
+        function updateUI() {
+          [workflowPanel, matrixPanel, resultsPanel].forEach((p) =>
+            p.classList.add("hidden")
+          );
+          const steps = {
+            draw: {
+              iTitle: "Step 1: Draw Your Circuit",
+              iText:
+                "Use the toolbar to draw. Double-click a component to set its value.",
+              wTitle: "Step 1: Drawing",
+              wText: "Finish drawing your circuit schematic before proceeding.",
+              btnText: "Next: Define Nodes",
+            },
+            nodes: {
+              iTitle: "Step 2: Define Nodes",
+              iText:
+                "Click on a wire segment to define a node. The first node is the reference (ground/0V).",
+              wTitle: "Step 2: Placing Nodes",
+              wText: "Place at least one reference and one other node.",
+              btnText: "Analyze Circuit",
+            },
+            matrix: { iTitle: "Step 3: Verify & Solve", panel: matrixPanel },
+            solve: { iTitle: "Step 4: Solution", panel: resultsPanel },
+          };
+          const current = steps[state.currentStep];
+          instructionTitle.textContent = current.iTitle;
+          instructionText.textContent = current.iText || "";
+          if (current.panel) {
+            current.panel.classList.remove("hidden");
+          } else {
+            workflowPanel.classList.remove("hidden");
+            workflowTitle.textContent = current.wTitle;
+            workflowText.textContent = current.wText;
+            workflowButton.textContent = current.btnText;
+          }
+          backToDrawButton.classList.toggle(
+            "hidden",
+            state.currentStep !== "nodes"
+          );
+          workflowButton.classList.toggle(
+            "hidden",
+            state.currentStep === "matrix" || state.currentStep === "solve"
+          );
+
+          undoNodeButton.classList.toggle(
+            "hidden",
+            state.currentStep !== "nodes" || state.nodes.length === 0
+          );
+          toolbar
+            .querySelectorAll(".tool-btn")
+            .forEach((btn) => btn.classList.remove("selected"));
+          const currentToolBtn = document.getElementById(
+            `tool-${selectedTool}`
+          );
+          if (currentToolBtn) currentToolBtn.classList.add("selected");
+          canvas.style.cursor =
+            state.currentStep === "nodes"
+              ? "pointer"
+              : selectedTool === "select"
+              ? "default"
+              : "crosshair";
+          updateToolbarStates();
+        }
+
+        function renderNodeList() {
+          nodeList.innerHTML = "";
+          state.nodes.forEach((node) => {
+            const div = document.createElement("div");
+            div.className = "flex items-center p-2 rounded-lg text-sm";
+            div.innerHTML = `<span class="font-bold w-24 text-gray-700">${
+              node.isRef ? "Ref (0V)" : `Node ${node.name}`
+            }</span>`;
+            if (node.isRef) div.classList.add("bg-green-100");
+            else div.classList.add("bg-blue-100");
+            nodeList.appendChild(div);
+          });
+        }
+
+        // --- Core Drawing Engine ---
+        function getMousePos(e) {
+          return {
+            x: e.clientX - canvas.getBoundingClientRect().left,
+            y: e.clientY - canvas.getBoundingClientRect().top,
+          };
+        }
+        function snapToGrid(val) {
+          return Math.round(val / (gridSize / 2)) * (gridSize / 2);
+        }
+
+        function getAbsoluteTerminals(el) {
+          const defaultData = componentData[el.type];
+          if (!defaultData || !defaultData.terminals) return [];
+          const angle = (el.rotation * Math.PI) / 180;
+          const cos = Math.cos(angle);
+          const sin = Math.sin(angle);
+          return defaultData.terminals.map((t) => {
+            const rotatedX = t.x * cos - t.y * sin;
+            const rotatedY = t.x * sin + t.y * cos;
+            return { x: el.x + rotatedX, y: el.y + rotatedY };
+          });
+        }
+
+        function getSnappingPoint(x, y) {
+          for (const el of circuitElements) {
+            const terms = getAbsoluteTerminals(el);
+            for (const t of terms) {
+              if (Math.hypot(x - t.x, y - t.y) < snapTolerance) return { ...t };
+            }
+            if (el.type === "wire") {
+              const path = getWirePath(el);
+              for (const p of path)
+                if (Math.hypot(x - p.x, y - p.y) < snapTolerance)
+                  return { ...p };
+            }
+          }
+          return { x: snapToGrid(x), y: snapToGrid(y) };
+        }
+        function distToSegment(p, v, w) {
+          const l2 = (v.x - w.x) ** 2 + (v.y - w.y) ** 2;
+          if (l2 === 0) return Math.hypot(p.x - v.x, p.y - v.y);
+          let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+          t = Math.max(0, Math.min(1, t));
+          return Math.hypot(
+            p.x - (v.x + t * (w.x - v.x)),
+            p.y - (v.y + t * (w.y - v.y))
+          );
+        }
+
+        function getWirePath(wire) {
+          return wire.routing === "direct"
+            ? [wire.start, wire.end]
+            : [wire.start, { x: wire.start.x, y: wire.end.y }, wire.end];
+        }
+
+        function isPointOnWire(point, wire) {
+          const p = getWirePath(wire);
+          for (let i = 0; i < p.length - 1; i++) {
+            if (distToSegment(point, p[i], p[i + 1]) < snapTolerance)
+              return true;
+          }
+          return false;
+        }
+
+        function getValueLabelBounds(el) {
+          if (el.value === undefined || !el.labelOffset) return null;
+          ctx.font = `italic ${textFontSize}px Georgia`;
+          const text =
+            (el.displayValue || formatValueWithPrefix(el.value)) +
+            (componentData[el.type].unit || "");
+          const metrics = ctx.measureText(text);
+          const w = metrics.width;
+          const h = textFontSize;
+          const x = el.x + el.labelOffset.x;
+          const y = el.y + el.labelOffset.y;
+          return { x: x - w / 2, y: y - h / 2, width: w, height: h };
+        }
+        function getElementAtPos(x, y) {
+          for (let el of [...circuitElements].reverse()) {
+            const labelBounds = getValueLabelBounds(el);
+            if (
+              labelBounds &&
+              x > labelBounds.x &&
+              x < labelBounds.x + labelBounds.width &&
+              y > labelBounds.y &&
+              y < labelBounds.y + labelBounds.height
+            )
+              return { element: el, handle: "label" };
+            if (el.type === "wire") {
+              if (isPointOnWire({ x, y }, el))
+                return { element: el, handle: "body" };
+            } else {
+              const data = componentData[el.type];
+              if (!data) continue;
+              const w = data.width;
+              const h = data.height;
+              const angle = (-el.rotation * Math.PI) / 180;
+              const dx = x - el.x;
+              const dy = y - el.y;
+              const localX = dx * Math.cos(angle) - dy * Math.sin(angle);
+              const localY = dx * Math.sin(angle) + dy * Math.cos(angle);
+              if (Math.abs(localX) < w / 2 && Math.abs(localY) < h / 2)
+                return { element: el, handle: "body" };
+            }
+          }
+          return null;
+        }
+
+        function setDrawingStyle(isSelected = false) {
+          ctx.strokeStyle = isSelected ? "#3b82f6" : "#333";
+          ctx.fillStyle = isSelected ? "#3b82f6" : "#333";
+          ctx.lineWidth = isSelected ? 2.5 : 1.5;
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
+        }
+        function drawGrid() {
+          ctx.strokeStyle = "#e9ecef";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          for (let x = 0; x <= canvas.width; x += gridSize) {
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, canvas.height);
+          }
+          for (let y = 0; y <= canvas.height; y += gridSize) {
+            ctx.moveTo(0, y);
+            ctx.lineTo(canvas.width, y);
+          }
+          ctx.stroke();
+        }
+
+        function drawJunctions() {
+          const points = new Map();
+          const add = (p_key) =>
+            points.set(p_key, (points.get(p_key) || 0) + 1);
+          circuitElements.forEach((el) => {
+            if (el.type === "wire") {
+              const p = getWirePath(el);
+              for (let i = 0; i < p.length; i++) add(`${p[i].x},${p[i].y}`);
+            } else {
+              getAbsoluteTerminals(el).forEach((t) => add(`${t.x},${t.y}`));
+            }
+          });
+          ctx.save();
+          ctx.fillStyle = "#333";
+          for (const [key, count] of points.entries()) {
+            if (count > 2) {
+              const [x, y] = key.split(",").map(Number);
+              ctx.beginPath();
+              ctx.arc(x, y, 4, 0, 2 * Math.PI);
+              ctx.fill();
+            }
+          }
+          ctx.restore();
+        }
+
+        function drawElement(el) {
+          const isSelected = selectedElements.some((s) => s.element === el);
+          setDrawingStyle(isSelected);
+          if (el.type === "wire") {
+            const p = getWirePath(el);
+            ctx.beginPath();
+            ctx.moveTo(p[0].x, p[0].y);
+            for (let i = 1; i < p.length; i++) ctx.lineTo(p[i].x, p[i].y);
+            ctx.stroke();
+            return;
+          }
+
+          ctx.save();
+          ctx.translate(el.x, el.y);
+          ctx.rotate((el.rotation * Math.PI) / 180);
+
+          switch (el.type) {
+            case "resistor":
+              const w = 18,
+                h = 9,
+                len = 40;
+              ctx.beginPath();
+              ctx.moveTo(-len, 0);
+              ctx.lineTo(-w, 0);
+              for (let i = 0; i < 6; i++)
+                ctx.lineTo(-w + (i * 2 + 1) * (w / 6), i % 2 === 0 ? -h : h);
+              ctx.lineTo(w, 0);
+              ctx.lineTo(len, 0);
+              ctx.stroke();
+              break;
+            case "voltage":
+              ctx.beginPath();
+              ctx.arc(0, 0, 16, 0, 2 * Math.PI);
+              ctx.moveTo(0, -30);
+              ctx.lineTo(0, -16);
+              ctx.moveTo(0, 16);
+              ctx.lineTo(0, 30);
+              ctx.moveTo(-4, -8);
+              ctx.lineTo(4, -8);
+              ctx.moveTo(0, -13);
+              ctx.lineTo(0, -3);
+              ctx.moveTo(-4, 8);
+              ctx.lineTo(4, 8);
+              ctx.stroke();
+              break;
+            case "currentsource":
+              ctx.beginPath();
+              ctx.arc(0, 0, 16, 0, 2 * Math.PI);
+              ctx.moveTo(0, -30);
+              ctx.lineTo(0, -16);
+              ctx.moveTo(0, 16);
+              ctx.lineTo(0, 30);
+              ctx.moveTo(0, -10);
+              ctx.lineTo(0, 10);
+              ctx.moveTo(-4, 4);
+              ctx.lineTo(0, 10);
+              ctx.lineTo(4, 4);
+              ctx.stroke();
+              break;
+            case "gnd":
+              ctx.beginPath();
+              ctx.moveTo(0, -10);
+              ctx.lineTo(0, 0);
+              ctx.moveTo(-15, 0);
+              ctx.lineTo(15, 0);
+              ctx.moveTo(-10, 6);
+              ctx.lineTo(10, 6);
+              ctx.moveTo(-5, 12);
+              ctx.lineTo(5, 12);
+              ctx.stroke();
+              break;
+          }
+          ctx.restore();
+
+          if (el.labelOffset && el.value !== undefined) {
+            ctx.fillStyle = isSelected ? "#3b82f6" : "#059669";
+            ctx.font = `italic ${textFontSize}px Georgia`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            const text =
+              (el.displayValue || formatValueWithPrefix(el.value)) +
+              (componentData[el.type].unit || "");
+            ctx.fillText(
+              text,
+              el.x + el.labelOffset.x,
+              el.y + el.labelOffset.y
+            );
+          }
+        }
+        function redrawCanvas() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          drawGrid();
+          circuitElements.forEach(drawElement);
+          drawJunctions();
+          if (isDrawingWire && wireStartPoint) {
+            let end = getSnappingPoint(currentMousePos.x, currentMousePos.y);
+            const snapPoint = getSnappingPoint(
+              currentMousePos.x,
+              currentMousePos.y
+            );
+            drawSnapIndicator(snapPoint);
+            ctx.save();
+            setDrawingStyle(true);
+            ctx.setLineDash([4, 4]);
+            const tempWire = {
+              start: wireStartPoint,
+              end,
+              routing: isShiftDown ? "direct" : "manhattan",
+            };
+            const p = getWirePath(tempWire);
+            ctx.beginPath();
+            ctx.moveTo(p[0].x, p[0].y);
+            for (let i = 1; i < p.length; i++) ctx.lineTo(p[i].x, p[i].y);
+            ctx.stroke();
+            ctx.restore();
+          }
+        }
+
+        function drawSnapIndicator(point) {
+          ctx.beginPath();
+          ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+          ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
+          ctx.fill();
+        }
+
+        // --- Connectivity Analysis Functions ---
+        function buildConnectivityGraph() {
+          connectivityGraph.clear();
+          const allPoints = new Map();
+
+          const addPoint = (p) => {
+            const key = `${p.x},${p.y}`;
+            if (!allPoints.has(key)) {
+              allPoints.set(key, new Set());
+            }
+            return key;
+          };
+
+          const connectPoints = (p1, p2) => {
+            const key1 = addPoint(p1);
+            const key2 = addPoint(p2);
+            allPoints.get(key1).add(key2);
+            allPoints.get(key2).add(key1);
+          };
+
+          circuitElements.forEach((el) => {
+            if (el.type === "wire") {
+              const path = getWirePath(el);
+              for (let i = 0; i < path.length - 1; i++) {
+                connectPoints(path[i], path[i + 1]);
+              }
+            } else {
+              const terminals = getAbsoluteTerminals(el);
+              terminals.forEach((t) => addPoint(t));
+            }
+          });
+
+          connectivityGraph = allPoints;
+        }
+
+        function getClosestPointOnWire(point, wire) {
+          const path = getWirePath(wire);
+          let minVertexDist = Infinity;
+          let closestVertex = null;
+          path.forEach((vertex) => {
+            const d = Math.hypot(point.x - vertex.x, point.y - vertex.y);
+            if (d < minVertexDist) {
+              minVertexDist = d;
+              closestVertex = vertex;
+            }
+          });
+          return closestVertex;
+        }
+
+        function findConnectedPointKeys(startPointKey) {
+          if (!connectivityGraph.has(startPointKey))
+            return new Set([startPointKey]);
+          const visited = new Set();
+          const queue = [startPointKey];
+          visited.add(startPointKey);
+          while (queue.length > 0) {
+            const currentKey = queue.shift();
+            const neighbors = connectivityGraph.get(currentKey);
+            if (neighbors) {
+              for (const neighborKey of neighbors) {
+                if (!visited.has(neighborKey)) {
+                  visited.add(neighborKey);
+                  queue.push(neighborKey);
+                }
+              }
+            }
+          }
+          return visited;
+        }
+
+        // --- Node Placement ---
+        function handleNodePlacement(e) {
+          const mousePos = getMousePos(e);
+          const clickedTarget = getElementAtPos(mousePos.x, mousePos.y);
+          const clickedWire =
+            clickedTarget && clickedTarget.element.type === "wire"
+              ? clickedTarget.element
+              : null;
+          if (!clickedWire) {
+            showToast("Please click on a wire to define a node.");
+            return;
+          }
+          buildConnectivityGraph();
+          const startPoint = getClosestPointOnWire(mousePos, clickedWire);
+          if (!startPoint) {
+            showToast("Could not find a starting point on the wire.");
+            return;
+          }
+          const connectedPointKeys = findConnectedPointKeys(
+            `${startPoint.x},${startPoint.y}`
+          );
+          for (const node of state.nodes) {
+            if (
+              [...connectedPointKeys].some((key) => node.pointKeys.has(key))
+            ) {
+              showToast("This electrical node has already been defined.");
+              return;
+            }
+          }
+          const isRef = state.nodes.length === 0;
+          const nodeName = isRef
+            ? "0"
+            : String.fromCharCode(65 + state.nodeCounter);
+          const points = [...connectedPointKeys].map((k) => {
+            const [x, y] = k.split(",");
+            return { x: +x, y: +y };
+          });
+          const avgPos = points.reduce(
+            (acc, p) => ({ x: acc.x + p.x, y: acc.y + p.y }),
+            { x: 0, y: 0 }
+          );
+          avgPos.x /= points.length;
+          avgPos.y /= points.length;
+          const newNode = {
+            name: nodeName,
+            isRef,
+            pointKeys: connectedPointKeys,
+            markerPos: avgPos,
+          };
+          if (isRef) {
+            const gndEl = circuitElements.find((el) => el.type === "gnd");
+            if (gndEl) {
+              const gndTerm = getAbsoluteTerminals(gndEl)[0];
+              if (connectedPointKeys.has(`${gndTerm.x},${gndTerm.y}`)) {
+                newNode.markerPos = gndTerm;
+                showToast(
+                  "Reference node automatically associated with GND symbol."
+                );
+              }
+            }
+          }
+          state.nodes.push(newNode);
+          if (!isRef) state.nodeCounter++;
+          const marker = document.createElement("div");
+          marker.className = `node-marker ${isRef ? "reference" : ""}`;
+          marker.textContent = isRef ? "R" : nodeName;
+          marker.style.left = `${newNode.markerPos.x - 12}px`;
+          marker.style.top = `${newNode.markerPos.y - 12}px`;
+          marker.dataset.nodeName = nodeName;
+          nodeMarkerContainer.appendChild(marker);
+          renderNodeList();
+          updateUI();
+        }
+
+        // --- Event Handlers ---
+        canvas.addEventListener("mousedown", (e) => {
+          if (state.currentStep === "nodes") {
+            handleNodePlacement(e);
+            return;
+          }
+          if (state.currentStep !== "draw") return;
+          const m = getMousePos(e);
+          if (selectedTool === "select") {
+            dragTarget = getElementAtPos(m.x, m.y);
+            selectedElements = dragTarget ? [dragTarget] : [];
+            if (dragTarget) {
+              isDragging = true;
+              dragStartPoint = m;
+              const el = dragTarget.element;
+              el.dragInitialState = {
+                x: el.x,
+                y: el.y,
+                labelOffsetX: el.labelOffset?.x,
+                labelOffsetY: el.labelOffset?.y,
+              };
+            }
+          } else if (selectedTool === "wire") {
+            isDrawingWire = true;
+            wireStartPoint = getSnappingPoint(m.x, m.y);
+          } else {
+            // This block handles placing any new component (resistor, source, etc.)
+            // 1. Create the new element object with a default placeholder value.
+            const newEl = {
+              id: nextId++,
+              type: selectedTool,
+              x: snapToGrid(m.x),
+              y: snapToGrid(m.y),
+              rotation: 0,
+              value: 0, // Set a default numerical value
+              displayValue: "?", // Set a default display value to show the user
+            };
+            const data = componentData[selectedTool];
+            if (data.defaultLabelOffset) {
+              newEl.labelOffset = { ...data.defaultLabelOffset };
+            }
+
+            // 2. Add the element to the canvas IMMEDIATELY.
+            circuitElements.push(newEl);
+
+            // 3. Redraw the canvas so the user sees the new component with the '?' label.
+            redrawCanvas();
+
+            // 6. Final state updates and switch back to the select tool.
+            saveState();
+            selectedTool = "select";
+            updateUI();
+          }
+          redrawCanvas();
+        });
+        canvas.addEventListener("mousemove", (e) => {
+          currentMousePos = getMousePos(e);
+          if (isDragging && dragTarget) {
+            const dx = currentMousePos.x - dragStartPoint.x,
+              dy = currentMousePos.y - dragStartPoint.y;
+            const el = dragTarget.element;
+            const i = el.dragInitialState;
+            if (dragTarget.handle === "label") {
+              el.labelOffset.x = i.labelOffsetX + dx;
+              el.labelOffset.y = i.labelOffsetY + dy;
+            } else {
+              el.x = snapToGrid(i.x + dx);
+              el.y = snapToGrid(i.y + dy);
+            }
+          }
+          redrawCanvas();
+        });
+        canvas.addEventListener("mouseup", () => {
+          if (isDrawingWire) {
+            const end = getSnappingPoint(currentMousePos.x, currentMousePos.y);
+            if (
+              Math.hypot(end.x - wireStartPoint.x, end.y - wireStartPoint.y) > 0
+            ) {
+              circuitElements.push({
+                id: nextId++,
+                type: "wire",
+                start: wireStartPoint,
+                end,
+                routing: isShiftDown ? "direct" : "manhattan",
+              });
+              saveState();
+            }
+          }
+          if (isDragging) {
+            saveState();
+          }
+          isDrawingWire = false;
+          isDragging = false;
+          if (dragTarget) dragTarget.element.dragInitialState = null;
+          dragTarget = null;
+          redrawCanvas();
+        });
+        canvas.addEventListener("dblclick", (e) => {
+          if (state.currentStep !== "draw") return;
+          const target = getElementAtPos(getMousePos(e).x, getMousePos(e).y);
+          if (!target || target.handle === "label") return;
+          const clickedEl = target.element;
+          if (clickedEl.type !== "wire" && clickedEl.type !== "gnd") {
+            const data = componentData[clickedEl.type];
+            let v_str = prompt(
+              `Enter value for ${data.name} (e.g., 10k, 2.2M, 100u):`,
+              "1k"
+            );
+            if (v_str === null) return;
+            let v_num = parseValueWithPrefix(v_str);
+            if (!isNaN(v_num)) {
+              clickedEl.value = v_num;
+              clickedEl.displayValue = v_str;
+              saveState();
+              redrawCanvas();
+            } else {
+              showToast(`Invalid value: ${v_str}`);
+            }
+          }
+        });
+
+        toolbar.addEventListener("click", (e) => {
+          const t = e.target.closest("button");
+          if (!t) return;
+          if (t.id.startsWith("tool-")) {
+            selectedTool = t.id.replace("tool-", "");
+            updateUI();
+          }
+        });
+        deleteBtn.addEventListener("click", () => {
+          if (selectedElements.length > 0) {
+            const idsToDelete = new Set(
+              selectedElements.map((s) => s.element.id)
+            );
+            circuitElements = circuitElements.filter(
+              (el) => !idsToDelete.has(el.id)
+            );
+            selectedElements = [];
+            saveState();
+            redrawCanvas();
+          }
+        });
+        rotateBtn.addEventListener("click", () => {
+          if (selectedElements.length > 0) {
+            selectedElements.forEach((sel) => {
+              const el = sel.element;
+              if (el.type !== "wire" && el.type !== "gnd") {
+                el.rotation = (el.rotation + 45) % 360;
+              }
+            });
+            saveState();
+            redrawCanvas();
+          }
+        });
+
+        undoBtn.addEventListener("click", undo);
+        redoBtn.addEventListener("click", redo);
+
+        window.addEventListener("keydown", (e) => {
+          isShiftDown = e.shiftKey;
+          if (
+            document.activeElement.tagName === "INPUT" ||
+            document.activeElement.tagName === "TEXTAREA"
+          )
+            return;
+
+          if (e.ctrlKey || e.metaKey) {
+            if (["z", "y", "r"].includes(e.key.toLowerCase()))
+              e.preventDefault();
+
+            switch (e.key.toLowerCase()) {
+              case "z":
+                undo();
+                break;
+              case "y":
+                redo();
+                break;
+              case "r":
+                rotateBtn.click();
+                break;
+            }
+          } else {
+            switch (e.key.toLowerCase()) {
+              case "s":
+              case "escape":
+                selectedTool = "select";
+                break;
+              case "w":
+                selectedTool = "wire";
+                break;
+              case "r":
+                selectedTool = "resistor";
+                break;
+              case "delete":
+              case "backspace":
+                deleteBtn.click();
+                break;
+            }
+          }
+          updateUI();
+          redrawCanvas();
+        });
+        window.addEventListener("keyup", (e) => {
+          isShiftDown = e.shiftKey;
+          redrawCanvas();
+        });
+        canvas.addEventListener("contextmenu", (e) => {
+          e.preventDefault();
+          selectedTool = "select";
+          isDrawingWire = false;
+          redrawCanvas();
+          updateUI();
+        });
+
+        workflowButton.addEventListener("click", () => {
+          if (state.currentStep === "draw") {
+            state.currentStep = "nodes";
+          } else if (state.currentStep === "nodes") {
+            if (state.nodes.length < 2) {
+              showToast("Please define at least two nodes (one reference).");
+              return;
+            }
+            analyzeDrawnCircuit();
+          }
+          updateUI();
+        });
+        backToDrawButton.addEventListener("click", () => {
+          state.currentStep = "draw";
+          state.nodes = [];
+          state.nodeCounter = 0;
+          nodeMarkerContainer.innerHTML = "";
+          renderNodeList();
+          updateUI();
+        });
+        undoNodeButton.addEventListener("click", () => {
+          if (state.nodes.length > 0) {
+            const lastNode = state.nodes.pop();
+            const marker = nodeMarkerContainer.querySelector(
+              `[data-node-name="${lastNode.name}"]`
+            );
+            if (marker) nodeMarkerContainer.removeChild(marker);
+            if (!lastNode.isRef) state.nodeCounter--;
+            renderNodeList();
+          }
+        });
+        resetButton.addEventListener("click", () => {
+          state = {
+            nodes: [],
+            components: [],
+            equations: [],
+            currentStep: "draw",
+            nodeCounter: 0,
+          };
+          circuitElements = [];
+          selectedElements = [];
+          nextId = 0;
+          nodeMarkerContainer.innerHTML = "";
+          nodeList.innerHTML = "";
+          equationsDisplay.innerHTML = "";
+          matrixInputContainer.innerHTML = "";
+          mathOutput.innerHTML = "";
+          matrixPreview.innerHTML = "";
+          history = [];
+          historyIndex = -1;
+          saveState();
+          updateUI();
+          redrawCanvas();
+        });
+        backToNodesButton.addEventListener("click", () => {
+          state.equations = [];
+          state.components = [];
+          state.currentStep = "nodes";
+          updateUI();
+        });
+        backToMatrixButton.addEventListener("click", () => {
+          state.equations = [];
+          state.components = [];
+          state.currentStep = "matrix";
+          updateUI();
+        });
+        solveButton.addEventListener("click", () => {
+          solveCircuitFromInputs();
+          state.currentStep = "solve";
+          updateUI();
+        });
+        matrixInputContainer.addEventListener("input", updateMatrixPreview);
+
+        // --- Full Implementations of Logic and Analysis ---
+
+        function analyzeDrawnCircuit() {
+          state.components = [];
+          buildConnectivityGraph();
+
+          function findNodeNameForTerminal(terminal) {
+            for (const node of state.nodes) {
+              for (const pointKey of node.pointKeys) {
+                const [px, py] = pointKey.split(",").map(Number);
+                if (
+                  Math.hypot(terminal.x - px, terminal.y - py) < snapTolerance
+                ) {
+                  return node.name;
+                }
+              }
+            }
+            return null;
+          }
+
+          circuitElements.forEach((el) => {
+            if (el.type !== "wire" && el.type !== "gnd") {
+              const terminals = getAbsoluteTerminals(el);
+              if (terminals.length === 2) {
+                const n1 = findNodeNameForTerminal(terminals[1]); // Node at terminal 0 (neg/tail)
+                const n2 = findNodeNameForTerminal(terminals[0]); // Node at terminal 1 (pos/head)
+                if (n1 !== null && n2 !== null && n1 !== n2) {
+                  let analysisType = el.type;
+                  if (el.type === "voltage") analysisType = "voltage_source";
+                  if (el.type === "currentsource")
+                    analysisType = "current_source";
+
+                  // Standardized Convention:
+                  // 'from' is always the node at terminal 0.
+                  // 'to' is always the node at terminal 1.
+                  state.components.push({
+                    type: analysisType,
+                    value: el.value || 0,
+                    from: n1,
+                    to: n2,
+                  });
+                }
+              }
+            }
+          });
+
+          if (
+            state.components.length === 0 &&
+            circuitElements.filter((c) => c.type !== "wire" && c.type !== "gnd")
+              .length > 0
+          ) {
+            showToast(
+              "Analysis failed. Ensure all components are fully connected."
+            );
+            return;
+          }
+          generateNodalEquations();
+          if (state.equations.length === 0) {
+            showToast("Could not generate equations. Check circuit validity.");
+            return;
+          }
+          state.currentStep = "matrix";
+          generateMatrixInputs();
+        }
+
+        function generateNodalEquations() {
+          state.equations = [];
+          const nonRefNodes = state.nodes
+            .filter((n) => !n.isRef)
+            .map((n) => n.name)
+            .sort();
+          const refNodeName = state.nodes.find((n) => n.isRef)?.name;
+          if (!refNodeName) {
+            showToast("Error: No reference node defined.");
+            return;
+          }
+          let kclData = {};
+          nonRefNodes.forEach((node) => {
+            kclData[node] = { lhs: [], rhs: 0, isHandled: false };
+          });
+
+          state.components.forEach((comp) => {
+            const { type, value, from, to } = comp; // from: node at terminal 0 (neg/tail), to: node at terminal 1 (pos/head)
+            if (type === "resistor") {
+              if (from !== refNodeName)
+                kclData[from].lhs.push(
+                  `\\frac{V_{${from}}${
+                    to !== refNodeName ? ` - V_{${to}}` : ""
+                  }}{${value}}`
+                );
+              if (to !== refNodeName)
+                kclData[to].lhs.push(
+                  `\\frac{V_{${to}}${
+                    from !== refNodeName ? ` - V_{${from}}` : ""
+                  }}{${value}}`
+                );
+            } else if (type === "current_source") {
+              // Current flows from the tail (from) to the head (to).
+              // KCL: Sum of currents leaving = Sum of sources entering
+              // Source enters node 'to'.
+              if (to !== refNodeName) kclData[to].rhs -= value;
+              // Source leaves node 'from'. This is a negative entering current.
+              if (from !== refNodeName) kclData[from].rhs += value;
+            }
+          });
+
+          let supernodesHandled = new Set();
+          state.components.forEach((comp) => {
+            if (comp.type === "voltage_source") {
+              const { value, from, to } = comp; // from: neg terminal node, to: pos terminal node
+              if (from === refNodeName) {
+                // Negative terminal is ground
+                // V_pos - V_neg = value -> V_to - 0 = value -> V_to = value
+                state.equations.push({
+                  title: `Constraint at Node ${to}`,
+                  eq: `V_{${to}} = ${value}`,
+                });
+                if (kclData[to]) kclData[to].isHandled = true;
+              } else if (to === refNodeName) {
+                // Positive terminal is ground
+                // V_pos - V_neg = value -> 0 - V_from = value -> V_from = -value
+                state.equations.push({
+                  title: `Constraint at Node ${from}`,
+                  eq: `V_{${from}} = ${-value}`,
+                });
+                if (kclData[from]) kclData[from].isHandled = true;
+              } else {
+                // Floating voltage source -> Supernode
+                const supernodeID = [from, to].sort().join("-");
+                if (!supernodesHandled.has(supernodeID)) {
+                  // KVL constraint: V_pos - V_neg = value -> V_to - V_from = value
+                  state.equations.push({
+                    title: `KVL for Supernode (${from},${to})`,
+                    eq: `V_{${to}} - V_{${from}} = ${value}`,
+                  });
+                  const combinedLHS = (kclData[from]?.lhs || []).concat(
+                    kclData[to]?.lhs || []
+                  );
+                  const combinedRHS =
+                    (kclData[from]?.rhs || 0) + (kclData[to]?.rhs || 0);
+                  state.equations.push({
+                    title: `KCL at Supernode (${from},${to})`,
+                    eq: `${combinedLHS.join(" + ")} = ${toFrac(combinedRHS)}`,
+                  });
+                  if (kclData[from]) kclData[from].isHandled = true;
+                  if (kclData[to]) kclData[to].isHandled = true;
+                  supernodesHandled.add(supernodeID);
+                }
+              }
+            }
+          });
+          nonRefNodes.forEach((node) => {
+            if (kclData[node] && !kclData[node].isHandled)
+              state.equations.push({
+                title: `KCL at Node ${node}`,
+                eq: `${kclData[node].lhs.join(" + ")} = ${toFrac(
+                  kclData[node].rhs
+                )}`,
+              });
+          });
+          state.equations.forEach((eq) => {
+            eq.eq = eq.eq.replace(/\+ -/g, "- ");
+          });
+          state.equations.sort((a, b) => a.title.localeCompare(b.title));
+        }
+
+        function generateMatrixInputs() {
+          equationsDisplay.innerHTML = state.equations
+            .map((e) => `<p><strong>${e.title}:</strong> $$ ${e.eq} $$</p>`)
+            .join("");
+          MathJax.typesetPromise([equationsDisplay]);
+          const nonRefNodes = state.nodes
+            .filter((n) => !n.isRef)
+            .sort((a, b) => a.name.localeCompare(b.name));
+          const n = nonRefNodes.length;
+          if (n === 0) return;
+
+          let table = `<table class="mx-auto"><thead><tr>`;
+          nonRefNodes.forEach(
+            (node) =>
+              (table += `<th class="px-1 text-center ">V<sub>${node.name}</sub></th>`)
+          );
+          table += `<th class="px-2 text-center font-bold"></th><th class="px-1 text-center font-bold">I</th></tr></thead><tbody>`;
+          for (let i = 0; i < n; i++) {
+            table += `<tr>`;
+            for (let j = 0; j < n; j++)
+              table += `<td><input type="text" class="matrix-input g-input" data-row="${i}" data-col="${j}" placeholder="0"></td>`;
+            table += `<td class="text-center font-bold text-lg px-2">=</td><td><input type="text" class="matrix-input i-input" data-row="${i}" placeholder="0"></td>`;
+            table += `</tr>`;
+          }
+          table += `</tbody></table>`;
+          matrixInputContainer.innerHTML = table;
+          updateMatrixPreview();
+        }
+
+        function updateMatrixPreview() {
+          // 1. Get and sort the nodes that determine the matrix size and order.
+          const nonRefNodes = state.nodes
+            .filter((n) => !n.isRef)
+            .sort((a, b) => a.name.localeCompare(b.name));
+          const n = nonRefNodes.length;
+
+          // If there are no nodes, clear the preview and exit.
+          if (n === 0) {
+            // Assuming 'matrixPreview' is a globally available element
+            matrixPreview.innerHTML = "";
+            return;
+          }
+
+          // 2. Initialize matrices using a more robust method.
+          const G = Array.from({ length: n }, () => Array(n).fill(0));
+          const I = Array(n).fill(0);
+
+          // 3. Populate matrices from DOM inputs.
+          // This part assumes the 'dataset' attributes are valid integers.
+          document.querySelectorAll(".g-input").forEach((input) => {
+            const row = parseInt(input.dataset.row, 10);
+            const col = parseInt(input.dataset.col, 10);
+            // Add checks to prevent errors if row/col are invalid or out of bounds
+            if (!isNaN(row) && !isNaN(col) && row < n && col < n) {
+              G[row][col] = parseFloat(input.value) || 0;
+            }
+          });
+
+          document.querySelectorAll(".i-input").forEach((input) => {
+            const row = parseInt(input.dataset.row, 10);
+            if (!isNaN(row) && row < n) {
+              I[row] = parseFloat(input.value) || 0;
+            }
+          });
+
+          // 4. Build LaTeX strings in a cleaner, more functional way.
+          const formatNumber = (num) => parseFloat(num.toFixed(2));
+
+          const matrixLatex =
+            `\\begin{bmatrix}\n` +
+            G.map((row) => row.map(formatNumber).join(" & ")).join(" \\\\\n") +
+            `\n\\end{bmatrix}`;
+
+          const nodesLatex =
+            `\\begin{bmatrix}\n` +
+            nonRefNodes.map((node) => `V_{${node.name}}`).join(" \\\\\n") +
+            `\n\\end{bmatrix}`;
+
+          const currentsLatex =
+            `\\begin{bmatrix}\n` +
+            I.map((current) => formatNumber(current)).join(" \\\\\n") +
+            `\n\\end{bmatrix}`;
+
+          // 5. Update the DOM and trigger MathJax typesetting.
+          // The main fix is here: removed the erroneous extra backslash '\\'.
+          matrixPreview.innerHTML = `$$ ${matrixLatex} ${nodesLatex} = ${currentsLatex} $$`;
+
+          // Ensure MathJax is available before calling it
+          if (window.MathJax) {
+            MathJax.typesetPromise([matrixPreview]);
+          }
+        }
+
+        function solveCircuitFromInputs() {
+          const nonRefNodes = state.nodes
+            .filter((n) => !n.isRef)
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((n) => n.name);
+          const n = nonRefNodes.length;
+          if (n === 0) {
+            showToast("No non-reference nodes to solve for.");
+            return;
+          }
+          const G = Array(n)
+            .fill(0)
+            .map(() => Array(n).fill(0));
+          const I = Array(n).fill(0);
+          document.querySelectorAll(".g-input").forEach((input) => {
+            G[parseInt(input.dataset.row)][parseInt(input.dataset.col)] =
+              parseFloat(input.value) || 0;
+          });
+          document.querySelectorAll(".i-input").forEach((input) => {
+            I[parseInt(input.dataset.row)] = parseFloat(input.value) || 0;
+          });
+          displayMath(G, I, nonRefNodes);
+        }
+
+        function determinant(matrix) {
+          const n = matrix.length;
+          if (n === 0) return 1;
+          if (n === 1) return matrix[0][0];
+          if (n === 2)
+            return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+          let det = 0;
+          for (let j = 0; j < n; j++) {
+            const subMatrix = matrix
+              .slice(1)
+              .map((row) => row.filter((_, colIndex) => colIndex !== j));
+            det +=
+              (j % 2 === 0 ? 1 : -1) * matrix[0][j] * determinant(subMatrix);
+          }
+          return det;
+        }
+
+        function displayMath(G, I, nonRefNodes) {
+          mathOutput.innerHTML = "";
+          const formatNumber = (num) => parseFloat(num.toPrecision(4));
+          const ordinals = ["first", "second", "third", "fourth", "fifth"];
+          let matrixLatex = `\\begin{bmatrix}`;
+          G.forEach((row) => {
+            matrixLatex += row.map((v) => formatNumber(v)).join(" & ") + "\\\\";
+          });
+          matrixLatex += `\\end{bmatrix}`;
+          let nodesLatex = `\\begin{bmatrix}`;
+          nonRefNodes.forEach((node) => {
+            nodesLatex += `V_{${node}} \\\\`;
+          });
+          nodesLatex += `\\end{bmatrix}`;
+          let currentsLatex = `\\begin{bmatrix}`;
+          I.forEach((current) => {
+            currentsLatex += `${formatNumber(current)} \\\\`;
+          });
+          currentsLatex += `\\end{bmatrix}`;
+          const systemEq = `<div class="math-container"><p class="font-semibold mb-2">1. Your system of linear equations is:</p><p>$$ ${matrixLatex} ${nodesLatex} = ${currentsLatex} $$</p></div>`;
+          mathOutput.insertAdjacentHTML("beforeend", systemEq);
+          const detG = determinant(G);
+          const detGLatex = `<div class="math-container"><p class="font-semibold mb-2">2. The determinant of the main matrix is:</p><p>$$ \\Delta = \\det(G) = ${formatNumber(
+            detG
+          )} $$</p></div>`;
+          mathOutput.insertAdjacentHTML("beforeend", detGLatex);
+          if (Math.abs(detG) < 1e-9) {
+            mathOutput.insertAdjacentHTML(
+              "beforeend",
+              '<p class="text-red-500 font-bold">The determinant is zero. The system cannot be solved.</p>'
+            );
+            return;
+          }
+          let resultsHTML =
+            '<div class="math-container"><p class="font-semibold mb-2">3. Solving for each node voltage:</p><div class="space-y-8">';
+          nonRefNodes.forEach((node, i) => {
+            let G_i = JSON.parse(JSON.stringify(G));
+            for (let row = 0; row < G_i.length; row++) {
+              G_i[row][i] = I[row];
+            }
+            const detG_i = determinant(G_i);
+            const voltage = detG_i / detG;
+            const originalColumn = G.map((row) => row[i]);
+            let originalColumnLatex = `\\begin{bmatrix}`;
+            originalColumn.forEach((val) => {
+              originalColumnLatex += `${formatNumber(val)} \\\\`;
+            });
+            originalColumnLatex += `\\end{bmatrix}`;
+            let iVectorLatex = `\\begin{bmatrix}`;
+            I.forEach((val) => {
+              iVectorLatex += `${formatNumber(val)} \\\\`;
+            });
+            iVectorLatex += `\\end{bmatrix}`;
+            let matrix_i_Latex = `\\begin{bmatrix}`;
+            G_i.forEach((row) => {
+              matrix_i_Latex +=
+                row.map((v) => formatNumber(v)).join(" & ") + "\\\\";
+            });
+            matrix_i_Latex += `\\end{bmatrix}`;
+            resultsHTML += `<div><p class="font-semibold">For Node ${node}:</p><div class="text-base text-gray-700 !mt-2 mb-2"><p>To solve for V<sub>${node}</sub>, we replace the <strong>${
+              ordinals[i] || `${i + 1}th`
+            }</strong> column of the main matrix,</p><div class="flex justify-center items-center my-2"><span class="font-mono text-blue-600">$$${originalColumnLatex}$$</span><span class="mx-4 text-gray-500">with the current vector,</span><span class="font-mono text-green-600">$$${iVectorLatex}$$</span></div></div><p class="text-base text-gray-700 !mt-2 mb-2">The determinant of the resulting new matrix is:</p><p>$$ \\Delta_{${node}} = \\det(${matrix_i_Latex}) = ${formatNumber(
+              detG_i
+            )} $$</p><p class="!mt-4">$$ V_{${node}} = \\frac{\\Delta_{${node}}}{\\Delta} = \\frac{${formatNumber(
+              detG_i
+            )}}{${formatNumber(detG)}} = \\mathbf{${voltage.toFixed(
+              4
+            )} V} $$</p></div>`;
+          });
+          resultsHTML += "</div></div>";
+          mathOutput.insertAdjacentHTML("beforeend", resultsHTML);
+          MathJax.typesetPromise();
+        }
+
+        // --- Initial Call ---
+        saveState();
+        updateUI();
+        redrawCanvas();
+      });
+    </script>
+  </body>
+</html>
