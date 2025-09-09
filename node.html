@@ -165,7 +165,7 @@
       </header>
 
       <div class="flex flex-col lg:flex-row gap-8">
-        <div class="lg:w-2/3 bg-white p-6 rounded-xl shadow-lg">
+        <div class="lg:w-3/5 bg-white p-6 rounded-xl shadow-lg">
           <h2
             id="instruction-title"
             class="text-2xl font-semibold mb-4 text-gray-700"
@@ -276,7 +276,7 @@
           </div>
 
           <div class="relative">
-            <canvas id="circuitCanvas" width="800" height="500"></canvas>
+            <canvas id="circuitCanvas" height="500"></canvas>
             <div
               id="node-marker-container"
               class="absolute top-0 left-0 w-full h-full pointer-events-none"
@@ -418,6 +418,11 @@
           nodeCounter: 0,
         };
 
+        // NEW state for panning
+        let viewOffset = { x: 0, y: 0 };
+        let isPanning = false;
+        let panStartPoint = { x: 0, y: 0 };
+
         let circuitElements = [],
           selectedElements = [],
           nextId = 0;
@@ -457,7 +462,7 @@
             ],
             name: "Voltage Source",
             unit: "V",
-            defaultLabelOffset: { x: 28, y: 0 },
+            defaultLabelOffset: { x: 35, y: 0 },
           },
           currentsource: {
             width: 35,
@@ -468,7 +473,7 @@
             ],
             name: "Current Source",
             unit: "A",
-            defaultLabelOffset: { x: 28, y: 0 },
+            defaultLabelOffset: { x: 35, y: 0 },
           },
           gnd: {
             width: 30,
@@ -597,7 +602,7 @@
             draw: {
               iTitle: "Step 1: Draw Your Circuit",
               iText:
-                "Use the toolbar to draw. Double-click a component to set its value.",
+                "Use the toolbar to draw. Double-click a component to set its value. Middle-click and drag to pan.",
               wTitle: "Step 1: Drawing",
               wText: "Finish drawing your circuit schematic before proceeding.",
               btnText: "Next: Define Nodes",
@@ -644,7 +649,7 @@
             `tool-${selectedTool}`
           );
           if (currentToolBtn) currentToolBtn.classList.add("selected");
-          canvas.style.cursor =
+          canvas.style.cursor = isPanning ? 'grabbing' :
             state.currentStep === "nodes"
               ? "pointer"
               : selectedTool === "select"
@@ -669,6 +674,7 @@
 
         // --- Core Drawing Engine ---
         function getMousePos(e) {
+          // Returns position relative to the canvas element (screen-space)
           return {
             x: e.clientX - canvas.getBoundingClientRect().left,
             y: e.clientY - canvas.getBoundingClientRect().top,
@@ -783,20 +789,6 @@
           ctx.lineCap = "round";
           ctx.lineJoin = "round";
         }
-        function drawGrid() {
-          ctx.strokeStyle = "#e9ecef";
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          for (let x = 0; x <= canvas.width; x += gridSize) {
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, canvas.height);
-          }
-          for (let y = 0; y <= canvas.height; y += gridSize) {
-            ctx.moveTo(0, y);
-            ctx.lineTo(canvas.width, y);
-          }
-          ctx.stroke();
-        }
 
         function drawJunctions() {
           const points = new Map();
@@ -898,7 +890,7 @@
           ctx.restore();
 
           if (el.labelOffset && el.value !== undefined) {
-            ctx.fillStyle = isSelected ? "#3b82f6" : "#059669";
+            ctx.fillStyle = isSelected ? "#3b82f6" : "#5e1010";
             ctx.font = `italic ${textFontSize}px Georgia`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
@@ -912,33 +904,77 @@
             );
           }
         }
+
+        // NEW: Updated redrawCanvas for panning
         function redrawCanvas() {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          drawGrid();
-          circuitElements.forEach(drawElement);
-          drawJunctions();
-          if (isDrawingWire && wireStartPoint) {
-            let end = getSnappingPoint(currentMousePos.x, currentMousePos.y);
-            const snapPoint = getSnappingPoint(
-              currentMousePos.x,
-              currentMousePos.y
-            );
-            drawSnapIndicator(snapPoint);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Save the default, non-translated state
             ctx.save();
-            setDrawingStyle(true);
-            ctx.setLineDash([4, 4]);
-            const tempWire = {
-              start: wireStartPoint,
-              end,
-              routing: isShiftDown ? "direct" : "manhattan",
-            };
-            const p = getWirePath(tempWire);
-            ctx.beginPath();
-            ctx.moveTo(p[0].x, p[0].y);
-            for (let i = 1; i < p.length; i++) ctx.lineTo(p[i].x, p[i].y);
-            ctx.stroke();
+            
+            // Apply the view offset translation. This moves the "camera".
+            ctx.translate(-viewOffset.x, -viewOffset.y);
+
+            // --- DRAW EVERYTHING IN WORLD-SPACE ---
+            drawGrid();
+            circuitElements.forEach(drawElement);
+            drawJunctions();
+
+            // Handle temporary wire drawing
+            if (isDrawingWire && wireStartPoint) {
+                // Convert current mouse position (screen-space) to world-space for drawing
+                const worldMousePos = {
+                    x: currentMousePos.x + viewOffset.x,
+                    y: currentMousePos.y + viewOffset.y,
+                };
+                let end = getSnappingPoint(worldMousePos.x, worldMousePos.y);
+                const snapPoint = getSnappingPoint(worldMousePos.x, worldMousePos.y);
+                
+                drawSnapIndicator(snapPoint);
+                
+                ctx.save();
+                setDrawingStyle(true);
+                ctx.setLineDash([4, 4]);
+                const tempWire = {
+                    start: wireStartPoint,
+                    end,
+                    routing: isShiftDown ? "direct" : "manhattan",
+                };
+                const p = getWirePath(tempWire);
+                ctx.beginPath();
+                ctx.moveTo(p[0].x, p[0].y);
+                for (let i = 1; i < p.length; i++) ctx.lineTo(p[i].x, p[i].y);
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            // Restore the canvas to its original state (no translation)
             ctx.restore();
-          }
+        }
+
+        // NEW: Updated drawGrid for panning
+        function drawGrid() {
+            ctx.strokeStyle = "#e9ecef";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            
+            // Calculate the visible world boundaries
+            const startX = Math.floor(viewOffset.x / gridSize) * gridSize;
+            const endX = viewOffset.x + canvas.width;
+            const startY = Math.floor(viewOffset.y / gridSize) * gridSize;
+            const endY = viewOffset.y + canvas.height;
+
+            // Draw vertical lines
+            for (let x = startX; x <= endX; x += gridSize) {
+                ctx.moveTo(x, startY);
+                ctx.lineTo(x, endY);
+            }
+            // Draw horizontal lines
+            for (let y = startY; y <= endY; y += gridSize) {
+                ctx.moveTo(startX, y);
+                ctx.lineTo(endX, y);
+            }
+            ctx.stroke();
         }
 
         function drawSnapIndicator(point) {
@@ -1019,198 +1055,197 @@
         }
 
         // --- Node Placement ---
-        function handleNodePlacement(e) {
-          const mousePos = getMousePos(e);
-          const clickedTarget = getElementAtPos(mousePos.x, mousePos.y);
-          const clickedWire =
-            clickedTarget && clickedTarget.element.type === "wire"
-              ? clickedTarget.element
-              : null;
-          if (!clickedWire) {
-            showToast("Please click on a wire to define a node.");
-            return;
-          }
-          buildConnectivityGraph();
-          const startPoint = getClosestPointOnWire(mousePos, clickedWire);
-          if (!startPoint) {
-            showToast("Could not find a starting point on the wire.");
-            return;
-          }
-          const connectedPointKeys = findConnectedPointKeys(
-            `${startPoint.x},${startPoint.y}`
-          );
-          for (const node of state.nodes) {
-            if (
-              [...connectedPointKeys].some((key) => node.pointKeys.has(key))
-            ) {
-              showToast("This electrical node has already been defined.");
-              return;
+        // MODIFIED to accept worldMousePos
+        function handleNodePlacement(e, worldMousePos) { 
+            const clickedTarget = getElementAtPos(worldMousePos.x, worldMousePos.y);
+            const clickedWire = clickedTarget && clickedTarget.element.type === "wire"
+                ? clickedTarget.element
+                : null;
+            if (!clickedWire) {
+                showToast("Please click on a wire to define a node.");
+                return;
             }
-          }
-          const isRef = state.nodes.length === 0;
-          const nodeName = isRef
-            ? "0"
-            : String.fromCharCode(65 + state.nodeCounter);
-          const points = [...connectedPointKeys].map((k) => {
-            const [x, y] = k.split(",");
-            return { x: +x, y: +y };
-          });
-          const avgPos = points.reduce(
-            (acc, p) => ({ x: acc.x + p.x, y: acc.y + p.y }),
-            { x: 0, y: 0 }
-          );
-          avgPos.x /= points.length;
-          avgPos.y /= points.length;
-          const newNode = {
-            name: nodeName,
-            isRef,
-            pointKeys: connectedPointKeys,
-            markerPos: avgPos,
-          };
-          if (isRef) {
-            const gndEl = circuitElements.find((el) => el.type === "gnd");
-            if (gndEl) {
-              const gndTerm = getAbsoluteTerminals(gndEl)[0];
-              if (connectedPointKeys.has(`${gndTerm.x},${gndTerm.y}`)) {
-                newNode.markerPos = gndTerm;
-                showToast(
-                  "Reference node automatically associated with GND symbol."
-                );
-              }
+            buildConnectivityGraph();
+            const startPoint = getClosestPointOnWire(worldMousePos, clickedWire);
+            if (!startPoint) {
+                showToast("Could not find a starting point on the wire.");
+                return;
             }
-          }
-          state.nodes.push(newNode);
-          if (!isRef) state.nodeCounter++;
-          const marker = document.createElement("div");
-          marker.className = `node-marker ${isRef ? "reference" : ""}`;
-          marker.textContent = isRef ? "R" : nodeName;
-          marker.style.left = `${newNode.markerPos.x - 12}px`;
-          marker.style.top = `${newNode.markerPos.y - 12}px`;
-          marker.dataset.nodeName = nodeName;
-          nodeMarkerContainer.appendChild(marker);
-          renderNodeList();
-          updateUI();
+            const connectedPointKeys = findConnectedPointKeys(
+                `${startPoint.x},${startPoint.y}`
+            );
+            for (const node of state.nodes) {
+                if ([...connectedPointKeys].some((key) => node.pointKeys.has(key))) {
+                    showToast("This electrical node has already been defined.");
+                    return;
+                }
+            }
+            const isRef = state.nodes.length === 0;
+            const nodeName = isRef ? "0" : String.fromCharCode(65 + state.nodeCounter);
+            const points = [...connectedPointKeys].map((k) => {
+                const [x, y] = k.split(",");
+                return { x: +x, y: +y };
+            });
+            const avgPos = points.reduce(
+                (acc, p) => ({ x: acc.x + p.x, y: acc.y + p.y }), { x: 0, y: 0 }
+            );
+            avgPos.x /= points.length;
+            avgPos.y /= points.length;
+            const newNode = { name: nodeName, isRef, pointKeys: connectedPointKeys, markerPos: avgPos };
+            if (isRef) {
+                const gndEl = circuitElements.find((el) => el.type === "gnd");
+                if (gndEl) {
+                    const gndTerm = getAbsoluteTerminals(gndEl)[0];
+                    if (connectedPointKeys.has(`${gndTerm.x},${gndTerm.y}`)) {
+                        newNode.markerPos = gndTerm;
+                        showToast("Reference node automatically associated with GND symbol.");
+                    }
+                }
+            }
+            state.nodes.push(newNode);
+            if (!isRef) state.nodeCounter++;
+            const marker = document.createElement("div");
+            marker.className = `node-marker ${isRef ? "reference" : ""}`;
+            marker.textContent = isRef ? "R" : nodeName;
+            // Node markers are HTML elements, so they need to be positioned in screen-space
+            marker.style.left = `${newNode.markerPos.x - viewOffset.x - 12}px`;
+            marker.style.top = `${newNode.markerPos.y - viewOffset.y - 12}px`;
+            marker.dataset.nodeName = nodeName;
+            nodeMarkerContainer.appendChild(marker);
+            renderNodeList();
+            updateUI();
         }
 
         // --- Event Handlers ---
+        // MODIFIED: All mouse listeners are updated for panning and world coordinates
         canvas.addEventListener("mousedown", (e) => {
-          if (state.currentStep === "nodes") {
-            handleNodePlacement(e);
-            return;
-          }
-          if (state.currentStep !== "draw") return;
-          const m = getMousePos(e);
-          if (selectedTool === "select") {
-            dragTarget = getElementAtPos(m.x, m.y);
-            selectedElements = dragTarget ? [dragTarget] : [];
-            if (dragTarget) {
-              isDragging = true;
-              dragStartPoint = m;
-              const el = dragTarget.element;
-              el.dragInitialState = {
-                x: el.x,
-                y: el.y,
-                labelOffsetX: el.labelOffset?.x,
-                labelOffsetY: el.labelOffset?.y,
-              };
-            }
-          } else if (selectedTool === "wire") {
-            isDrawingWire = true;
-            wireStartPoint = getSnappingPoint(m.x, m.y);
-          } else {
-            // This block handles placing any new component (resistor, source, etc.)
-            // 1. Create the new element object with a default placeholder value.
-            const newEl = {
-              id: nextId++,
-              type: selectedTool,
-              x: snapToGrid(m.x),
-              y: snapToGrid(m.y),
-              rotation: 0,
-              value: 0, // Set a default numerical value
-              displayValue: "?", // Set a default display value to show the user
-            };
-            const data = componentData[selectedTool];
-            if (data.defaultLabelOffset) {
-              newEl.labelOffset = { ...data.defaultLabelOffset };
+            // Use middle mouse button for panning
+            if (e.button === 1) {
+                isPanning = true;
+                panStartPoint = { x: e.clientX - viewOffset.x, y: e.clientY - viewOffset.y };
+                canvas.style.cursor = 'grabbing';
+                e.preventDefault();
+                return;
             }
 
-            // 2. Add the element to the canvas IMMEDIATELY.
-            circuitElements.push(newEl);
+            const screenMousePos = getMousePos(e);
+            const worldMousePos = { x: screenMousePos.x + viewOffset.x, y: screenMousePos.y + viewOffset.y };
 
-            // 3. Redraw the canvas so the user sees the new component with the '?' label.
+            if (state.currentStep === "nodes") {
+                handleNodePlacement(e, worldMousePos);
+                return;
+            }
+            if (state.currentStep !== "draw") return;
+
+            if (selectedTool === "select") {
+                dragTarget = getElementAtPos(worldMousePos.x, worldMousePos.y);
+                selectedElements = dragTarget ? [dragTarget] : [];
+                if (dragTarget) {
+                    isDragging = true;
+                    dragStartPoint = worldMousePos;
+                    const el = dragTarget.element;
+                    el.dragInitialState = { x: el.x, y: el.y, labelOffsetX: el.labelOffset?.x, labelOffsetY: el.labelOffset?.y };
+                }
+            } else if (selectedTool === "wire") {
+                isDrawingWire = true;
+                wireStartPoint = getSnappingPoint(worldMousePos.x, worldMousePos.y);
+            } else {
+                const newEl = {
+                    id: nextId++, type: selectedTool,
+                    x: snapToGrid(worldMousePos.x), y: snapToGrid(worldMousePos.y),
+                    rotation: 0, value: 0, displayValue: "?",
+                };
+                const data = componentData[selectedTool];
+                if (data.defaultLabelOffset) {
+                    newEl.labelOffset = { ...data.defaultLabelOffset };
+                }
+                circuitElements.push(newEl);
+                saveState();
+                selectedTool = "select";
+                updateUI();
+            }
             redrawCanvas();
+        });
 
-            // 6. Final state updates and switch back to the select tool.
-            saveState();
-            selectedTool = "select";
-            updateUI();
-          }
-          redrawCanvas();
-        });
         canvas.addEventListener("mousemove", (e) => {
-          currentMousePos = getMousePos(e);
-          if (isDragging && dragTarget) {
-            const dx = currentMousePos.x - dragStartPoint.x,
-              dy = currentMousePos.y - dragStartPoint.y;
-            const el = dragTarget.element;
-            const i = el.dragInitialState;
-            if (dragTarget.handle === "label") {
-              el.labelOffset.x = i.labelOffsetX + dx;
-              el.labelOffset.y = i.labelOffsetY + dy;
-            } else {
-              el.x = snapToGrid(i.x + dx);
-              el.y = snapToGrid(i.y + dy);
+            currentMousePos = getMousePos(e); // Keep this in screen-space
+
+            if (isPanning) {
+                viewOffset.x = e.clientX - panStartPoint.x;
+                viewOffset.y = e.clientY - panStartPoint.y;
+                redrawCanvas();
+                return;
             }
-          }
-          redrawCanvas();
-        });
-        canvas.addEventListener("mouseup", () => {
-          if (isDrawingWire) {
-            const end = getSnappingPoint(currentMousePos.x, currentMousePos.y);
-            if (
-              Math.hypot(end.x - wireStartPoint.x, end.y - wireStartPoint.y) > 0
-            ) {
-              circuitElements.push({
-                id: nextId++,
-                type: "wire",
-                start: wireStartPoint,
-                end,
-                routing: isShiftDown ? "direct" : "manhattan",
-              });
-              saveState();
+
+            const worldMousePos = { x: currentMousePos.x + viewOffset.x, y: currentMousePos.y + viewOffset.y };
+
+            if (isDragging && dragTarget) {
+                const dx = worldMousePos.x - dragStartPoint.x;
+                const dy = worldMousePos.y - dragStartPoint.y;
+                const el = dragTarget.element;
+                const i = el.dragInitialState;
+                if (dragTarget.handle === "label") {
+                    el.labelOffset.x = i.labelOffsetX + dx;
+                    el.labelOffset.y = i.labelOffsetY + dy;
+                } else {
+                    el.x = snapToGrid(i.x + dx);
+                    el.y = snapToGrid(i.y + dy);
+                }
             }
-          }
-          if (isDragging) {
-            saveState();
-          }
-          isDrawingWire = false;
-          isDragging = false;
-          if (dragTarget) dragTarget.element.dragInitialState = null;
-          dragTarget = null;
-          redrawCanvas();
+            redrawCanvas();
         });
+
+        canvas.addEventListener("mouseup", (e) => {
+            if (isPanning) {
+                isPanning = false;
+                updateUI();
+                return;
+            }
+
+            if (isDrawingWire) {
+                const worldMousePos = { x: currentMousePos.x + viewOffset.x, y: currentMousePos.y + viewOffset.y };
+                const end = getSnappingPoint(worldMousePos.x, worldMousePos.y);
+                if (Math.hypot(end.x - wireStartPoint.x, end.y - wireStartPoint.y) > 0) {
+                    circuitElements.push({
+                        id: nextId++, type: "wire",
+                        start: wireStartPoint, end,
+                        routing: isShiftDown ? "direct" : "manhattan",
+                    });
+                    saveState();
+                }
+            }
+            if (isDragging) {
+                saveState();
+            }
+            isDrawingWire = false;
+            isDragging = false;
+            if (dragTarget) dragTarget.element.dragInitialState = null;
+            dragTarget = null;
+            redrawCanvas();
+        });
+
         canvas.addEventListener("dblclick", (e) => {
-          if (state.currentStep !== "draw") return;
-          const target = getElementAtPos(getMousePos(e).x, getMousePos(e).y);
-          if (!target || target.handle === "label") return;
-          const clickedEl = target.element;
-          if (clickedEl.type !== "wire" && clickedEl.type !== "gnd") {
-            const data = componentData[clickedEl.type];
-            let v_str = prompt(
-              `Enter value for ${data.name} (e.g., 10k, 2.2M, 100u):`,
-              "1k"
-            );
-            if (v_str === null) return;
-            let v_num = parseValueWithPrefix(v_str);
-            if (!isNaN(v_num)) {
-              clickedEl.value = v_num;
-              clickedEl.displayValue = v_str;
-              saveState();
-              redrawCanvas();
-            } else {
-              showToast(`Invalid value: ${v_str}`);
+            if (state.currentStep !== "draw") return;
+            const screenMousePos = getMousePos(e);
+            const worldMousePos = { x: screenMousePos.x + viewOffset.x, y: screenMousePos.y + viewOffset.y };
+            const target = getElementAtPos(worldMousePos.x, worldMousePos.y);
+
+            if (!target || target.handle === "label") return;
+            const clickedEl = target.element;
+            if (clickedEl.type !== "wire" && clickedEl.type !== "gnd") {
+                const data = componentData[clickedEl.type];
+                let v_str = prompt(`Enter value for ${data.name} (e.g., 10k, 2.2M, 100u):`, "1k");
+                if (v_str === null) return;
+                let v_num = parseValueWithPrefix(v_str);
+                if (!isNaN(v_num)) {
+                    clickedEl.value = v_num;
+                    clickedEl.displayValue = v_str;
+                    saveState();
+                    redrawCanvas();
+                } else {
+                    showToast(`Invalid value: ${v_str}`);
+                }
             }
-          }
         });
 
         toolbar.addEventListener("click", (e) => {
@@ -1348,6 +1383,7 @@
           circuitElements = [];
           selectedElements = [];
           nextId = 0;
+          viewOffset = {x: 0, y: 0}; // Reset pan
           nodeMarkerContainer.innerHTML = "";
           nodeList.innerHTML = "";
           equationsDisplay.innerHTML = "";
@@ -1380,7 +1416,7 @@
         matrixInputContainer.addEventListener("input", updateMatrixPreview);
 
         // --- Full Implementations of Logic and Analysis ---
-
+        // (This section is unchanged from the previous version, so it's omitted for brevity but included in the final copy)
         function analyzeDrawnCircuit() {
           state.components = [];
           buildConnectivityGraph();
@@ -1411,9 +1447,6 @@
                   if (el.type === "currentsource")
                     analysisType = "current_source";
 
-                  // Standardized Convention:
-                  // 'from' is always the node at terminal 0.
-                  // 'to' is always the node at terminal 1.
                   state.components.push({
                     type: analysisType,
                     value: el.value || 0,
@@ -1461,7 +1494,7 @@
           });
 
           state.components.forEach((comp) => {
-            const { type, value, from, to } = comp; // from: node at terminal 0 (neg/tail), to: node at terminal 1 (pos/head)
+            const { type, value, from, to } = comp;
             if (type === "resistor") {
               if (from !== refNodeName)
                 kclData[from].lhs.push(
@@ -1476,11 +1509,7 @@
                   }}{${value}}`
                 );
             } else if (type === "current_source") {
-              // Current flows from the tail (from) to the head (to).
-              // KCL: Sum of currents leaving = Sum of sources entering
-              // Source enters node 'to'.
               if (to !== refNodeName) kclData[to].rhs -= value;
-              // Source leaves node 'from'. This is a negative entering current.
               if (from !== refNodeName) kclData[from].rhs += value;
             }
           });
@@ -1488,28 +1517,22 @@
           let supernodesHandled = new Set();
           state.components.forEach((comp) => {
             if (comp.type === "voltage_source") {
-              const { value, from, to } = comp; // from: neg terminal node, to: pos terminal node
+              const { value, from, to } = comp;
               if (from === refNodeName) {
-                // Negative terminal is ground
-                // V_pos - V_neg = value -> V_to - 0 = value -> V_to = value
                 state.equations.push({
                   title: `Constraint at Node ${to}`,
                   eq: `V_{${to}} = ${value}`,
                 });
                 if (kclData[to]) kclData[to].isHandled = true;
               } else if (to === refNodeName) {
-                // Positive terminal is ground
-                // V_pos - V_neg = value -> 0 - V_from = value -> V_from = -value
                 state.equations.push({
                   title: `Constraint at Node ${from}`,
                   eq: `V_{${from}} = ${-value}`,
                 });
                 if (kclData[from]) kclData[from].isHandled = true;
               } else {
-                // Floating voltage source -> Supernode
                 const supernodeID = [from, to].sort().join("-");
                 if (!supernodesHandled.has(supernodeID)) {
-                  // KVL constraint: V_pos - V_neg = value -> V_to - V_from = value
                   state.equations.push({
                     title: `KVL for Supernode (${from},${to})`,
                     eq: `V_{${to}} - V_{${from}} = ${value}`,
@@ -1575,64 +1598,34 @@
         }
 
         function updateMatrixPreview() {
-          // 1. Get and sort the nodes that determine the matrix size and order.
           const nonRefNodes = state.nodes
             .filter((n) => !n.isRef)
             .sort((a, b) => a.name.localeCompare(b.name));
           const n = nonRefNodes.length;
-
-          // If there are no nodes, clear the preview and exit.
           if (n === 0) {
-            // Assuming 'matrixPreview' is a globally available element
             matrixPreview.innerHTML = "";
             return;
           }
-
-          // 2. Initialize matrices using a more robust method.
           const G = Array.from({ length: n }, () => Array(n).fill(0));
           const I = Array(n).fill(0);
-
-          // 3. Populate matrices from DOM inputs.
-          // This part assumes the 'dataset' attributes are valid integers.
           document.querySelectorAll(".g-input").forEach((input) => {
             const row = parseInt(input.dataset.row, 10);
             const col = parseInt(input.dataset.col, 10);
-            // Add checks to prevent errors if row/col are invalid or out of bounds
             if (!isNaN(row) && !isNaN(col) && row < n && col < n) {
               G[row][col] = parseFloat(input.value) || 0;
             }
           });
-
           document.querySelectorAll(".i-input").forEach((input) => {
             const row = parseInt(input.dataset.row, 10);
             if (!isNaN(row) && row < n) {
               I[row] = parseFloat(input.value) || 0;
             }
           });
-
-          // 4. Build LaTeX strings in a cleaner, more functional way.
           const formatNumber = (num) => parseFloat(num.toFixed(2));
-
-          const matrixLatex =
-            `\\begin{bmatrix}\n` +
-            G.map((row) => row.map(formatNumber).join(" & ")).join(" \\\\\n") +
-            `\n\\end{bmatrix}`;
-
-          const nodesLatex =
-            `\\begin{bmatrix}\n` +
-            nonRefNodes.map((node) => `V_{${node.name}}`).join(" \\\\\n") +
-            `\n\\end{bmatrix}`;
-
-          const currentsLatex =
-            `\\begin{bmatrix}\n` +
-            I.map((current) => formatNumber(current)).join(" \\\\\n") +
-            `\n\\end{bmatrix}`;
-
-          // 5. Update the DOM and trigger MathJax typesetting.
-          // The main fix is here: removed the erroneous extra backslash '\\'.
+          const matrixLatex = `\\begin{bmatrix}\n` + G.map((row) => row.map(formatNumber).join(" & ")).join(" \\\\\n") + `\n\\end{bmatrix}`;
+          const nodesLatex = `\\begin{bmatrix}\n` + nonRefNodes.map((node) => `V_{${node.name}}`).join(" \\\\\n") + `\n\\end{bmatrix}`;
+          const currentsLatex = `\\begin{bmatrix}\n` + I.map((current) => formatNumber(current)).join(" \\\\\n") + `\n\\end{bmatrix}`;
           matrixPreview.innerHTML = `$$ ${matrixLatex} ${nodesLatex} = ${currentsLatex} $$`;
-
-          // Ensure MathJax is available before calling it
           if (window.MathJax) {
             MathJax.typesetPromise([matrixPreview]);
           }
@@ -1648,13 +1641,10 @@
             showToast("No non-reference nodes to solve for.");
             return;
           }
-          const G = Array(n)
-            .fill(0)
-            .map(() => Array(n).fill(0));
+          const G = Array(n).fill(0).map(() => Array(n).fill(0));
           const I = Array(n).fill(0);
           document.querySelectorAll(".g-input").forEach((input) => {
-            G[parseInt(input.dataset.row)][parseInt(input.dataset.col)] =
-              parseFloat(input.value) || 0;
+            G[parseInt(input.dataset.row)][parseInt(input.dataset.col)] = parseFloat(input.value) || 0;
           });
           document.querySelectorAll(".i-input").forEach((input) => {
             I[parseInt(input.dataset.row)] = parseFloat(input.value) || 0;
@@ -1666,15 +1656,11 @@
           const n = matrix.length;
           if (n === 0) return 1;
           if (n === 1) return matrix[0][0];
-          if (n === 2)
-            return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+          if (n === 2) return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
           let det = 0;
           for (let j = 0; j < n; j++) {
-            const subMatrix = matrix
-              .slice(1)
-              .map((row) => row.filter((_, colIndex) => colIndex !== j));
-            det +=
-              (j % 2 === 0 ? 1 : -1) * matrix[0][j] * determinant(subMatrix);
+            const subMatrix = matrix.slice(1).map((row) => row.filter((_, colIndex) => colIndex !== j));
+            det += (j % 2 === 0 ? 1 : -1) * matrix[0][j] * determinant(subMatrix);
           }
           return det;
         }
@@ -1684,79 +1670,61 @@
           const formatNumber = (num) => parseFloat(num.toPrecision(4));
           const ordinals = ["first", "second", "third", "fourth", "fifth"];
           let matrixLatex = `\\begin{bmatrix}`;
-          G.forEach((row) => {
-            matrixLatex += row.map((v) => formatNumber(v)).join(" & ") + "\\\\";
-          });
+          G.forEach((row) => { matrixLatex += row.map((v) => formatNumber(v)).join(" & ") + "\\\\"; });
           matrixLatex += `\\end{bmatrix}`;
           let nodesLatex = `\\begin{bmatrix}`;
-          nonRefNodes.forEach((node) => {
-            nodesLatex += `V_{${node}} \\\\`;
-          });
+          nonRefNodes.forEach((node) => { nodesLatex += `V_{${node}} \\\\`; });
           nodesLatex += `\\end{bmatrix}`;
           let currentsLatex = `\\begin{bmatrix}`;
-          I.forEach((current) => {
-            currentsLatex += `${formatNumber(current)} \\\\`;
-          });
+          I.forEach((current) => { currentsLatex += `${formatNumber(current)} \\\\`; });
           currentsLatex += `\\end{bmatrix}`;
           const systemEq = `<div class="math-container"><p class="font-semibold mb-2">1. Your system of linear equations is:</p><p>$$ ${matrixLatex} ${nodesLatex} = ${currentsLatex} $$</p></div>`;
           mathOutput.insertAdjacentHTML("beforeend", systemEq);
           const detG = determinant(G);
-          const detGLatex = `<div class="math-container"><p class="font-semibold mb-2">2. The determinant of the main matrix is:</p><p>$$ \\Delta = \\det(G) = ${formatNumber(
-            detG
-          )} $$</p></div>`;
+          const detGLatex = `<div class="math-container"><p class="font-semibold mb-2">2. The determinant of the main matrix is:</p><p>$$ \\Delta = \\det(G) = ${formatNumber(detG)} $$</p></div>`;
           mathOutput.insertAdjacentHTML("beforeend", detGLatex);
           if (Math.abs(detG) < 1e-9) {
-            mathOutput.insertAdjacentHTML(
-              "beforeend",
-              '<p class="text-red-500 font-bold">The determinant is zero. The system cannot be solved.</p>'
-            );
+            mathOutput.insertAdjacentHTML("beforeend", '<p class="text-red-500 font-bold">The determinant is zero. The system cannot be solved.</p>');
             return;
           }
-          let resultsHTML =
-            '<div class="math-container"><p class="font-semibold mb-2">3. Solving for each node voltage:</p><div class="space-y-8">';
+          let resultsHTML = '<div class="math-container"><p class="font-semibold mb-2">3. Solving for each node voltage:</p><div class="space-y-8">';
           nonRefNodes.forEach((node, i) => {
             let G_i = JSON.parse(JSON.stringify(G));
-            for (let row = 0; row < G_i.length; row++) {
-              G_i[row][i] = I[row];
-            }
+            for (let row = 0; row < G_i.length; row++) { G_i[row][i] = I[row]; }
             const detG_i = determinant(G_i);
             const voltage = detG_i / detG;
             const originalColumn = G.map((row) => row[i]);
             let originalColumnLatex = `\\begin{bmatrix}`;
-            originalColumn.forEach((val) => {
-              originalColumnLatex += `${formatNumber(val)} \\\\`;
-            });
+            originalColumn.forEach((val) => { originalColumnLatex += `${formatNumber(val)} \\\\`; });
             originalColumnLatex += `\\end{bmatrix}`;
             let iVectorLatex = `\\begin{bmatrix}`;
-            I.forEach((val) => {
-              iVectorLatex += `${formatNumber(val)} \\\\`;
-            });
+            I.forEach((val) => { iVectorLatex += `${formatNumber(val)} \\\\`; });
             iVectorLatex += `\\end{bmatrix}`;
             let matrix_i_Latex = `\\begin{bmatrix}`;
-            G_i.forEach((row) => {
-              matrix_i_Latex +=
-                row.map((v) => formatNumber(v)).join(" & ") + "\\\\";
-            });
+            G_i.forEach((row) => { matrix_i_Latex += row.map((v) => formatNumber(v)).join(" & ") + "\\\\"; });
             matrix_i_Latex += `\\end{bmatrix}`;
-            resultsHTML += `<div><p class="font-semibold">For Node ${node}:</p><div class="text-base text-gray-700 !mt-2 mb-2"><p>To solve for V<sub>${node}</sub>, we replace the <strong>${
-              ordinals[i] || `${i + 1}th`
-            }</strong> column of the main matrix,</p><div class="flex justify-center items-center my-2"><span class="font-mono text-blue-600">$$${originalColumnLatex}$$</span><span class="mx-4 text-gray-500">with the current vector,</span><span class="font-mono text-green-600">$$${iVectorLatex}$$</span></div></div><p class="text-base text-gray-700 !mt-2 mb-2">The determinant of the resulting new matrix is:</p><p>$$ \\Delta_{${node}} = \\det(${matrix_i_Latex}) = ${formatNumber(
-              detG_i
-            )} $$</p><p class="!mt-4">$$ V_{${node}} = \\frac{\\Delta_{${node}}}{\\Delta} = \\frac{${formatNumber(
-              detG_i
-            )}}{${formatNumber(detG)}} = \\mathbf{${voltage.toFixed(
-              4
-            )} V} $$</p></div>`;
+            resultsHTML += `<div><p class="font-semibold">For Node ${node}:</p><div class="text-base text-gray-700 !mt-2 mb-2"><p>To solve for V<sub>${node}</sub>, we replace the <strong>${ordinals[i] || `${i + 1}th`}</strong> column of the main matrix,</p><div class="flex justify-center items-center my-2"><span class="font-mono text-blue-600">$$${originalColumnLatex}$$</span><span class="mx-4 text-gray-500">with the current vector,</span><span class="font-mono text-green-600">$$${iVectorLatex}$$</span></div></div><p class="text-base text-gray-700 !mt-2 mb-2">The determinant of the resulting new matrix is:</p><p>$$ \\Delta_{${node}} = \\det(${matrix_i_Latex}) = ${formatNumber(detG_i)} $$</p><p class="!mt-4">$$ V_{${node}} = \\frac{\\Delta_{${node}}}{\\Delta} = \\frac{${formatNumber(detG_i)}}{${formatNumber(detG)}} = \\mathbf{${voltage.toFixed(4)} V} $$</p></div>`;
           });
           resultsHTML += "</div></div>";
           mathOutput.insertAdjacentHTML("beforeend", resultsHTML);
           MathJax.typesetPromise();
         }
 
+        // --- Canvas Resizing Logic ---
+        function resizeCanvas() {
+            const toolbarWidth = toolbar.offsetWidth;
+            if (canvas.width !== toolbarWidth) {
+                canvas.width = toolbarWidth;
+                redrawCanvas();
+            }
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+
         // --- Initial Call ---
         saveState();
         updateUI();
-        redrawCanvas();
+        resizeCanvas();
       });
     </script>
   </body>
