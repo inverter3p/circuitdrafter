@@ -1566,6 +1566,26 @@
         }
       }
       /* --- END: V1.02 true touch dropdown portal fix --- */
+
+
+      /* --- START: V1.03 remove duplicate original dropdown --- */
+      /* The real visible menu is #cd-dropdown-portal.  Keep every in-toolbar
+         dropdown body hidden even when older CSS adds .dropdown-open.  Without
+         this stronger selector, old V0.99/V1.00 rules can show the original
+         dropdown at fixed top/left = 0px, producing the duplicate menu in the
+         upper-left corner on touch devices. */
+      #toolbar .tool-dropdown .dropdown-content,
+      #toolbar .tool-dropdown:hover .dropdown-content,
+      #toolbar .tool-dropdown:focus-within .dropdown-content,
+      #toolbar .tool-dropdown.dropdown-open .dropdown-content,
+      #toolbar .tool-dropdown.open .dropdown-content {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+      }
+      /* --- END: V1.03 remove duplicate original dropdown --- */
+
 </style>
   </head>
   <body>
@@ -1576,7 +1596,7 @@
         class="logo"
       />
       <div>
-        <h1>Circuit Drafter (V1.01 Touch) </h1>
+        <h1>Circuit Drafter (V1.03 Touch) </h1>
         <p id="tagline">Effortless circuit schematics. Desktop + iPad touch editor. Compact modal edit on small screens.</p>
       </div>
     </div>
