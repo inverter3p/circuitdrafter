@@ -1474,7 +1474,99 @@
       /* --- END: V1.01 compact modal + touch toolbar patch --- */
 
 
-    </style>
+    
+
+      /* --- START: V1.02 true touch dropdown portal fix --- */
+      #toolbar {
+        touch-action: pan-x !important;
+      }
+      #toolbar button,
+      #toolbar .tool-btn,
+      #toolbar .action-btn,
+      #cd-dropdown-portal button {
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: rgba(0, 123, 255, 0.18);
+      }
+
+      /* Hide the original in-toolbar dropdown body. On iPad/Safari, fixed
+         children inside a horizontally scrolling toolbar can still be clipped.
+         The visible menu is rendered into #cd-dropdown-portal under <body>. */
+      #toolbar .dropdown-content {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+      }
+      #toolbar .tool-dropdown.dropdown-open > .dropdown-trigger {
+        background-color: #007bff !important;
+        border-color: #007bff !important;
+        color: #ffffff !important;
+      }
+      #toolbar .tool-dropdown.dropdown-open > .dropdown-trigger svg,
+      #toolbar .tool-dropdown.dropdown-open > .dropdown-trigger .material-icons,
+      #toolbar .tool-dropdown.dropdown-open > .dropdown-trigger .material-symbols-outlined {
+        stroke: #ffffff !important;
+        color: #ffffff !important;
+      }
+      #toolbar .tool-dropdown.dropdown-open > .dropdown-trigger svg path[fill]:not([fill="none"]) {
+        fill: #ffffff !important;
+      }
+
+      #cd-dropdown-portal {
+        position: fixed;
+        display: none;
+        grid-template-columns: 1fr;
+        gap: 7px;
+        padding: 9px;
+        background: rgba(255, 255, 255, 0.98);
+        border: 1px solid #d8dee9;
+        border-radius: 12px;
+        box-shadow: 0 18px 46px rgba(15, 23, 42, 0.28);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        z-index: 2147483647;
+        max-height: min(72vh, 540px);
+        overflow: auto;
+        overscroll-behavior: contain;
+      }
+      #cd-dropdown-portal.open {
+        display: grid;
+      }
+      #cd-dropdown-portal .tool-btn,
+      #cd-dropdown-portal .action-btn {
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+        min-height: 48px;
+        margin: 0;
+        flex: 0 0 auto;
+      }
+      #cd-dropdown-portal .tool-btn.selected,
+      #cd-dropdown-portal .action-btn.selected {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: #ffffff;
+      }
+      #cd-dropdown-backdrop {
+        position: fixed;
+        inset: 0;
+        display: none;
+        z-index: 2147483646;
+        background: transparent;
+      }
+      #cd-dropdown-backdrop.open {
+        display: block;
+      }
+      @media (max-width: 900px), (hover: none), (pointer: coarse) {
+        #cd-dropdown-portal {
+          grid-template-columns: repeat(auto-fit, minmax(48px, 48px));
+          justify-content: center;
+          gap: 8px;
+          padding: 10px;
+          border-radius: 14px;
+        }
+      }
+      /* --- END: V1.02 true touch dropdown portal fix --- */
+</style>
   </head>
   <body>
     <div class="title-container">
@@ -3412,148 +3504,211 @@
         function setupFloatingDropdowns() {
           const toolbar = document.getElementById("toolbar");
           if (!toolbar) return;
+
           const dropdowns = Array.from(toolbar.querySelectorAll(".tool-dropdown"));
-          const timers = new WeakMap();
-          let tapStart = null;
-          let lastToolbarActivation = 0;
+          let activeDropdown = null;
+          let lastHandledButton = null;
+          let lastHandledTime = 0;
+          let pointerStart = null;
 
-          function isCoarsePointer() {
-            return window.matchMedia("(hover: none), (pointer: coarse)").matches;
+          const backdrop = document.createElement("div");
+          backdrop.id = "cd-dropdown-backdrop";
+          document.body.appendChild(backdrop);
+
+          const portal = document.createElement("div");
+          portal.id = "cd-dropdown-portal";
+          portal.setAttribute("role", "menu");
+          portal.setAttribute("aria-hidden", "true");
+          document.body.appendChild(portal);
+
+          function eventWasAlreadyHandled(button) {
+            return button === lastHandledButton && performance.now() - lastHandledTime < 360;
           }
 
-          function cancelClose(dropdown) {
-            const t = timers.get(dropdown);
-            if (t) clearTimeout(t);
+          function markHandled(button) {
+            lastHandledButton = button;
+            lastHandledTime = performance.now();
           }
 
-          function closeDropdown(dropdown) {
-            if (!dropdown) return;
-            dropdown.classList.remove("dropdown-open");
+          function closeAllDropdowns() {
+            dropdowns.forEach((dropdown) => dropdown.classList.remove("dropdown-open"));
+            activeDropdown = null;
+            portal.classList.remove("open");
+            portal.setAttribute("aria-hidden", "true");
+            portal.replaceChildren();
+            backdrop.classList.remove("open");
           }
 
-          function closeAll(except = null) {
-            dropdowns.forEach((dropdown) => {
-              if (dropdown !== except) closeDropdown(dropdown);
-            });
+          function positionPortal(trigger, preferredWidth) {
+            const rect = trigger.getBoundingClientRect();
+            const pad = 8;
+            const gap = 7;
+
+            portal.style.left = "0px";
+            portal.style.top = "0px";
+            portal.style.width = preferredWidth ? `${preferredWidth}px` : "auto";
+
+            const portalRect = portal.getBoundingClientRect();
+            const width = Math.max(portalRect.width || 62, preferredWidth || 62);
+            const height = portalRect.height || 62;
+
+            let left = rect.left + rect.width / 2 - width / 2;
+            left = Math.max(pad, Math.min(left, window.innerWidth - width - pad));
+
+            let top = rect.bottom + gap;
+            const fitsBelow = top + height <= window.innerHeight - pad;
+            const fitsAbove = rect.top - gap - height >= pad;
+            if (!fitsBelow && fitsAbove) {
+              top = rect.top - gap - height;
+            }
+            top = Math.max(pad, Math.min(top, window.innerHeight - height - pad));
+
+            portal.style.left = `${Math.round(left)}px`;
+            portal.style.top = `${Math.round(top)}px`;
           }
 
-          function positionDropdown(dropdown) {
+          function setSelectedToolFromButton(button) {
+            if (!button || !button.id || !button.id.startsWith("tool-") || button.classList.contains("dropdown-trigger")) {
+              return false;
+            }
+
+            selectedTool = button.id.replace("tool-", "");
+            cancelTransientAction();
+            if (selectedTool !== "select") selectedElements = [];
+
+            setEditorMode(
+              "idle",
+              selectedTool === "wire"
+                ? "Wire: drag from terminal to terminal. Auto corner routing is active; hold Shift for direct line."
+                : selectedTool === "path-wire"
+                ? "Path Wire: click start point, then enter h/v/box/triangle/circle commands."
+                : selectedTool === "text"
+                ? "Text tool active. Click canvas to add text or equation-like label."
+                : selectedTool === "select"
+                ? "Select tool active."
+                : "Ready."
+            );
+
+            closeAllDropdowns();
+            redrawCanvas();
+            return true;
+          }
+
+          function runKnownToolbarAction(button) {
+            if (!button || button.disabled) return true;
+
+            if (button.classList.contains("dropdown-trigger")) {
+              const dropdown = button.closest(".tool-dropdown");
+              if (!dropdown) return true;
+              if (activeDropdown === dropdown && portal.classList.contains("open")) closeAllDropdowns();
+              else openDropdown(dropdown);
+              return true;
+            }
+
+            if (setSelectedToolFromButton(button)) return true;
+
+            switch (button.id) {
+              case "undoBtn": undo(); break;
+              case "redoBtn": redo(); break;
+              case "copyBtn": copySelected(); break;
+              case "rotateBtn": rotateSelected(); break;
+              case "deleteBtn": deleteSelected(); break;
+              case "saveExportBtn": handleSaveExport(); break;
+              case "loadBtn": fileInput.click(); break;
+              default:
+                return false; // Let the original listener handle bulk/image/LaTeX/Gemini/etc.
+            }
+
+            closeAllDropdowns();
+            redrawCanvas();
+            return true;
+          }
+
+          function makePortalButton(originalButton) {
+            const clone = document.createElement("button");
+            clone.type = "button";
+            clone.className = originalButton.className.replace(/\bdropdown-trigger\b/g, "").trim();
+            clone.innerHTML = originalButton.innerHTML;
+            clone.title = originalButton.title || "";
+            clone.disabled = originalButton.disabled;
+            clone.dataset.sourceButtonId = originalButton.id || "";
+            clone.setAttribute("role", "menuitem");
+
+            if (originalButton.classList.contains("selected")) clone.classList.add("selected");
+            return clone;
+          }
+
+          function openDropdown(dropdown) {
             const trigger = dropdown.querySelector(".dropdown-trigger");
             const menu = dropdown.querySelector(".dropdown-content");
             if (!trigger || !menu) return;
 
-            const wasOpen = dropdown.classList.contains("dropdown-open");
-            if (!wasOpen) {
-              menu.style.visibility = "hidden";
-              menu.style.opacity = "1";
-              menu.style.pointerEvents = "none";
+            dropdowns.forEach((dd) => dd.classList.toggle("dropdown-open", dd === dropdown));
+            activeDropdown = dropdown;
+            portal.replaceChildren();
+
+            const originalButtons = Array.from(menu.querySelectorAll("button"));
+            originalButtons.forEach((originalButton) => {
+              portal.appendChild(makePortalButton(originalButton));
+            });
+
+            // A wider bottom-like palette is easier to see on narrow touch screens.
+            const coarseOrNarrow = window.matchMedia("(max-width: 900px), (hover: none), (pointer: coarse)").matches;
+            const preferredWidth = coarseOrNarrow
+              ? Math.min(window.innerWidth - 16, Math.max(72, originalButtons.length * 56 + 22))
+              : null;
+
+            backdrop.classList.add("open");
+            portal.classList.add("open");
+            portal.setAttribute("aria-hidden", "false");
+            positionPortal(trigger, preferredWidth);
+            requestAnimationFrame(() => positionPortal(trigger, preferredWidth));
+          }
+
+          function activateClonedPortalButton(cloneButton, e) {
+            const sourceId = cloneButton.dataset.sourceButtonId;
+            const originalButton = sourceId ? document.getElementById(sourceId) : null;
+            if (!originalButton || originalButton.disabled) {
+              closeAllDropdowns();
+              return;
             }
-            const triggerRect = trigger.getBoundingClientRect();
-            const menuRect = menu.getBoundingClientRect();
-            if (!wasOpen) {
-              menu.style.visibility = "";
-              menu.style.opacity = "";
-              menu.style.pointerEvents = "";
+
+            const handled = runKnownToolbarAction(originalButton);
+            if (!handled) {
+              closeAllDropdowns();
+              originalButton.click();
             }
 
-            const gap = 6;
-            const pad = 8;
-            const menuWidth = menuRect.width || 56;
-            const menuHeight = menuRect.height || 56;
-
-            let left = triggerRect.left + triggerRect.width / 2 - menuWidth / 2;
-            left = Math.max(pad, Math.min(left, window.innerWidth - menuWidth - pad));
-
-            let top = triggerRect.bottom + gap;
-            const fitsBelow = top + menuHeight <= window.innerHeight - pad;
-            const fitsAbove = triggerRect.top - gap - menuHeight >= pad;
-            if (!fitsBelow && fitsAbove) top = triggerRect.top - gap - menuHeight;
-            top = Math.max(pad, Math.min(top, window.innerHeight - menuHeight - pad));
-
-            menu.style.setProperty("--dropdown-left", `${Math.round(left)}px`);
-            menu.style.setProperty("--dropdown-top", `${Math.round(top)}px`);
-          }
-
-          function openDropdown(dropdown) {
-            cancelClose(dropdown);
-            closeAll(dropdown);
-            positionDropdown(dropdown);
-            dropdown.classList.add("dropdown-open");
-            requestAnimationFrame(() => positionDropdown(dropdown));
-          }
-
-          function scheduleClose(dropdown) {
-            cancelClose(dropdown);
-            timers.set(dropdown, setTimeout(() => closeDropdown(dropdown), 160));
-          }
-
-          function activateToolbarButton(target) {
-            if (!target || target.disabled) return false;
-            let handled = true;
-            if (target.classList.contains("dropdown-trigger")) {
-              const dropdown = target.closest(".tool-dropdown");
-              if (!dropdown) return false;
-              if (dropdown.classList.contains("dropdown-open")) closeDropdown(dropdown);
-              else openDropdown(dropdown);
-              return true;
+            if (e) {
+              e.preventDefault();
+              e.stopPropagation();
             }
-            if (target.classList.contains("tool-btn")) {
-              selectedTool = target.id.replace("tool-", "");
-              cancelTransientAction();
-              if (selectedTool !== "select") selectedElements = [];
-              closeAll();
-              setEditorMode(
-                "idle",
-                selectedTool === "wire"
-                  ? "Wire: drag from terminal to terminal. Auto corner routing is active; hold Shift for direct line."
-                  : selectedTool === "path-wire"
-                  ? "Path Wire: click start point, then enter h/v/box/triangle/circle commands."
-                  : "Ready."
-              );
-            } else if (target.id === "undoBtn") undo();
-            else if (target.id === "redoBtn") redo();
-            else if (target.id === "copyBtn") copySelected();
-            else if (target.id === "rotateBtn") rotateSelected();
-            else if (target.id === "deleteBtn") deleteSelected();
-            else if (target.id === "saveExportBtn") handleSaveExport();
-            else if (target.id === "loadBtn") fileInput.click();
-            else handled = false;
-            if (handled) redrawCanvas();
-            return handled;
           }
 
-          dropdowns.forEach((dropdown) => {
-            const trigger = dropdown.querySelector(".dropdown-trigger");
-            const menu = dropdown.querySelector(".dropdown-content");
-
-            dropdown.addEventListener("mouseenter", () => {
-              if (!isCoarsePointer()) openDropdown(dropdown);
-            });
-            dropdown.addEventListener("mouseleave", () => {
-              if (!isCoarsePointer()) scheduleClose(dropdown);
-            });
-            dropdown.addEventListener("focusin", () => {
-              if (!isCoarsePointer()) openDropdown(dropdown);
-            });
-            dropdown.addEventListener("focusout", (e) => {
-              if (!isCoarsePointer() && !dropdown.contains(e.relatedTarget)) scheduleClose(dropdown);
-            });
-            if (trigger) {
-              trigger.addEventListener("click", (e) => {
-                if (isCoarsePointer()) return;
+          function handleToolbarActivation(button, e) {
+            if (!button || button.disabled) return;
+            if (eventWasAlreadyHandled(button)) {
+              if (e) {
                 e.preventDefault();
                 e.stopPropagation();
-              });
+              }
+              return;
             }
-            if (menu) {
-              menu.addEventListener("mouseenter", () => cancelClose(dropdown));
+
+            const handled = runKnownToolbarAction(button);
+            if (handled) {
+              markHandled(button);
+              if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+              }
             }
-          });
+          }
 
           toolbar.addEventListener("pointerdown", (e) => {
             const button = e.target.closest("button");
-            if (!button || button.disabled) return;
-            tapStart = {
+            if (!button || !toolbar.contains(button) || button.disabled) return;
+            pointerStart = {
               id: e.pointerId,
               x: e.clientX,
               y: e.clientY,
@@ -3564,43 +3719,64 @@
 
           toolbar.addEventListener("pointerup", (e) => {
             const button = e.target.closest("button");
-            if (!button || !tapStart || tapStart.id !== e.pointerId) return;
-            const moved = Math.hypot(e.clientX - tapStart.x, e.clientY - tapStart.y) > 12;
-            const tooSlow = performance.now() - tapStart.time > 900;
-            const sameButton = button === tapStart.button || tapStart.button.contains(e.target) || button.contains(tapStart.button);
-            tapStart = null;
-            if (moved || tooSlow || !sameButton) return;
-            const handled = activateToolbarButton(button);
-            if (handled) {
-              e.preventDefault();
-              e.stopPropagation();
-              lastToolbarActivation = performance.now();
+            if (!button || !toolbar.contains(button) || !pointerStart || pointerStart.id !== e.pointerId) return;
+            const moved = Math.hypot(e.clientX - pointerStart.x, e.clientY - pointerStart.y) > 14;
+            const sameButton = button === pointerStart.button || button.contains(pointerStart.button) || pointerStart.button.contains(button);
+            const isSlowPress = performance.now() - pointerStart.time > 1000;
+            pointerStart = null;
+
+            if (moved || !sameButton || isSlowPress) return;
+
+            // Pointerup is needed for iPad Safari where click can be delayed or swallowed
+            // when the toolbar is horizontally scrollable.
+            if (e.pointerType !== "mouse" || button.classList.contains("dropdown-trigger") || button.classList.contains("tool-btn")) {
+              handleToolbarActivation(button, e);
             }
           }, { passive: false });
 
           toolbar.addEventListener("click", (e) => {
-            if (performance.now() - lastToolbarActivation < 500) {
-              e.preventDefault();
-              e.stopPropagation();
-              return;
-            }
-            const target = e.target.closest("button");
-            if (!target || target.disabled) return;
-            activateToolbarButton(target);
+            const button = e.target.closest("button");
+            if (!button || !toolbar.contains(button) || button.disabled) return;
+            handleToolbarActivation(button, e);
+          }, true);
+
+          portal.addEventListener("pointerup", (e) => {
+            const cloneButton = e.target.closest("button[data-source-button-id]");
+            if (!cloneButton) return;
+            activateClonedPortalButton(cloneButton, e);
+          }, { passive: false });
+
+          portal.addEventListener("click", (e) => {
+            const cloneButton = e.target.closest("button[data-source-button-id]");
+            if (!cloneButton) return;
+            e.preventDefault();
+            e.stopPropagation();
+          }, true);
+
+          backdrop.addEventListener("pointerdown", (e) => {
+            closeAllDropdowns();
+            e.preventDefault();
+            e.stopPropagation();
+          }, { passive: false });
+
+          document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") closeAllDropdowns();
           });
 
-          const repositionOpen = () => dropdowns.forEach((dropdown) => {
-            if (dropdown.classList.contains("dropdown-open")) positionDropdown(dropdown);
-          });
-          window.addEventListener("resize", repositionOpen);
-          window.addEventListener("scroll", repositionOpen, true);
-          toolbar.addEventListener("scroll", repositionOpen, { passive: true });
-          document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape") closeAll();
-          });
-          document.addEventListener("pointerdown", (e) => {
-            if (!e.target.closest("#toolbar .tool-dropdown")) closeAll();
-          });
+          const reposition = () => {
+            if (!activeDropdown || !portal.classList.contains("open")) return;
+            const trigger = activeDropdown.querySelector(".dropdown-trigger");
+            if (!trigger) return;
+            const coarseOrNarrow = window.matchMedia("(max-width: 900px), (hover: none), (pointer: coarse)").matches;
+            const count = portal.querySelectorAll("button").length;
+            const preferredWidth = coarseOrNarrow
+              ? Math.min(window.innerWidth - 16, Math.max(72, count * 56 + 22))
+              : null;
+            positionPortal(trigger, preferredWidth);
+          };
+          window.addEventListener("resize", reposition);
+          window.addEventListener("scroll", reposition, true);
+          toolbar.addEventListener("scroll", reposition, { passive: true });
         }
 
         setupFloatingDropdowns();
