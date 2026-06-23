@@ -1390,6 +1390,90 @@
       /* --- END: Desktop + iPad unified input patch (V1.00 Touch) --- */
 
 
+      /* --- START: V1.01 compact modal + touch toolbar patch --- */
+      @media (max-width: 900px), (max-height: 760px), ((hover: none) and (pointer: coarse)) {
+        #editor-shell {
+          grid-template-columns: minmax(0, 1fr) !important;
+          grid-template-rows: minmax(0, 1fr) !important;
+        }
+        #inspector-panel {
+          display: none !important;
+        }
+        #canvas-pane {
+          height: auto !important;
+          min-height: 0 !important;
+        }
+      }
+
+      #quickEditModal .modal-content {
+        width: min(94vw, 520px);
+        max-height: 88vh;
+        overflow: auto;
+        padding: 16px 18px;
+      }
+      .quick-edit-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 10px;
+        margin-top: 8px;
+      }
+      .quick-edit-row {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        font-size: 0.86rem;
+        color: #495057;
+      }
+      .quick-edit-row.full {
+        grid-column: 1 / -1;
+      }
+      .quick-edit-row input,
+      .quick-edit-row select,
+      .quick-edit-row textarea {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        padding: 8px;
+        font: inherit;
+        background: #fff;
+      }
+      .quick-edit-row textarea {
+        min-height: 74px;
+        resize: vertical;
+      }
+      .quick-edit-checks {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 14px;
+        padding: 4px 0;
+      }
+      .quick-edit-checks label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        font-size: 0.86rem;
+        color: #495057;
+      }
+      .quick-edit-help {
+        margin: 6px 0 2px 0;
+        font-size: 0.82rem;
+        color: #6c757d;
+        line-height: 1.35;
+      }
+      @media (max-width: 520px) {
+        .quick-edit-grid { grid-template-columns: 1fr; }
+        .quick-edit-row.full { grid-column: auto; }
+        #quickEditModal .modal-content { padding: 14px; }
+      }
+      /* --- END: V1.01 compact modal + touch toolbar patch --- */
+
+
     </style>
   </head>
   <body>
@@ -1400,8 +1484,8 @@
         class="logo"
       />
       <div>
-        <h1>Circuit Drafter (V1.00 Touch) </h1>
-        <p id="tagline">Effortless circuit schematics. Desktop + iPad pointer/touch editor.</p>
+        <h1>Circuit Drafter (V1.01 Touch) </h1>
+        <p id="tagline">Effortless circuit schematics. Desktop + iPad touch editor. Compact modal edit on small screens.</p>
       </div>
     </div>
 
@@ -2184,6 +2268,27 @@
       </div>
     </div>
     <!-- END: Component Transform Modal -->
+
+
+
+    <!-- START: Quick Edit Modal for compact / touch layout -->
+    <div id="quickEditModal" class="modal-overlay">
+      <div class="modal-content">
+        <span class="modal-close" id="quickEditModalClose">&times;</span>
+        <h3 id="quickEditModalTitle">Edit Object</h3>
+        <div class="quick-edit-help">
+          Compact mode hides the inspector. Double-tap or double-click an object to edit it here.
+        </div>
+        <form id="quickEditForm"></form>
+        <div class="modal-actions">
+          <button id="quick-edit-delete-btn" class="modal-button secondary" type="button">Delete</button>
+          <button id="quick-edit-duplicate-btn" class="modal-button secondary" type="button">Duplicate</button>
+          <button id="quick-edit-cancel-btn" class="modal-button secondary" type="button">Cancel</button>
+          <button id="quick-edit-ok-btn" class="modal-button primary" type="button">Apply</button>
+        </div>
+      </div>
+    </div>
+    <!-- END: Quick Edit Modal -->
 
     <!-- START: LaTeX Equation Modal -->
     <div id="latexModal" class="modal-overlay">
@@ -3308,8 +3413,13 @@
           const toolbar = document.getElementById("toolbar");
           if (!toolbar) return;
           const dropdowns = Array.from(toolbar.querySelectorAll(".tool-dropdown"));
-          if (!dropdowns.length) return;
           const timers = new WeakMap();
+          let tapStart = null;
+          let lastToolbarActivation = 0;
+
+          function isCoarsePointer() {
+            return window.matchMedia("(hover: none), (pointer: coarse)").matches;
+          }
 
           function cancelClose(dropdown) {
             const t = timers.get(dropdown);
@@ -3332,8 +3442,20 @@
             const menu = dropdown.querySelector(".dropdown-content");
             if (!trigger || !menu) return;
 
+            const wasOpen = dropdown.classList.contains("dropdown-open");
+            if (!wasOpen) {
+              menu.style.visibility = "hidden";
+              menu.style.opacity = "1";
+              menu.style.pointerEvents = "none";
+            }
             const triggerRect = trigger.getBoundingClientRect();
             const menuRect = menu.getBoundingClientRect();
+            if (!wasOpen) {
+              menu.style.visibility = "";
+              menu.style.opacity = "";
+              menu.style.pointerEvents = "";
+            }
+
             const gap = 6;
             const pad = 8;
             const menuWidth = menuRect.width || 56;
@@ -3355,6 +3477,7 @@
           function openDropdown(dropdown) {
             cancelClose(dropdown);
             closeAll(dropdown);
+            positionDropdown(dropdown);
             dropdown.classList.add("dropdown-open");
             requestAnimationFrame(() => positionDropdown(dropdown));
           }
@@ -3364,29 +3487,106 @@
             timers.set(dropdown, setTimeout(() => closeDropdown(dropdown), 160));
           }
 
+          function activateToolbarButton(target) {
+            if (!target || target.disabled) return false;
+            let handled = true;
+            if (target.classList.contains("dropdown-trigger")) {
+              const dropdown = target.closest(".tool-dropdown");
+              if (!dropdown) return false;
+              if (dropdown.classList.contains("dropdown-open")) closeDropdown(dropdown);
+              else openDropdown(dropdown);
+              return true;
+            }
+            if (target.classList.contains("tool-btn")) {
+              selectedTool = target.id.replace("tool-", "");
+              cancelTransientAction();
+              if (selectedTool !== "select") selectedElements = [];
+              closeAll();
+              setEditorMode(
+                "idle",
+                selectedTool === "wire"
+                  ? "Wire: drag from terminal to terminal. Auto corner routing is active; hold Shift for direct line."
+                  : selectedTool === "path-wire"
+                  ? "Path Wire: click start point, then enter h/v/box/triangle/circle commands."
+                  : "Ready."
+              );
+            } else if (target.id === "undoBtn") undo();
+            else if (target.id === "redoBtn") redo();
+            else if (target.id === "copyBtn") copySelected();
+            else if (target.id === "rotateBtn") rotateSelected();
+            else if (target.id === "deleteBtn") deleteSelected();
+            else if (target.id === "saveExportBtn") handleSaveExport();
+            else if (target.id === "loadBtn") fileInput.click();
+            else handled = false;
+            if (handled) redrawCanvas();
+            return handled;
+          }
+
           dropdowns.forEach((dropdown) => {
             const trigger = dropdown.querySelector(".dropdown-trigger");
             const menu = dropdown.querySelector(".dropdown-content");
-            dropdown.addEventListener("mouseenter", () => openDropdown(dropdown));
-            dropdown.addEventListener("mouseleave", () => scheduleClose(dropdown));
-            dropdown.addEventListener("focusin", () => openDropdown(dropdown));
+
+            dropdown.addEventListener("mouseenter", () => {
+              if (!isCoarsePointer()) openDropdown(dropdown);
+            });
+            dropdown.addEventListener("mouseleave", () => {
+              if (!isCoarsePointer()) scheduleClose(dropdown);
+            });
+            dropdown.addEventListener("focusin", () => {
+              if (!isCoarsePointer()) openDropdown(dropdown);
+            });
             dropdown.addEventListener("focusout", (e) => {
-              if (!dropdown.contains(e.relatedTarget)) scheduleClose(dropdown);
+              if (!isCoarsePointer() && !dropdown.contains(e.relatedTarget)) scheduleClose(dropdown);
             });
             if (trigger) {
-              trigger.addEventListener("pointerdown", (e) => {
-                if (dropdown.classList.contains("dropdown-open")) {
-                  closeDropdown(dropdown);
-                } else {
-                  openDropdown(dropdown);
-                }
+              trigger.addEventListener("click", (e) => {
+                if (isCoarsePointer()) return;
                 e.preventDefault();
+                e.stopPropagation();
               });
             }
             if (menu) {
               menu.addEventListener("mouseenter", () => cancelClose(dropdown));
-              menu.addEventListener("click", () => closeDropdown(dropdown));
             }
+          });
+
+          toolbar.addEventListener("pointerdown", (e) => {
+            const button = e.target.closest("button");
+            if (!button || button.disabled) return;
+            tapStart = {
+              id: e.pointerId,
+              x: e.clientX,
+              y: e.clientY,
+              button,
+              time: performance.now(),
+            };
+          }, { passive: true });
+
+          toolbar.addEventListener("pointerup", (e) => {
+            const button = e.target.closest("button");
+            if (!button || !tapStart || tapStart.id !== e.pointerId) return;
+            const moved = Math.hypot(e.clientX - tapStart.x, e.clientY - tapStart.y) > 12;
+            const tooSlow = performance.now() - tapStart.time > 900;
+            const sameButton = button === tapStart.button || tapStart.button.contains(e.target) || button.contains(tapStart.button);
+            tapStart = null;
+            if (moved || tooSlow || !sameButton) return;
+            const handled = activateToolbarButton(button);
+            if (handled) {
+              e.preventDefault();
+              e.stopPropagation();
+              lastToolbarActivation = performance.now();
+            }
+          }, { passive: false });
+
+          toolbar.addEventListener("click", (e) => {
+            if (performance.now() - lastToolbarActivation < 500) {
+              e.preventDefault();
+              e.stopPropagation();
+              return;
+            }
+            const target = e.target.closest("button");
+            if (!target || target.disabled) return;
+            activateToolbarButton(target);
           });
 
           const repositionOpen = () => dropdowns.forEach((dropdown) => {
@@ -3404,34 +3604,6 @@
         }
 
         setupFloatingDropdowns();
-
-        document.getElementById("toolbar").addEventListener("click", (e) => {
-          const target = e.target.closest("button");
-          if (!target || target.disabled) return;
-          if (
-            target.classList.contains("tool-btn") &&
-            !target.classList.contains("dropdown-trigger")
-          ) {
-            selectedTool = target.id.replace("tool-", "");
-            cancelTransientAction();
-            if (selectedTool !== "select") selectedElements = [];
-            setEditorMode(
-              "idle",
-              selectedTool === "wire"
-                ? "Wire: drag from terminal to terminal. Auto corner routing is active; hold Shift for direct line."
-                : selectedTool === "path-wire"
-                ? "Path Wire: click start point, then enter h/v/box/triangle/circle commands."
-                : "Ready."
-            );
-          } else if (target.id === "undoBtn") undo();
-          else if (target.id === "redoBtn") redo();
-          else if (target.id === "copyBtn") copySelected();
-          else if (target.id === "rotateBtn") rotateSelected();
-          else if (target.id === "deleteBtn") deleteSelected();
-          else if (target.id === "saveExportBtn") handleSaveExport();
-          else if (target.id === "loadBtn") fileInput.click();
-          redrawCanvas();
-        });
 
         window.addEventListener("keydown", (e) => {
           if (
@@ -4939,6 +5111,228 @@
           redrawCanvas();
         }
 
+
+        function isCompactModalEditMode() {
+          return window.matchMedia("(max-width: 900px), (max-height: 760px), ((hover: none) and (pointer: coarse))").matches;
+        }
+
+        function getQuickEditFieldValue(form, name, fallback = "") {
+          const el = form.querySelector(`[name="${name}"]`);
+          if (!el) return fallback;
+          if (el.type === "checkbox") return el.checked;
+          return el.value;
+        }
+
+        function quickEditInput(name, label, value, type = "text", extra = "") {
+          return `<label class="quick-edit-row"><span>${label}</span><input name="${name}" type="${type}" value="${escapeHtml(value ?? "")}" ${extra}></label>`;
+        }
+
+        function quickEditTextarea(name, label, value, extra = "") {
+          return `<label class="quick-edit-row full"><span>${label}</span><textarea name="${name}" ${extra}>${escapeHtml(value ?? "")}</textarea></label>`;
+        }
+
+        function quickEditSelect(name, label, value, options) {
+          return `<label class="quick-edit-row"><span>${label}</span><select name="${name}">${options.map((opt) => `<option value="${escapeHtml(opt.value)}" ${String(value) === String(opt.value) ? "selected" : ""}>${escapeHtml(opt.label)}</option>`).join("")}</select></label>`;
+        }
+
+        function quickEditColorSelect(value, type = "component") {
+          const names = allowedColorsForType(type).map((name) => ({ value: name, label: name }));
+          return quickEditSelect("color", "Color", value || "black", names);
+        }
+
+        function quickEditCheckbox(name, label, checked) {
+          return `<label><input name="${name}" type="checkbox" ${checked ? "checked" : ""}> ${label}</label>`;
+        }
+
+        function buildQuickEditFormHtml(el) {
+          const isComponent = isComponentElement(el);
+          const isTransformable = isTransformableInspectorElement(el);
+          const colorRows = isColorableElement(el) ? quickEditColorSelect(colorValue(el), el.type) : "";
+          const xyRows = (el.x !== undefined && el.y !== undefined)
+            ? quickEditInput("x", "X", Math.round(el.x || 0), "number", 'step="5"') + quickEditInput("y", "Y", Math.round(el.y || 0), "number", 'step="5"')
+            : "";
+          const rotationRow = (el.rotation !== undefined && el.type !== "wire" && el.type !== "path-wire")
+            ? quickEditInput("rotation", "Rotation", Number(el.rotation || 0), "number", 'step="90"')
+            : "";
+          const scaleRow = isTransformable
+            ? quickEditInput("scalePercent", "Scale %", getScalePercent(el), "number", 'min="10" max="400" step="5"')
+            : "";
+          const imageRows = (el.type === "image" || el.type === "latex")
+            ? quickEditInput("width", "Width", Math.round(el.width || 100), "number", 'step="5"') + quickEditInput("height", "Height", Math.round(el.height || 60), "number", 'step="5"')
+            : "";
+          const textRows = (el.type === "text")
+            ? quickEditTextarea("text", "Text", el.text || "") + `<div class="quick-edit-checks">${quickEditCheckbox("isItalic", "Italic", el.isItalic ?? true)}</div>`
+            : "";
+          const wireRows = (el.type === "wire")
+            ? quickEditSelect("routing", "Routing", el.routing || "auto", [
+                { value: "auto", label: "Auto corner" },
+                { value: "direct", label: "Direct" },
+                { value: "manhattan", label: "Legacy L" },
+              ])
+            : "";
+          const pathRows = (el.type === "path-wire")
+            ? quickEditTextarea("commandStr", "Path command", el.commandStr || "", 'placeholder="h 100 v 50 arrow"')
+            : "";
+          const labelEl = isComponent ? getAssociatedText(el, "label") : null;
+          const valueEl = isComponent ? getAssociatedText(el, "value") : null;
+          const annotationRows = isComponent ? `
+            <div class="quick-edit-checks">
+              ${quickEditCheckbox("showLabel", "Show label", el.showLabel !== false)}
+              ${quickEditCheckbox("showValue", "Show value", el.showValue === true)}
+              ${quickEditCheckbox("flipH", "Flip H", el.flipH === true)}
+              ${quickEditCheckbox("flipV", "Flip V", el.flipV === true)}
+            </div>
+            ${quickEditTextarea("annotationLabel", "Label", labelEl ? labelEl.text : "")}
+            ${quickEditTextarea("annotationValue", "Value", valueEl ? valueEl.text : "", 'placeholder="e.g., 10 kΩ, 100 nF, V_{dc}"')}
+          ` : (isTransformable ? `<div class="quick-edit-checks">${quickEditCheckbox("flipH", "Flip H", el.flipH === true)}${quickEditCheckbox("flipV", "Flip V", el.flipV === true)}</div>` : "");
+
+          return `<div class="quick-edit-grid">${xyRows}${rotationRow}${scaleRow}${imageRows}${colorRows}${wireRows}${pathRows}${textRows}${annotationRows}</div>`;
+        }
+
+        function applyQuickEditForm(el, form) {
+          if (!el || !form) return;
+          const oldX = el.x;
+          const oldY = el.y;
+
+          if (form.querySelector('[name="x"]')) el.x = Number(getQuickEditFieldValue(form, "x", el.x));
+          if (form.querySelector('[name="y"]')) el.y = Number(getQuickEditFieldValue(form, "y", el.y));
+          if (Number.isFinite(el.x) && Number.isFinite(el.y) && oldX !== undefined && oldY !== undefined) {
+            moveAssociatedTextsBy(el, (el.x || 0) - (oldX || 0), (el.y || 0) - (oldY || 0));
+          }
+          if (form.querySelector('[name="rotation"]')) {
+            const r = Number(getQuickEditFieldValue(form, "rotation", el.rotation || 0));
+            if (Number.isFinite(r)) el.rotation = r;
+          }
+          if (form.querySelector('[name="width"]')) {
+            const w = Number(getQuickEditFieldValue(form, "width", el.width || 100));
+            if (Number.isFinite(w) && w > 0) el.width = w;
+          }
+          if (form.querySelector('[name="height"]')) {
+            const h = Number(getQuickEditFieldValue(form, "height", el.height || 60));
+            if (Number.isFinite(h) && h > 0) el.height = h;
+          }
+          if (form.querySelector('[name="scalePercent"]')) {
+            setElementScalePercent(el, Number(getQuickEditFieldValue(form, "scalePercent", getScalePercent(el))));
+          }
+          if (form.querySelector('[name="flipH"]')) el.flipH = getQuickEditFieldValue(form, "flipH", false);
+          if (form.querySelector('[name="flipV"]')) el.flipV = getQuickEditFieldValue(form, "flipV", false);
+          if (form.querySelector('[name="color"]')) setElementColor(el, getQuickEditFieldValue(form, "color", colorValue(el)));
+          if (el.type === "text" && form.querySelector('[name="text"]')) {
+            el.text = evaluateExpressions(getQuickEditFieldValue(form, "text", el.text || ""));
+            el.isItalic = getQuickEditFieldValue(form, "isItalic", el.isItalic ?? true);
+          }
+          if (el.type === "wire" && form.querySelector('[name="routing"]')) {
+            el.routing = getQuickEditFieldValue(form, "routing", el.routing || "auto");
+            if (el.routing === "direct") el.points = [cleanPoint(el.start), cleanPoint(el.end)];
+            else el.points = buildAutoWirePath(el.start, el.end, el.routing === "direct").map(cleanPoint);
+          }
+          if (el.type === "path-wire" && form.querySelector('[name="commandStr"]')) {
+            const newCommandStr = getQuickEditFieldValue(form, "commandStr", el.commandStr || "");
+            const startPoint = el.points && el.points[0] ? el.points[0] : { x: el.x || 0, y: el.y || 0 };
+            const newPathData = parsePathCommandString(startPoint, newCommandStr);
+            if (!newPathData || !newPathData.points || newPathData.points.length < 2) {
+              throw new Error("The command did not produce a valid path.");
+            }
+            el.points = newPathData.points;
+            el.corners = newPathData.corners;
+            el.shapes = newPathData.shapes;
+            el.arrows = newPathData.arrows;
+            el.commandStr = newCommandStr;
+            delete el.hasArrow;
+          }
+          if (isComponentElement(el)) {
+            if (form.querySelector('[name="showLabel"]')) {
+              el.showLabel = getQuickEditFieldValue(form, "showLabel", el.showLabel !== false);
+              if (el.showLabel) ensureAssociatedText(el, "label", allocateComponentLabel(el.type));
+            }
+            if (form.querySelector('[name="showValue"]')) {
+              el.showValue = getQuickEditFieldValue(form, "showValue", el.showValue === true);
+              if (el.showValue) ensureAssociatedText(el, "value", "");
+            }
+            if (form.querySelector('[name="annotationLabel"]')) {
+              const labelText = getQuickEditFieldValue(form, "annotationLabel", "");
+              if (labelText.trim() || el.showLabel) setAssociatedText(el, "label", labelText);
+            }
+            if (form.querySelector('[name="annotationValue"]')) {
+              const valueText = getQuickEditFieldValue(form, "annotationValue", "");
+              if (valueText.trim() || el.showValue) setAssociatedText(el, "value", valueText);
+            }
+          }
+        }
+
+        function showElementEditModal(element) {
+          return new Promise((resolve, reject) => {
+            const modal = document.getElementById("quickEditModal");
+            const form = document.getElementById("quickEditForm");
+            const title = document.getElementById("quickEditModalTitle");
+            const closeBtn = document.getElementById("quickEditModalClose");
+            const okBtn = document.getElementById("quick-edit-ok-btn");
+            const cancelBtn = document.getElementById("quick-edit-cancel-btn");
+            const duplicateBtn = document.getElementById("quick-edit-duplicate-btn");
+            const deleteBtn = document.getElementById("quick-edit-delete-btn");
+            if (!modal || !form || !title || !okBtn || !cancelBtn || !closeBtn) {
+              reject();
+              return;
+            }
+
+            title.textContent = `Edit ${element.type || "object"}`;
+            form.innerHTML = buildQuickEditFormHtml(element);
+            modal.style.display = "flex";
+            const firstInput = form.querySelector("input, textarea, select");
+            if (firstInput) {
+              setTimeout(() => {
+                firstInput.focus();
+                if (firstInput.select) firstInput.select();
+              }, 40);
+            }
+
+            const cleanup = () => {
+              okBtn.removeEventListener("click", onOk);
+              cancelBtn.removeEventListener("click", onCancel);
+              closeBtn.removeEventListener("click", onCancel);
+              duplicateBtn.removeEventListener("click", onDuplicate);
+              deleteBtn.removeEventListener("click", onDelete);
+              window.removeEventListener("keydown", onKeydown);
+              modal.style.display = "none";
+            };
+            const onOk = () => {
+              try {
+                applyQuickEditForm(element, form);
+                cleanup();
+                resolve("applied");
+              } catch (err) {
+                alert(err.message || String(err));
+              }
+            };
+            const onCancel = () => {
+              cleanup();
+              reject();
+            };
+            const onDuplicate = () => {
+              cleanup();
+              selectedElements = [element];
+              copySelected();
+              resolve("duplicated");
+            };
+            const onDelete = () => {
+              cleanup();
+              selectedElements = [element];
+              deleteSelected();
+              resolve("deleted");
+            };
+            const onKeydown = (e) => {
+              if (e.key === "Escape") onCancel();
+              else if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) onOk();
+            };
+            okBtn.addEventListener("click", onOk);
+            cancelBtn.addEventListener("click", onCancel);
+            closeBtn.addEventListener("click", onCancel);
+            duplicateBtn.addEventListener("click", onDuplicate);
+            deleteBtn.addEventListener("click", onDelete);
+            window.addEventListener("keydown", onKeydown);
+          });
+        }
+
         function handleDoubleClick(e) {
           e.preventDefault();
           const mousePos = getMousePos(e);
@@ -4954,6 +5348,18 @@
             };
             circuitElements.push(newTerminal);
             saveState();
+            redrawCanvas();
+            return;
+          }
+
+          selectedElements = [clickedElement];
+          if (isCompactModalEditMode()) {
+            showElementEditModal(clickedElement)
+              .then((result) => {
+                if (result === "applied") saveState();
+                redrawCanvas();
+              })
+              .catch(() => {});
             redrawCanvas();
             return;
           }
