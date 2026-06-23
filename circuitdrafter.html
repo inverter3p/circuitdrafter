@@ -53,11 +53,13 @@
         font-family: "Georgia", "Times New Roman", Times, serif;
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: stretch;
         margin: 0;
-        padding: 20px;
-        background-color: #f8f9fa;
+        padding: 16px;
+        background-color: #eef2f8;
         color: #333;
+        min-height: 100vh;
+        box-sizing: border-box;
       }
       h1 {
         font-family: "Outfit", sans-serif;
@@ -65,7 +67,9 @@
         color: #212529;
       }
       #toolbar {
-        margin-bottom: 20px;
+        align-self: center;
+        width: min(1500px, 100%);
+        margin-bottom: 14px;
         background: #ffffff;
         padding: 10px;
         border-radius: 12px;
@@ -238,10 +242,12 @@
       }
 
       .title-container {
+        align-self: center;
+        width: min(1500px, 100%);
         display: flex;
         align-items: center;
         gap: 15px;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
       }
       .logo {
         height: 75px;
@@ -522,6 +528,868 @@
         flex-shrink: 0; /* Prevent the button from shrinking */
       }
       /* --- END: Text Command Bar Styles --- */
+      /* --- START: Viewport + Inspector Shell Patch --- */
+      #editor-shell {
+        width: min(1500px, 100%);
+        height: calc(100vh - 190px);
+        min-height: 620px;
+        align-self: center;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 12px;
+      }
+      #canvas-pane {
+        position: relative;
+        min-width: 0;
+        min-height: 0;
+        overflow: hidden;
+        background: #ffffff;
+        border: 1px solid #d8dee9;
+        border-radius: 16px;
+        box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+      }
+      #circuitCanvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+        border: none;
+        border-radius: 16px;
+        background-color: #fff;
+        cursor: crosshair;
+      }
+      #canvas-pane.panning #circuitCanvas {
+        cursor: grab;
+      }
+      #canvas-pane.panning.active #circuitCanvas {
+        cursor: grabbing;
+      }
+      #command-bar {
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        z-index: 20;
+        max-width: none;
+        margin: 0;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid #d8dee9;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.14);
+        backdrop-filter: blur(12px);
+        box-sizing: border-box;
+      }
+      #command-input {
+        border-radius: 10px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+      }
+      #zoom-hud {
+        position: absolute;
+        right: 14px;
+        bottom: 78px;
+        z-index: 19;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid #d8dee9;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1);
+        padding: 6px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        color: #495057;
+      }
+      .zoom-btn {
+        min-width: 32px;
+        height: 30px;
+        padding: 0 8px;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        background: #fff;
+        cursor: pointer;
+      }
+      #zoom-label {
+        min-width: 52px;
+        text-align: center;
+        font-size: 0.85rem;
+        color: #6c757d;
+      }
+      #inspector-panel {
+        min-width: 0;
+        background: #ffffff;
+        border: 1px solid #d8dee9;
+        border-radius: 16px;
+        box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+        padding: 16px;
+        overflow: auto;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+      }
+      .inspector-title {
+        font-size: 0.82rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #6c757d;
+        margin-bottom: 12px;
+      }
+      .inspector-card {
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 12px;
+        background: #fbfcfe;
+      }
+      .inspector-row {
+        display: grid;
+        grid-template-columns: 84px 1fr;
+        gap: 8px;
+        align-items: center;
+        margin: 8px 0;
+        font-size: 0.88rem;
+      }
+      .inspector-row label { color: #6c757d; }
+      .inspector-row input,
+      .inspector-row textarea,
+      .inspector-row select {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        padding: 7px 8px;
+        background: #fff;
+        font: inherit;
+      }
+      .inspector-row textarea { min-height: 78px; resize: vertical; }
+      .inspector-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      .inspector-actions button {
+        height: 34px;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        background: #fff;
+        cursor: pointer;
+      }
+      .inspector-muted {
+        color: #6c757d;
+        font-size: 0.9rem;
+        line-height: 1.45;
+      }
+      .inspector-status {
+        border-left: 3px solid #007bff;
+        background: #f8fbff;
+      }
+      @media (max-width: 1100px) {
+        #editor-shell {
+          grid-template-columns: 1fr;
+          height: auto;
+        }
+        #canvas-pane { height: 68vh; min-height: 520px; }
+        #inspector-panel { min-height: 220px; }
+      }
+      /* --- END: Viewport + Inspector Shell Patch --- */
+
+      /* --- START: Fullscreen Shell + Associated Label Patch --- */
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      body {
+        padding: 0;
+        box-sizing: border-box;
+      }
+      .title-container {
+        width: 100%;
+        min-height: 100px;
+        margin: 0;
+        padding: 7px 14px;
+        box-sizing: border-box;
+        flex-shrink: 0;
+        background: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+      }
+      .title-container .logo { height: 75px; }
+      .title-container h1 { font-size: 1.08rem; }
+      #tagline { font-size: 0.85rem; }
+      #helpBtn {
+        top: 8px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+      }
+      #toolbar {
+        width: calc(100% - 24px);
+        margin: 8px 12px;
+        padding: 8px;
+        flex-shrink: 0;
+        box-sizing: border-box;
+        overflow-x: auto;
+        overflow-y: visible;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+      }
+      #toolbar .tool-group,
+      #toolbar .tool-dropdown,
+      #toolbar .divider { flex-shrink: 0; }
+      #editor-shell {
+        width: 100vw;
+        flex: 1 1 auto;
+        height: auto;
+        min-height: 0;
+        align-self: stretch;
+        grid-template-columns: minmax(0, 1fr) 340px;
+        padding: 0 12px 12px 12px;
+        box-sizing: border-box;
+      }
+      #canvas-pane,
+      #inspector-panel {
+        height: 100%;
+        box-sizing: border-box;
+      }
+      #inspector-panel {
+        padding: 14px;
+      }
+      .associated-text-note {
+        font-size: 0.82rem;
+        color: #6c757d;
+        line-height: 1.35;
+      }
+      @media (max-width: 1100px) {
+        body { overflow: auto; }
+        #editor-shell {
+          width: 100%;
+          min-height: 0;
+          padding: 0 10px 10px 10px;
+        }
+      }
+      /* --- END: Fullscreen Shell + Associated Label Patch --- */
+
+      /* --- START: Compact inspector + crisp canvas + no transform modal patch --- */
+      #editor-shell { grid-template-columns: minmax(0, 1fr) 300px; }
+      #inspector-panel {
+        padding: 10px;
+        border-radius: 12px;
+        font-size: 0.82rem;
+      }
+      #inspector-panel > .inspector-title {
+        margin-bottom: 7px;
+      }
+      .inspector-title {
+        font-size: 0.72rem;
+        margin-bottom: 6px;
+        letter-spacing: 0.055em;
+      }
+      .inspector-card {
+        padding: 8px;
+        margin-bottom: 8px;
+        border-radius: 10px;
+      }
+      .inspector-row {
+        grid-template-columns: 68px 1fr;
+        gap: 6px;
+        margin: 5px 0;
+        font-size: 0.8rem;
+      }
+      .inspector-row input,
+      .inspector-row textarea,
+      .inspector-row select {
+        border-radius: 6px;
+        padding: 4px 6px;
+        min-height: 26px;
+      }
+      .inspector-row textarea { min-height: 42px; }
+      .inspector-actions { gap: 6px; margin-top: 7px; }
+      .inspector-actions button {
+        height: 28px;
+        padding: 0 8px;
+        border-radius: 7px;
+        font-size: 0.78rem;
+      }
+      .inspector-muted {
+        font-size: 0.76rem;
+        line-height: 1.35;
+      }
+      .inspector-two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+      }
+      .inspector-checkrow {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin: 5px 0;
+        color: #495057;
+        font-size: 0.8rem;
+      }
+      .inspector-checkrow input { width: 14px; height: 14px; }
+      .inspector-color-palette {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .inspector-color-swatch {
+        width: 20px;
+        height: 20px;
+        border: 1px solid #c9d1db;
+        border-radius: 999px;
+        cursor: pointer;
+        box-shadow: inset 0 0 0 2px rgba(255,255,255,.85);
+      }
+      .inspector-color-swatch.active {
+        outline: 2px solid #007bff;
+        outline-offset: 1px;
+      }
+      #transformModal { display: none !important; }
+      #circuitCanvas { image-rendering: auto; }
+
+      /* --- START: Compact inspector v2 + dropdown overlay fix --- */
+      #toolbar {
+        position: relative;
+        z-index: 10000 !important;
+        overflow: visible !important;
+      }
+      #toolbar .tool-dropdown {
+        position: relative;
+        z-index: 10001;
+      }
+      #toolbar .tool-dropdown:hover,
+      #toolbar .tool-dropdown:focus-within {
+        z-index: 10020;
+      }
+      #toolbar .dropdown-content {
+        z-index: 10030 !important;
+      }
+      #editor-shell,
+      #canvas-pane,
+      #circuitCanvas,
+      #command-bar,
+      #zoom-hud {
+        z-index: 1;
+      }
+      #editor-shell { grid-template-columns: minmax(0, 1fr) 280px; }
+      #inspector-panel {
+        padding: 8px;
+        font-size: 0.78rem;
+      }
+      .inspector-card {
+        padding: 6px;
+        margin-bottom: 6px;
+      }
+      .inspector-row {
+        grid-template-columns: 56px 1fr;
+        gap: 5px;
+        margin: 4px 0;
+      }
+      .inspector-row input,
+      .inspector-row textarea,
+      .inspector-row select {
+        min-height: 24px;
+        padding: 3px 5px;
+      }
+      .inspector-row textarea { min-height: 34px; }
+      .inspector-inline-checks {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px 6px;
+        margin: 4px 0;
+      }
+      .inspector-inline-checks .inspector-checkrow,
+      .inspector-compact-checkrow {
+        margin: 0;
+        min-height: 22px;
+        white-space: nowrap;
+      }
+      .inspector-color-row {
+        align-items: center;
+      }
+      .inspector-color-palette { gap: 4px; }
+      .inspector-color-swatch {
+        width: 18px;
+        height: 18px;
+      }
+      .inspector-actions button {
+        height: 26px;
+        padding: 0 7px;
+      }
+      /* --- END: Compact inspector v2 + dropdown overlay fix --- */
+
+      /* --- END: Compact inspector + crisp canvas + no transform modal patch --- */
+
+      /* --- START: Compact inspector v3 stability patch --- */
+      #toolbar {
+        position: relative !important;
+        z-index: 50000 !important;
+        overflow: visible !important;
+        flex-wrap: wrap !important;
+        row-gap: 6px;
+      }
+      #toolbar .tool-dropdown,
+      #toolbar .tool-group,
+      #toolbar .divider {
+        position: relative;
+        z-index: 50001 !important;
+      }
+      #toolbar .tool-dropdown:hover,
+      #toolbar .tool-dropdown:focus-within {
+        z-index: 60000 !important;
+      }
+      #toolbar .dropdown-content {
+        position: absolute !important;
+        top: calc(100% + 6px) !important;
+        z-index: 70000 !important;
+      }
+      #editor-shell {
+        position: relative;
+        z-index: 0 !important;
+      }
+      #canvas-pane,
+      #inspector-panel,
+      #circuitCanvas {
+        z-index: 1 !important;
+      }
+      #command-bar {
+        width: auto !important;
+        max-width: none !important;
+        min-width: 0 !important;
+        left: 14px !important;
+        right: 14px !important;
+        box-sizing: border-box !important;
+      }
+      #command-input {
+        min-width: 0 !important;
+      }
+      .inspector-row textarea[data-inspector="text"],
+      .inspector-row textarea[data-inspector="annotation.label"],
+      .inspector-row textarea[data-inspector="annotation.value"] {
+        min-height: 30px;
+      }
+      /* --- END: Compact inspector v3 stability patch --- */
+
+
+
+      /* --- START: Responsive bottom inspector + floating dropdown fix (V0.99) --- */
+      :root {
+        --cd-toolbar-z: 2147482000;
+        --cd-dropdown-z: 2147483000;
+      }
+
+      /* Keep the toolbar as one scrollable row. Wrapped rows caused dropdowns
+         from the first row to be painted under the second toolbar row. */
+      #toolbar {
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        position: relative !important;
+        z-index: var(--cd-toolbar-z) !important;
+        scrollbar-width: thin;
+        -webkit-overflow-scrolling: touch;
+      }
+      #toolbar::-webkit-scrollbar { height: 7px; }
+      #toolbar::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 999px;
+      }
+
+      /* Dropdowns are positioned by JS as fixed overlays. This avoids clipping
+         by the toolbar scroll container and prevents them from hiding under any
+         lower toolbar row, canvas, or inspector. */
+      #toolbar .dropdown-content {
+        position: fixed !important;
+        top: var(--dropdown-top, 0px) !important;
+        left: var(--dropdown-left, 0px) !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        z-index: var(--cd-dropdown-z) !important;
+        max-height: min(72vh, 520px);
+        overflow-y: auto;
+      }
+      #toolbar .tool-dropdown:hover .dropdown-content,
+      #toolbar .tool-dropdown:focus-within .dropdown-content {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+      }
+      #toolbar .tool-dropdown.dropdown-open .dropdown-content {
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+      }
+
+      @media (max-width: 900px), (max-height: 760px) {
+        html, body {
+          width: 100%;
+          height: 100%;
+          overflow: hidden !important;
+        }
+        .title-container {
+          min-height: 66px !important;
+          padding: 5px 10px !important;
+          gap: 10px !important;
+        }
+        .title-container .logo { height: 54px !important; }
+        .title-container h1 { font-size: 1rem !important; }
+        #tagline { font-size: 0.76rem !important; }
+        #helpBtn {
+          width: 34px !important;
+          height: 34px !important;
+          top: 8px !important;
+          right: 8px !important;
+        }
+        #helpBtn .material-icons { font-size: 24px !important; }
+
+        #toolbar {
+          width: calc(100% - 12px) !important;
+          margin: 6px !important;
+          padding: 6px !important;
+          gap: 6px !important;
+          border-radius: 12px !important;
+        }
+        .tool-group { gap: 6px !important; }
+        .divider {
+          height: 32px !important;
+          margin: 0 4px !important;
+        }
+        .tool-btn,
+        .action-btn {
+          width: 40px !important;
+          height: 40px !important;
+          border-radius: 9px !important;
+          flex: 0 0 auto !important;
+        }
+
+        #editor-shell {
+          width: 100vw !important;
+          flex: 1 1 auto !important;
+          min-height: 0 !important;
+          height: auto !important;
+          display: grid !important;
+          grid-template-columns: minmax(0, 1fr) !important;
+          grid-template-rows: minmax(0, 1fr) auto !important;
+          gap: 8px !important;
+          padding: 0 6px 6px 6px !important;
+          box-sizing: border-box !important;
+          position: relative !important;
+          z-index: 0 !important;
+        }
+        #canvas-pane {
+          width: 100% !important;
+          height: auto !important;
+          min-height: 0 !important;
+          border-radius: 14px !important;
+        }
+        #circuitCanvas {
+          border-radius: 14px !important;
+        }
+
+        #inspector-panel {
+          width: 100% !important;
+          height: auto !important;
+          min-height: 0 !important;
+          max-height: 190px !important;
+          overflow: auto !important;
+          padding: 6px !important;
+          border-radius: 14px !important;
+          box-sizing: border-box !important;
+          display: grid !important;
+          grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)) !important;
+          gap: 6px !important;
+          align-items: start !important;
+          box-shadow: 0 -10px 34px rgba(15, 23, 42, 0.15) !important;
+        }
+        #inspector-panel > .inspector-title { display: none !important; }
+        #inspector-panel .inspector-card {
+          margin: 0 !important;
+          padding: 6px !important;
+          border-radius: 10px !important;
+          min-width: 0 !important;
+        }
+        #inspector-panel .inspector-title {
+          font-size: 0.68rem !important;
+          margin-bottom: 4px !important;
+        }
+        #inspector-panel .inspector-row {
+          grid-template-columns: 48px minmax(0, 1fr) !important;
+          gap: 4px !important;
+          margin: 3px 0 !important;
+          font-size: 0.75rem !important;
+        }
+        #inspector-panel .inspector-row input,
+        #inspector-panel .inspector-row textarea,
+        #inspector-panel .inspector-row select {
+          min-height: 22px !important;
+          padding: 2px 5px !important;
+          border-radius: 6px !important;
+          font-size: 0.75rem !important;
+        }
+        #inspector-panel .inspector-row textarea { min-height: 26px !important; }
+        #inspector-panel .inspector-muted {
+          font-size: 0.72rem !important;
+          line-height: 1.25 !important;
+        }
+        #inspector-panel .inspector-inline-checks {
+          grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          gap: 3px 6px !important;
+        }
+        #inspector-panel .inspector-checkrow {
+          font-size: 0.74rem !important;
+          min-height: 20px !important;
+        }
+        #inspector-panel .inspector-checkrow input {
+          width: 13px !important;
+          height: 13px !important;
+        }
+        #inspector-panel .inspector-color-palette { gap: 3px !important; }
+        #inspector-panel .inspector-color-swatch {
+          width: 17px !important;
+          height: 17px !important;
+        }
+        #inspector-panel .inspector-actions {
+          gap: 4px !important;
+          margin-top: 5px !important;
+        }
+        #inspector-panel .inspector-actions button {
+          height: 24px !important;
+          padding: 0 6px !important;
+          font-size: 0.72rem !important;
+        }
+
+        #command-bar {
+          left: 10px !important;
+          right: 10px !important;
+          bottom: 10px !important;
+          padding: 8px !important;
+          gap: 6px !important;
+          border-radius: 13px !important;
+        }
+        #command-input {
+          min-width: 0 !important;
+          font-size: 0.86rem !important;
+          padding: 8px !important;
+        }
+        #command-execute-btn {
+          padding: 8px 14px !important;
+          white-space: nowrap !important;
+        }
+        #zoom-hud {
+          right: 10px !important;
+          bottom: 70px !important;
+          padding: 5px !important;
+        }
+      }
+
+      @media (max-width: 540px) {
+        .title-container h1 { font-size: 0.92rem !important; }
+        #tagline { display: none !important; }
+        #inspector-panel {
+          max-height: 170px !important;
+          grid-template-columns: 1fr !important;
+        }
+        #command-bar {
+          left: 8px !important;
+          right: 8px !important;
+          bottom: 8px !important;
+        }
+      }
+      /* --- END: Responsive bottom inspector + floating dropdown fix (V0.99) --- */
+
+
+      /* --- START: Desktop + iPad unified input patch (V1.00 Touch) --- */
+      #circuitCanvas {
+        touch-action: none !important;
+        -webkit-user-select: none !important;
+        user-select: none !important;
+      }
+      #canvas-pane {
+        overscroll-behavior: contain;
+      }
+      #toolbar {
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch;
+      }
+      .tool-btn,
+      .action-btn,
+      .zoom-btn {
+        min-width: 44px;
+        min-height: 44px;
+      }
+      #toolbar .tool-dropdown.dropdown-open .dropdown-content {
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+      }
+      @media (hover: none), (pointer: coarse) {
+        html, body {
+          overflow: hidden !important;
+        }
+        .title-container {
+          min-height: 62px !important;
+          padding: 5px 10px !important;
+          gap: 10px !important;
+        }
+        .title-container .logo { height: 52px !important; }
+        .title-container h1 { font-size: 0.98rem !important; }
+        #tagline { font-size: 0.74rem !important; }
+        #helpBtn {
+          width: 34px !important;
+          height: 34px !important;
+          top: 8px !important;
+          right: 8px !important;
+        }
+        #toolbar {
+          width: calc(100% - 12px) !important;
+          margin: 6px !important;
+          padding: 6px !important;
+          gap: 6px !important;
+          border-radius: 12px !important;
+        }
+        .tool-group { gap: 6px !important; }
+        .divider {
+          height: 32px !important;
+          margin: 0 4px !important;
+        }
+        .tool-btn,
+        .action-btn {
+          width: 42px !important;
+          height: 42px !important;
+          border-radius: 9px !important;
+          flex: 0 0 auto !important;
+        }
+        #editor-shell {
+          width: 100vw !important;
+          flex: 1 1 auto !important;
+          min-height: 0 !important;
+          height: auto !important;
+          display: grid !important;
+          grid-template-columns: minmax(0, 1fr) !important;
+          grid-template-rows: minmax(0, 1fr) auto !important;
+          gap: 8px !important;
+          padding: 0 6px 6px 6px !important;
+          box-sizing: border-box !important;
+          position: relative !important;
+          z-index: 0 !important;
+        }
+        #canvas-pane {
+          width: 100% !important;
+          height: auto !important;
+          min-height: 0 !important;
+          border-radius: 14px !important;
+        }
+        #circuitCanvas {
+          border-radius: 14px !important;
+        }
+        #inspector-panel {
+          width: 100% !important;
+          height: auto !important;
+          min-height: 0 !important;
+          max-height: 210px !important;
+          overflow: auto !important;
+          padding: 6px !important;
+          border-radius: 14px !important;
+          box-sizing: border-box !important;
+          display: grid !important;
+          grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)) !important;
+          gap: 6px !important;
+          align-items: start !important;
+          box-shadow: 0 -10px 34px rgba(15, 23, 42, 0.15) !important;
+        }
+        #inspector-panel > .inspector-title { display: none !important; }
+        #inspector-panel .inspector-card {
+          margin: 0 !important;
+          padding: 6px !important;
+          border-radius: 10px !important;
+          min-width: 0 !important;
+        }
+        #inspector-panel .inspector-title {
+          font-size: 0.68rem !important;
+          margin-bottom: 4px !important;
+        }
+        #inspector-panel .inspector-row {
+          grid-template-columns: 48px minmax(0, 1fr) !important;
+          gap: 4px !important;
+          margin: 3px 0 !important;
+          font-size: 0.75rem !important;
+        }
+        #inspector-panel .inspector-row input,
+        #inspector-panel .inspector-row textarea,
+        #inspector-panel .inspector-row select {
+          min-height: 24px !important;
+          padding: 3px 5px !important;
+          border-radius: 6px !important;
+          font-size: 0.78rem !important;
+        }
+        #inspector-panel .inspector-row textarea { min-height: 30px !important; }
+        #inspector-panel .inspector-muted {
+          font-size: 0.72rem !important;
+          line-height: 1.25 !important;
+        }
+        #inspector-panel .inspector-inline-checks {
+          grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          gap: 3px 6px !important;
+        }
+        #inspector-panel .inspector-checkrow {
+          font-size: 0.74rem !important;
+          min-height: 22px !important;
+        }
+        #inspector-panel .inspector-checkrow input {
+          width: 15px !important;
+          height: 15px !important;
+        }
+        #inspector-panel .inspector-color-palette { gap: 4px !important; }
+        #inspector-panel .inspector-color-swatch {
+          width: 19px !important;
+          height: 19px !important;
+        }
+        #inspector-panel .inspector-actions {
+          gap: 5px !important;
+          margin-top: 5px !important;
+        }
+        #inspector-panel .inspector-actions button {
+          height: 28px !important;
+          padding: 0 8px !important;
+          font-size: 0.76rem !important;
+        }
+        #command-bar {
+          left: 10px !important;
+          right: 10px !important;
+          bottom: 10px !important;
+          padding: 8px !important;
+          gap: 6px !important;
+          border-radius: 13px !important;
+        }
+        #command-input {
+          min-width: 0 !important;
+          font-size: 0.88rem !important;
+          padding: 8px !important;
+        }
+        #command-execute-btn {
+          padding: 8px 14px !important;
+          white-space: nowrap !important;
+        }
+        #zoom-hud {
+          right: 10px !important;
+          bottom: 70px !important;
+          padding: 5px !important;
+        }
+      }
+      /* --- END: Desktop + iPad unified input patch (V1.00 Touch) --- */
+
+
     </style>
   </head>
   <body>
@@ -532,8 +1400,8 @@
         class="logo"
       />
       <div>
-        <h1>Circuit Drafter (V0.75m)</h1>
-        <p id="tagline">Effortless circuit schematics.</p>
+        <h1>Circuit Drafter (V1.00 Touch) </h1>
+        <p id="tagline">Effortless circuit schematics. Desktop + iPad pointer/touch editor.</p>
       </div>
     </div>
 
@@ -1121,29 +1989,46 @@
       <!-- END: File Operations Dropdown -->
     </div>
 
-    <!-- START: Text Command Input -->
-    <div id="command-bar">
-      <input
-        type="text"
-        id="command-input"
-        placeholder="e.g., vdc1 h 50 r1 v 100 l1"
-      />
-      <button id="command-execute-btn" class="modal-button primary">
-        Place
-      </button>
-    </div>
-    <!-- END: Text Command Input -->
+    <div id="editor-shell">
+      <main id="canvas-pane">
+        <!-- START: Text Command Input -->
+        <div id="command-bar">
+          <input
+            type="text"
+            id="command-input"
+            placeholder="e.g., vdc1 h80 r1 h80 led1 v80 gnd"
+          />
+          <button id="command-execute-btn" class="modal-button primary">
+            Place
+          </button>
+        </div>
+        <!-- END: Text Command Input -->
 
-    <canvas id="circuitCanvas" width="1000" height="700"></canvas>
-    <input type="file" id="fileInput" accept=".json" style="display: none" />
-    <!-- ===== NEW IMAGE FILE INPUT START ===== -->
-    <input
-      type="file"
-      id="imageInput"
-      accept="image/png"
-      style="display: none"
-    />
-    <!-- ===== NEW IMAGE FILE INPUT END ===== -->
+
+        <div id="zoom-hud">
+          <button class="zoom-btn" id="zoomOutBtn" title="Zoom out">−</button>
+          <span id="zoom-label">100%</span>
+          <button class="zoom-btn" id="zoomInBtn" title="Zoom in">+</button>
+          <button class="zoom-btn" id="zoomFitBtn" title="Fit drawing">Fit</button>
+        </div>
+
+        <canvas id="circuitCanvas" width="1000" height="700"></canvas>
+        <input type="file" id="fileInput" accept=".json" style="display: none" />
+        <!-- ===== NEW IMAGE FILE INPUT START ===== -->
+        <input
+          type="file"
+          id="imageInput"
+          accept="image/png"
+          style="display: none"
+        />
+        <!-- ===== NEW IMAGE FILE INPUT END ===== -->
+      </main>
+
+      <aside id="inspector-panel">
+        <div class="inspector-title">Inspector</div>
+        <div class="inspector-muted">Select a component, wire, text, equation, or image to edit its properties. Your original symbol drawings are preserved.</div>
+      </aside>
+    </div>
 
     <!-- START: Bulk Add Components Modal -->
     <div id="bulkAddModal" class="modal-overlay">
@@ -1332,7 +2217,14 @@
 
     <script>
       /****************************************************************************
-       * Circuit Drafter - V0.75Mom (Date: 2025-08-22)
+      * Circuit Drafter - V1.00 Touch (Date: 2026-06-23)
+       *   - Unified Pointer Events for desktop mouse, iPad touch, and pen.
+       *   - Tap dropdowns, one-finger draw/move, two-finger pan, pinch zoom, double-tap edit.
+      * Circuit Drafter - V0.98+ (Date: 2026-06-23)
+       *   - Fix many things.
+       *   - New layout. Better render and navigate.
+       *   - Use inspector Sidebar instead of modal box to edit components. 
+      * Circuit Drafter - V0.75Mom (Date: 2025-08-22)
        *   - Add Latex equation editor using Codecogs engine.
        *   - HBD to my mom!!!
        * Circuit Drafter - V0.52e (Date: 2025-08-19)
@@ -1444,6 +2336,12 @@
         const commandExecuteBtn = document.getElementById(
           "command-execute-btn"
         );
+        const canvasPane = document.getElementById("canvas-pane");
+        const inspectorPanel = document.getElementById("inspector-panel");
+        const zoomLabel = document.getElementById("zoom-label");
+        const zoomInBtn = document.getElementById("zoomInBtn");
+        const zoomOutBtn = document.getElementById("zoomOutBtn");
+        const zoomFitBtn = document.getElementById("zoomFitBtn");
 
         let autoLabelCounters = {};
         const shortNameToType = {
@@ -1480,12 +2378,53 @@
         );
 
         let selectedTool = "select";
+        let editorMode = "idle";
+        let viewport = { x: 0, y: 0, zoom: 1 };
+        let isPanning = false;
+        let isSpaceDown = false;
+        let panStartScreen = null;
+        let panStartViewport = null;
         let isDrawingWire = false,
           isDragging = false,
           isShiftDown = false;
         let wireStartPoint = null,
+          wireMouseDownPoint = null,
           currentMousePos = { x: 0, y: 0 },
           dragStartPoint = null;
+
+        let currentStatus = "Ready. Desktop: wheel zooms, Space/middle-drag pans. iPad: one finger draws/moves, two fingers pan/pinch zoom.";
+
+        function setEditorMode(mode, message = "") {
+          editorMode = mode;
+          if (message) {
+            currentStatus = message;
+            updateInspector();
+          }
+        }
+
+        function inspectorStatusCard() {
+          return `
+            <div class="inspector-card inspector-status">
+              <div class="inspector-title">Status / Hints</div>
+              <div class="inspector-muted">${escapeHtml(currentStatus)}</div>
+            </div>`;
+        }
+
+        function cancelTransientAction() {
+          isDrawingWire = false;
+          isDragging = false;
+          isMarqueeSelecting = false;
+          wireStartPoint = null;
+          wireMouseDownPoint = null;
+          marqueeStartPoint = null;
+          dragStartPoint = null;
+          hoveredWireSegment = null;
+          isPanning = false;
+          if (canvasPane) canvasPane.classList.remove("active");
+          circuitElements.forEach((el) => delete el.dragInitialState);
+          setEditorMode("idle");
+          redrawCanvas();
+        }
         let circuitElements = [];
         let nextId = 0;
         const gridSize = 20,
@@ -1678,6 +2617,222 @@
           gnd: { width: 30, height: 25, terminals: [{ x: 0, y: -10 }] },
           arrow_marker: { width: 16, height: 10, terminals: [] },
         };
+
+        const componentPrefixByType = {
+          resistor: "R",
+          capacitor: "C",
+          inductor: "L",
+          diode: "D",
+          fwd: "D",
+          zener: "ZD",
+          led: "LED",
+          switch: "SW",
+          spdtSwitch: "SW",
+          igbt: "Q",
+          opamp: "U",
+          nfet: "Q",
+          pfet: "Q",
+          npn: "Q",
+          pnp: "Q",
+          voltage: "V",
+          acvoltage: "V",
+          currentsource: "I",
+          dependent_voltage: "V",
+          dependent_current: "I",
+          battery: "BATT",
+          gnd: "GND",
+        };
+
+        function isComponentElement(el) {
+          return !!(
+            el &&
+            componentData[el.type] &&
+            el.type !== "arrow_marker" &&
+            el.type !== "junction" &&
+            el.type !== "open_terminal" &&
+            el.type !== "wire" &&
+            el.type !== "path-wire" &&
+            el.type !== "text" &&
+            el.type !== "image" &&
+            el.type !== "latex"
+          );
+        }
+
+        function getComponentLabelPrefix(type) {
+          return componentPrefixByType[type] || String(type || "X").toUpperCase().slice(0, 3);
+        }
+
+        function allocateComponentLabel(type) {
+          const prefix = getComponentLabelPrefix(type);
+          if (!autoLabelCounters[prefix]) {
+            recalculateAutoLabelCounters();
+            if (!autoLabelCounters[prefix]) autoLabelCounters[prefix] = 1;
+          }
+          return `${prefix}_{${autoLabelCounters[prefix]++}}`;
+        }
+
+        function getAssociatedTextElements(component, role = null) {
+          if (!component || component.id === undefined) return [];
+          return circuitElements.filter((el) => {
+            if (el.type !== "text") return false;
+            if (el.parentId !== component.id) return false;
+            if (role && el.associationRole !== role) return false;
+            return true;
+          });
+        }
+
+        function getAssociatedText(component, role) {
+          if (!component) return null;
+          const idKey = role === "value" ? "valueTextId" : "labelTextId";
+          if (component[idKey] !== undefined) {
+            const byId = circuitElements.find((el) => el.type === "text" && el.id === component[idKey]);
+            if (byId) return byId;
+          }
+          return getAssociatedTextElements(component, role)[0] || null;
+        }
+
+        function getAssociatedTextVisibility(component, role) {
+          if (!component) return true;
+          if (role === "value") return component.showValue === true;
+          return component.showLabel !== false;
+        }
+
+        function isTextVisible(el) {
+          if (!el || el.type !== "text") return true;
+          if (el.hidden === true) return false;
+          if (el.parentId === undefined || !el.associationRole) return true;
+          const parent = circuitElements.find((item) => item.id === el.parentId);
+          return getAssociatedTextVisibility(parent, el.associationRole);
+        }
+
+        function getAnnotationPosition(component, role) {
+          const data = componentData[component.type] || { width: 80, height: 40, terminals: [] };
+          const { width, height } = getDimensionsAndScale(component);
+          const terminals = getAbsoluteTerminals(component);
+          let axisX = 1;
+          let axisY = 0;
+          if (terminals.length >= 2) {
+            const a = terminals[0];
+            const b = terminals[terminals.length - 1];
+            const mag = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+            axisX = (b.x - a.x) / mag;
+            axisY = (b.y - a.y) / mag;
+          } else {
+            const angle = ((component.rotation || 0) * Math.PI) / 180;
+            axisX = Math.cos(angle);
+            axisY = Math.sin(angle);
+          }
+          // Normal vector from terminal axis. Label and value are placed on opposite sides.
+          let nx = -axisY;
+          let ny = axisX;
+          const isMostlyVertical = Math.abs(axisY) > Math.abs(axisX);
+          const crossOffset = Math.max(width, height) * 0.35 + 26;
+          const alongOffset = 0;
+          if (role === "value") {
+            nx = -nx;
+            ny = -ny;
+          }
+          // Keep labels below horizontal parts and to the right of vertical parts by default.
+          if (role === "label") {
+            if (!isMostlyVertical && ny < 0) { nx = -nx; ny = -ny; }
+            if (isMostlyVertical && nx < 0) { nx = -nx; ny = -ny; }
+          }
+          if (role === "value") {
+            if (!isMostlyVertical && ny > 0) { nx = -nx; ny = -ny; }
+            if (isMostlyVertical && nx > 0) { nx = -nx; ny = -ny; }
+          }
+          return {
+            x: snapToGrid(component.x + nx * crossOffset + axisX * alongOffset),
+            y: snapToGrid(component.y + ny * crossOffset + axisY * alongOffset),
+          };
+        }
+
+        function makeAssociatedTextForComponent(component, role, text, options = {}) {
+          const pos = options.position || getAnnotationPosition(component, role);
+          const newText = {
+            id: nextId++,
+            type: "text",
+            text: evaluateExpressions(text || ""),
+            x: pos.x,
+            y: pos.y,
+            rotation: 0,
+            isItalic: role === "label" ? true : false,
+            parentId: component.id,
+            associationRole: role,
+          };
+          if (role === "label") {
+            component.labelTextId = newText.id;
+            if (component.showLabel === undefined) component.showLabel = true;
+          } else {
+            component.valueTextId = newText.id;
+            if (component.showValue === undefined) component.showValue = true;
+          }
+          return newText;
+        }
+
+        function ensureAssociatedText(component, role, textIfCreated = "") {
+          let textEl = getAssociatedText(component, role);
+          if (!textEl) {
+            textEl = makeAssociatedTextForComponent(component, role, textIfCreated);
+            circuitElements.push(textEl);
+          }
+          if (role === "label" && component.labelTextId === undefined) component.labelTextId = textEl.id;
+          if (role === "value" && component.valueTextId === undefined) component.valueTextId = textEl.id;
+          return textEl;
+        }
+
+        function createDefaultAssociatedTexts(component, options = {}) {
+          if (!isComponentElement(component)) return [];
+          if (component.showLabel === undefined) component.showLabel = true;
+          if (component.showValue === undefined) component.showValue = false;
+          const created = [];
+          const labelText = options.labelText || allocateComponentLabel(component.type);
+          if (labelText) {
+            const labelEl = makeAssociatedTextForComponent(component, "label", labelText);
+            created.push(labelEl);
+          }
+          if (options.valueText) {
+            component.showValue = true;
+            const valueEl = makeAssociatedTextForComponent(component, "value", options.valueText);
+            created.push(valueEl);
+          }
+          return created;
+        }
+
+        function setAssociatedText(component, role, text) {
+          if (!isComponentElement(component)) return null;
+          const textEl = ensureAssociatedText(component, role, "");
+          textEl.text = evaluateExpressions(text || "");
+          textEl.isItalic = role === "label" ? true : (textEl.isItalic ?? false);
+          if (role === "label") {
+            component.showLabel = true;
+          } else if ((text || "").trim()) {
+            component.showValue = true;
+          }
+          return textEl;
+        }
+
+        function resetAssociatedTextPositions(component) {
+          if (!isComponentElement(component)) return;
+          ["label", "value"].forEach((role) => {
+            const textEl = getAssociatedText(component, role);
+            if (textEl) {
+              const pos = getAnnotationPosition(component, role);
+              textEl.x = pos.x;
+              textEl.y = pos.y;
+            }
+          });
+        }
+
+        function moveAssociatedTextsBy(component, dx, dy, excludeIds = new Set()) {
+          if (!isComponentElement(component) || (!dx && !dy)) return;
+          getAssociatedTextElements(component).forEach((textEl) => {
+            if (excludeIds.has(textEl.id)) return;
+            textEl.x = snapToGrid(textEl.x + dx);
+            textEl.y = snapToGrid(textEl.y + dy);
+          });
+        }
+
         const actionButtons = {
           undo: document.getElementById("undoBtn"),
           redo: document.getElementById("redoBtn"),
@@ -1706,8 +2861,8 @@
                   const newImage = {
                     id: nextId++,
                     type: "image",
-                    x: snapToGrid(canvas.width / 2),
-                    y: snapToGrid(canvas.height / 2),
+                    x: snapToGrid(getViewWidth() / 2),
+                    y: snapToGrid(getViewHeight() / 2),
                     width: img.width,
                     height: img.height,
                     img: img,
@@ -1856,8 +3011,399 @@
           actionButtons.copy.disabled = selectedElements.length === 0;
           actionButtons.delete.disabled = selectedElements.length === 0;
           canvas.style.cursor =
-            selectedTool === "select" ? "default" : "crosshair";
+            editorMode === "dragging-selection" || editorMode === "marquee-select"
+              ? "grabbing"
+              : selectedTool === "select"
+              ? "default"
+              : "crosshair";
         }
+
+        function isTransformableInspectorElement(el) {
+          return el && el.type !== "wire" && el.type !== "path-wire" && el.type !== "text" && el.type !== "junction" && el.type !== "open_terminal";
+        }
+        function getScalePercent(el) {
+          if (!el) return 100;
+          if (el.type === "image" || el.type === "latex") return Math.round(((el.scalePercent || 100)));
+          const d = componentData[el.type];
+          if (!d || !d.width) return 100;
+          const w = el.width || d.width;
+          return Math.round((w / d.width) * 100);
+        }
+        function setElementScalePercent(el, percent) {
+          const pct = Math.max(10, Math.min(400, Number(percent) || 100));
+          el.scalePercent = pct;
+          if (el.type === "image" || el.type === "latex") {
+            const factor = pct / (el.__lastScalePercent || 100);
+            if (Number.isFinite(factor) && factor > 0) {
+              el.width = Math.max(5, (el.width || 100) * factor);
+              el.height = Math.max(5, (el.height || 60) * factor);
+            }
+            el.__lastScalePercent = pct;
+            return;
+          }
+          const d = componentData[el.type];
+          if (d && d.width) {
+            el.width = d.width * pct / 100;
+            el.height = d.height * pct / 100;
+          }
+        }
+        const INSPECTOR_COLOR_MAP = {
+          black: "#111827",
+          red: "#dc2626",
+          blue: "#2563eb",
+          green: "#16a34a",
+          orange: "#f97316",
+          purple: "#7c3aed",
+          gray: "#6b7280",
+        };
+        const COMPONENT_LINE_COLORS = ["black", "red", "blue", "green", "orange", "purple", "gray"];
+        const TEXT_COLORS = COMPONENT_LINE_COLORS;
+
+        function isColorableElement(el) {
+          return !!el && el.type !== "image" && el.type !== "latex" && el.type !== "junction" && el.type !== "open_terminal";
+        }
+        function allowedColorsForType(type) {
+          return type === "text" ? TEXT_COLORS : COMPONENT_LINE_COLORS;
+        }
+        function colorValue(el) {
+          return el && el.color ? el.color : "black";
+        }
+        function setElementColor(el, colorName) {
+          if (!isColorableElement(el)) return;
+          const color = colorName || "black";
+          if (el.type === "text" && !TEXT_COLORS.includes(color)) return;
+          if (color === "black") delete el.color;
+          else el.color = color;
+        }
+        function commonSelectionColor() {
+          if (!selectedElements.length) return "";
+          const colorable = selectedElements.filter(isColorableElement);
+          if (!colorable.length) return "";
+          const first = colorValue(colorable[0]);
+          return colorable.every((el) => colorValue(el) === first) ? first : "";
+        }
+        function colorPaletteHtml(active, type = "component") {
+          const names = allowedColorsForType(type);
+          return `<div class="inspector-color-palette">${names.map((name) => `<button type="button" class="inspector-color-swatch ${active === name ? "active" : ""}" data-color="${name}" title="${name}" style="background:${INSPECTOR_COLOR_MAP[name]}"></button>`).join("")}</div>`;
+        }
+
+        function isInspectorControlFocused() {
+          const active = document.activeElement;
+          if (!active || !inspectorPanel || !inspectorPanel.contains(active)) return false;
+          const tag = active.tagName;
+          return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
+        }
+
+        function updateInspector() {
+          if (!inspectorPanel) return;
+          if (isInspectorControlFocused()) return;
+          const count = selectedElements.length;
+          if (count === 0) {
+            inspectorPanel.innerHTML = `
+              <div class="inspector-title">Inspector</div>
+              <div class="inspector-card">
+                <div class="inspector-muted">No selection. Use the original toolbar to place engineering symbols. Wheel zooms around the cursor; Space or middle mouse pans.</div>
+              </div>
+              <div class="inspector-card">
+                <div class="inspector-title">Viewport</div>
+                <div class="inspector-row"><label>Zoom</label><input data-inspector="viewport.zoom" type="number" step="5" value="${Math.round(viewport.zoom * 100)}"></div>
+                <div class="inspector-actions"><button data-action="fit-view">Fit drawing</button><button data-action="reset-view">Reset view</button></div>
+              </div>
+              ${inspectorStatusCard()}`;
+            return;
+          }
+          if (count > 1) {
+            const multiPalette = selectedElements.some((el) => el.type !== "text" && isColorableElement(el))
+              ? colorPaletteHtml(commonSelectionColor(), "component")
+              : colorPaletteHtml(commonSelectionColor(), "text");
+            inspectorPanel.innerHTML = `
+              <div class="inspector-title">Inspector</div>
+              <div class="inspector-card">
+                <strong>${count} objects selected</strong>
+                <div class="inspector-muted">Group edit. Selected objects use the shared color palette.</div>
+                <div class="inspector-row inspector-color-row"><label>Color</label>${multiPalette}</div>
+                <div class="inspector-actions"><button data-action="rotate-selected">Rotate 90°</button><button data-action="duplicate-selected">Duplicate</button><button data-action="delete-selected">Delete</button></div>
+              </div>
+              ${inspectorStatusCard()}`;
+            return;
+          }
+          const el = selectedElements[0];
+          const typeLabel = el.type || "object";
+          const xyRows = (el.x !== undefined && el.y !== undefined) ? `
+              <div class="inspector-row"><label>X</label><input data-inspector="x" type="number" step="5" value="${Number(el.x).toFixed(0)}"></div>
+              <div class="inspector-row"><label>Y</label><input data-inspector="y" type="number" step="5" value="${Number(el.y).toFixed(0)}"></div>` : "";
+          const rotationRow = (el.rotation !== undefined && el.type !== "wire" && el.type !== "path-wire") ? `
+              <div class="inspector-row"><label>Rotation</label><input data-inspector="rotation" type="number" step="90" value="${Number(el.rotation || 0)}"></div>` : "";
+          const textRows = (el.type === "text") ? `
+              <div class="inspector-row"><label>Text</label><textarea data-inspector="text">${escapeHtml(el.text || "")}</textarea></div>
+              <div class="inspector-row"><label>Italic</label><select data-inspector="isItalic"><option value="true" ${el.isItalic ? "selected" : ""}>Yes</option><option value="false" ${!el.isItalic ? "selected" : ""}>No</option></select></div>` : "";
+          const pathRows = (el.type === "path-wire") ? `
+              <div class="inspector-row"><label>Command</label><textarea data-inspector="commandStr">${escapeHtml(el.commandStr || "")}</textarea></div>
+              <div class="inspector-actions"><button data-action="apply-path-command">Apply command</button></div>` : "";
+          const wireRows = (el.type === "wire") ? `
+              <div class="inspector-row"><label>Routing</label><select data-inspector="routing"><option value="auto" ${(el.routing || "auto") === "auto" ? "selected" : ""}>Auto corner</option><option value="direct" ${el.routing === "direct" ? "selected" : ""}>Direct</option><option value="manhattan" ${el.routing === "manhattan" ? "selected" : ""}>Legacy L</option></select></div>
+              <div class="inspector-muted">Wire endpoints still snap to the original symbol terminals first.</div>` : "";
+          const imageRows = (el.type === "image" || el.type === "latex") ? `
+              <div class="inspector-row"><label>Width</label><input data-inspector="width" type="number" step="5" value="${Math.round(el.width || 100)}"></div>
+              <div class="inspector-row"><label>Height</label><input data-inspector="height" type="number" step="5" value="${Math.round(el.height || 60)}"></div>` : "";
+          const colorRows = isColorableElement(el) ? `
+              <div class="inspector-row inspector-color-row"><label>Color</label>${colorPaletteHtml(colorValue(el), el.type)}</div>` : "";
+          const transformRows = isTransformableInspectorElement(el) ? `
+              <div class="inspector-row"><label>Scale</label><input data-inspector="scalePercent" type="number" step="5" min="10" max="400" value="${getScalePercent(el)}" title="Scale percentage"></div>
+              <div class="inspector-inline-checks">
+                <label class="inspector-checkrow inspector-compact-checkrow"><input data-inspector="flipH" type="checkbox" ${el.flipH ? "checked" : ""}> Flip H</label>
+                <label class="inspector-checkrow inspector-compact-checkrow"><input data-inspector="flipV" type="checkbox" ${el.flipV ? "checked" : ""}> Flip V</label>
+              </div>` : "";
+          const annotationRows = isComponentElement(el) ? (() => {
+              const labelEl = getAssociatedText(el, "label");
+              const valueEl = getAssociatedText(el, "value");
+              const labelText = labelEl ? labelEl.text : "";
+              const valueText = valueEl ? valueEl.text : "";
+              return `
+              <div class="inspector-card">
+                <div class="inspector-title">Label / Value</div>
+                <div class="inspector-inline-checks">
+                  <label class="inspector-checkrow inspector-compact-checkrow"><input data-inspector="showLabel" type="checkbox" ${el.showLabel !== false ? "checked" : ""}> Show label</label>
+                  <label class="inspector-checkrow inspector-compact-checkrow"><input data-inspector="showValue" type="checkbox" ${el.showValue === true ? "checked" : ""}> Show value</label>
+                </div>
+                <div class="inspector-row"><label>Label</label><textarea data-inspector="annotation.label">${escapeHtml(labelText)}</textarea></div>
+                <div class="inspector-row"><label>Value</label><textarea data-inspector="annotation.value" placeholder="e.g., 10 kΩ, 100 nF, V_{dc}">${escapeHtml(valueText)}</textarea></div>
+                <div class="inspector-actions"><button data-action="reset-associated-text">Reset positions</button></div>
+              </div>`;
+            })() : "";
+          inspectorPanel.innerHTML = `
+            <div class="inspector-title">Inspector</div>
+            <div class="inspector-card">
+              <strong>${escapeHtml(typeLabel)}</strong>
+              <div class="inspector-muted">ID ${el.id}</div>
+              ${xyRows}
+              ${colorRows}
+              ${transformRows}
+              ${wireRows}
+              ${pathRows}
+              ${textRows}
+              ${imageRows}
+              <div class="inspector-actions">
+                <button data-action="rotate-selected">Rotate 90°</button>
+                <button data-action="duplicate-selected">Duplicate</button>
+                <button data-action="delete-selected">Delete</button>
+              </div>
+            </div>
+            ${annotationRows}
+            ${inspectorStatusCard()}`;
+        }
+
+        function escapeHtml(value) {
+          return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;");
+        }
+
+        function applyInspectorChange(target, options = {}) {
+          if (!target || !target.dataset || !target.dataset.inspector) return;
+          const commit = options.commit !== false;
+          const key = target.dataset.inspector;
+          if (key === "viewport.zoom") {
+            const z = Number(target.value) / 100;
+            if (Number.isFinite(z)) viewport.zoom = Math.max(0.25, Math.min(4, z));
+            redrawCanvas();
+            return;
+          }
+          if (selectedElements.length !== 1) return;
+          const el = selectedElements[0];
+
+          // Path command text is parsed only when the user clicks Apply command.
+          // Do not redraw/rebuild the inspector on textarea blur/change here;
+          // otherwise the Apply button can be replaced before its click handler runs,
+          // which makes the user click Apply twice.
+          if (key === "commandStr") {
+            el.commandStr = target.value;
+            return;
+          }
+
+          let value = target.value;
+          if (["x", "y", "rotation", "width", "height", "scalePercent"].includes(key)) {
+            value = Number(value);
+            if (!Number.isFinite(value)) return;
+          }
+          if (key === "isItalic") value = value === "true";
+          if (key === "showLabel" || key === "showValue") value = !!target.checked;
+          if (key === "flipH" || key === "flipV") value = !!target.checked;
+          if (key === "scalePercent") {
+            setElementScalePercent(el, value);
+          } else if (key === "flipH" || key === "flipV") {
+            el[key] = value;
+          } else if (key === "routing") {
+            el.routing = value;
+            if (value === "direct") el.points = [cleanPoint(el.start), cleanPoint(el.end)];
+            else el.points = buildAutoWirePath(el.start, el.end, value === "direct").map(cleanPoint);
+          } else if (key === "annotation.label") {
+            setAssociatedText(el, "label", value);
+          } else if (key === "annotation.value") {
+            setAssociatedText(el, "value", value);
+          } else if (key === "showLabel") {
+            el.showLabel = value;
+            if (value) ensureAssociatedText(el, "label", allocateComponentLabel(el.type));
+          } else if (key === "showValue") {
+            el.showValue = value;
+            if (value) ensureAssociatedText(el, "value", "");
+          } else if (key === "x" || key === "y") {
+            const oldX = el.x;
+            const oldY = el.y;
+            el[key] = value;
+            moveAssociatedTextsBy(el, (el.x || 0) - (oldX || 0), (el.y || 0) - (oldY || 0));
+          } else {
+            el[key] = value;
+          }
+          if (commit) saveState();
+          redrawCanvas();
+        }
+
+        if (inspectorPanel) {
+          inspectorPanel.addEventListener("input", (e) => applyInspectorChange(e.target, { commit: false }));
+          inspectorPanel.addEventListener("change", (e) => applyInspectorChange(e.target, { commit: true }));
+          inspectorPanel.addEventListener("click", (e) => {
+            if (e.target && e.target.dataset && e.target.dataset.color && selectedElements.length > 0) {
+              const colorName = e.target.dataset.color;
+              selectedElements.forEach((el) => setElementColor(el, colorName));
+              saveState();
+              redrawCanvas();
+              return;
+            }
+            const action = e.target && e.target.dataset ? e.target.dataset.action : null;
+            if (!action) return;
+            if (action === "fit-view") fitDrawingToView();
+            else if (action === "reset-view") { viewport = { x: 0, y: 0, zoom: 1 }; redrawCanvas(); }
+            else if (action === "rotate-selected") rotateSelected();
+            else if (action === "duplicate-selected") copySelected();
+            else if (action === "delete-selected") deleteSelected();
+            else if (action === "reset-associated-text" && selectedElements.length === 1) {
+              resetAssociatedTextPositions(selectedElements[0]);
+              saveState();
+              redrawCanvas();
+            }
+            else if (action === "apply-path-command" && selectedElements.length === 1) {
+              const el = selectedElements[0];
+              const textarea = inspectorPanel.querySelector('[data-inspector="commandStr"]');
+              if (el.type === "path-wire" && textarea) {
+                try {
+                  const start = el.points && el.points[0] ? el.points[0] : { x: el.x || 0, y: el.y || 0 };
+                  const data = parsePathCommandString(start, textarea.value);
+                  Object.assign(el, data, { commandStr: textarea.value });
+                  saveState();
+                  redrawCanvas();
+                } catch (err) {
+                  setEditorMode("idle", `Path command error: ${err.message}`);
+                }
+              }
+            }
+          });
+        }
+
+
+
+        function setupFloatingDropdowns() {
+          const toolbar = document.getElementById("toolbar");
+          if (!toolbar) return;
+          const dropdowns = Array.from(toolbar.querySelectorAll(".tool-dropdown"));
+          if (!dropdowns.length) return;
+          const timers = new WeakMap();
+
+          function cancelClose(dropdown) {
+            const t = timers.get(dropdown);
+            if (t) clearTimeout(t);
+          }
+
+          function closeDropdown(dropdown) {
+            if (!dropdown) return;
+            dropdown.classList.remove("dropdown-open");
+          }
+
+          function closeAll(except = null) {
+            dropdowns.forEach((dropdown) => {
+              if (dropdown !== except) closeDropdown(dropdown);
+            });
+          }
+
+          function positionDropdown(dropdown) {
+            const trigger = dropdown.querySelector(".dropdown-trigger");
+            const menu = dropdown.querySelector(".dropdown-content");
+            if (!trigger || !menu) return;
+
+            const triggerRect = trigger.getBoundingClientRect();
+            const menuRect = menu.getBoundingClientRect();
+            const gap = 6;
+            const pad = 8;
+            const menuWidth = menuRect.width || 56;
+            const menuHeight = menuRect.height || 56;
+
+            let left = triggerRect.left + triggerRect.width / 2 - menuWidth / 2;
+            left = Math.max(pad, Math.min(left, window.innerWidth - menuWidth - pad));
+
+            let top = triggerRect.bottom + gap;
+            const fitsBelow = top + menuHeight <= window.innerHeight - pad;
+            const fitsAbove = triggerRect.top - gap - menuHeight >= pad;
+            if (!fitsBelow && fitsAbove) top = triggerRect.top - gap - menuHeight;
+            top = Math.max(pad, Math.min(top, window.innerHeight - menuHeight - pad));
+
+            menu.style.setProperty("--dropdown-left", `${Math.round(left)}px`);
+            menu.style.setProperty("--dropdown-top", `${Math.round(top)}px`);
+          }
+
+          function openDropdown(dropdown) {
+            cancelClose(dropdown);
+            closeAll(dropdown);
+            dropdown.classList.add("dropdown-open");
+            requestAnimationFrame(() => positionDropdown(dropdown));
+          }
+
+          function scheduleClose(dropdown) {
+            cancelClose(dropdown);
+            timers.set(dropdown, setTimeout(() => closeDropdown(dropdown), 160));
+          }
+
+          dropdowns.forEach((dropdown) => {
+            const trigger = dropdown.querySelector(".dropdown-trigger");
+            const menu = dropdown.querySelector(".dropdown-content");
+            dropdown.addEventListener("mouseenter", () => openDropdown(dropdown));
+            dropdown.addEventListener("mouseleave", () => scheduleClose(dropdown));
+            dropdown.addEventListener("focusin", () => openDropdown(dropdown));
+            dropdown.addEventListener("focusout", (e) => {
+              if (!dropdown.contains(e.relatedTarget)) scheduleClose(dropdown);
+            });
+            if (trigger) {
+              trigger.addEventListener("pointerdown", (e) => {
+                if (dropdown.classList.contains("dropdown-open")) {
+                  closeDropdown(dropdown);
+                } else {
+                  openDropdown(dropdown);
+                }
+                e.preventDefault();
+              });
+            }
+            if (menu) {
+              menu.addEventListener("mouseenter", () => cancelClose(dropdown));
+              menu.addEventListener("click", () => closeDropdown(dropdown));
+            }
+          });
+
+          const repositionOpen = () => dropdowns.forEach((dropdown) => {
+            if (dropdown.classList.contains("dropdown-open")) positionDropdown(dropdown);
+          });
+          window.addEventListener("resize", repositionOpen);
+          window.addEventListener("scroll", repositionOpen, true);
+          toolbar.addEventListener("scroll", repositionOpen, { passive: true });
+          document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") closeAll();
+          });
+          document.addEventListener("pointerdown", (e) => {
+            if (!e.target.closest("#toolbar .tool-dropdown")) closeAll();
+          });
+        }
+
+        setupFloatingDropdowns();
 
         document.getElementById("toolbar").addEventListener("click", (e) => {
           const target = e.target.closest("button");
@@ -1867,7 +3413,16 @@
             !target.classList.contains("dropdown-trigger")
           ) {
             selectedTool = target.id.replace("tool-", "");
+            cancelTransientAction();
             if (selectedTool !== "select") selectedElements = [];
+            setEditorMode(
+              "idle",
+              selectedTool === "wire"
+                ? "Wire: drag from terminal to terminal. Auto corner routing is active; hold Shift for direct line."
+                : selectedTool === "path-wire"
+                ? "Path Wire: click start point, then enter h/v/box/triangle/circle commands."
+                : "Ready."
+            );
           } else if (target.id === "undoBtn") undo();
           else if (target.id === "redoBtn") redo();
           else if (target.id === "copyBtn") copySelected();
@@ -1884,6 +3439,20 @@
             document.activeElement.tagName === "TEXTAREA"
           )
             return;
+          if (e.code === "Space") {
+            e.preventDefault();
+            isSpaceDown = true;
+            if (canvasPane) canvasPane.classList.add("panning");
+            return;
+          }
+          if (e.key === "Escape") {
+            e.preventDefault();
+            cancelTransientAction();
+            selectedTool = "select";
+            setEditorMode("idle", "Cancelled. Select tool active.");
+            redrawCanvas();
+            return;
+          }
           if (e.key === "Shift") isShiftDown = true;
           else if (e.altKey && e.key.toLowerCase() === "c") {
             e.preventDefault();
@@ -1935,16 +3504,24 @@
                 }
                 break;
               case "w":
+                cancelTransientAction();
                 selectedTool = "wire";
+                setEditorMode("idle", "Wire: drag from terminal to terminal. Auto corner routing is active; hold Shift for direct line.");
                 break;
               case "p":
+                cancelTransientAction();
                 selectedTool = "path-wire";
+                setEditorMode("idle", "Path Wire: click start point, then enter h/v/box/triangle/circle commands.");
                 break;
               case "s":
+                cancelTransientAction();
                 selectedTool = "select";
+                setEditorMode("idle", "Select tool active.");
                 break;
               case "t":
+                cancelTransientAction();
                 selectedTool = "text";
+                setEditorMode("idle", "Text tool active. Click canvas to add text or equation-like label.");
                 break;
             }
           }
@@ -1956,9 +3533,16 @@
             isShiftDown = false;
             redrawCanvas();
           }
+          if (e.code === "Space") {
+            isSpaceDown = false;
+            if (!isPanning && canvasPane) canvasPane.classList.remove("panning", "active");
+          }
         });
         window.addEventListener("blur", () => {
           isShiftDown = false;
+          isSpaceDown = false;
+          isPanning = false;
+          if (canvasPane) canvasPane.classList.remove("panning", "active");
         });
         fileInput.addEventListener("change", handleFileLoad);
 
@@ -1974,8 +3558,8 @@
               const newImage = {
                 id: nextId++,
                 type: "image",
-                x: snapToGrid(canvas.width / 2),
-                y: snapToGrid(canvas.height / 2),
+                x: snapToGrid(getViewWidth() / 2),
+                y: snapToGrid(getViewHeight() / 2),
                 width: img.width,
                 height: img.height,
                 img: img,
@@ -2080,33 +3664,71 @@
 
         function copySelected() {
           if (selectedElements.length === 0) return;
-          const newSelection = [];
           const offset = gridSize;
+          const originalSelectedIds = new Set(selectedElements.map((el) => el.id));
+          const expanded = [...selectedElements];
           selectedElements.forEach((el) => {
+            if (isComponentElement(el)) {
+              getAssociatedTextElements(el).forEach((textEl) => {
+                if (!originalSelectedIds.has(textEl.id) && !expanded.some((item) => item.id === textEl.id)) {
+                  expanded.push(textEl);
+                }
+              });
+            }
+          });
+
+          const idMap = new Map();
+          const newSelection = [];
+          const newElements = [];
+          expanded.forEach((el) => {
             const newEl = JSON.parse(
               JSON.stringify(el, (key, value) =>
                 key === "img" ? undefined : value
               )
             );
+            const oldId = newEl.id;
             newEl.id = nextId++;
+            idMap.set(oldId, newEl.id);
             if (newEl.type === "wire") {
               newEl.start.x += offset;
               newEl.start.y += offset;
               newEl.end.x += offset;
               newEl.end.y += offset;
+              if (newEl.points) {
+                newEl.points.forEach((p) => {
+                  p.x += offset;
+                  p.y += offset;
+                });
+              }
             } else if (newEl.type === "path-wire") {
               newEl.points.forEach((p) => {
                 p.x += offset;
                 p.y += offset;
               });
             } else {
-              newEl.x += offset;
-              newEl.y += offset;
+              if (newEl.x !== undefined) newEl.x += offset;
+              if (newEl.y !== undefined) newEl.y += offset;
             }
-            circuitElements.push(newEl);
-            newSelection.push(newEl);
+            newElements.push(newEl);
+            if (originalSelectedIds.has(oldId)) newSelection.push(newEl);
           });
-          selectedElements = newSelection;
+
+          newElements.forEach((newEl) => {
+            if (newEl.type === "text" && newEl.parentId !== undefined && idMap.has(newEl.parentId)) {
+              newEl.parentId = idMap.get(newEl.parentId);
+            }
+            if (isComponentElement(newEl)) {
+              if (newEl.labelTextId !== undefined && idMap.has(newEl.labelTextId)) {
+                newEl.labelTextId = idMap.get(newEl.labelTextId);
+              }
+              if (newEl.valueTextId !== undefined && idMap.has(newEl.valueTextId)) {
+                newEl.valueTextId = idMap.get(newEl.valueTextId);
+              }
+            }
+          });
+
+          circuitElements.push(...newElements);
+          selectedElements = newSelection.length ? newSelection : newElements;
 
           loadElements(circuitElements, false).then(() => {
             saveState();
@@ -2124,7 +3746,7 @@
               el.type !== "junction" &&
               el.type !== "open_terminal"
             ) {
-              el.rotation = (el.rotation + 45) % 360;
+              el.rotation = (el.rotation + 90) % 360;
             }
           });
           saveState();
@@ -2133,24 +3755,38 @@
         function deleteSelected() {
           if (selectedElements.length === 0) return;
           const selectedIds = new Set(selectedElements.map((el) => el.id));
-          circuitElements = circuitElements.filter(
-            (el) => !selectedIds.has(el.id)
+          const selectedComponentIds = new Set(
+            selectedElements.filter((el) => isComponentElement(el)).map((el) => el.id)
           );
+          circuitElements = circuitElements.filter((el) => {
+            if (selectedIds.has(el.id)) return false;
+            if (el.type === "text" && selectedComponentIds.has(el.parentId)) return false;
+            return true;
+          });
           selectedElements = [];
           saveState();
           redrawCanvas();
         }
 
         function redrawCanvas() {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          syncCanvasSize();
+          const dpr = getCanvasDpr();
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx.clearRect(0, 0, getViewWidth(), getViewHeight());
           drawGrid();
+
+          ctx.save();
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx.translate(viewport.x, viewport.y);
+          ctx.scale(viewport.zoom, viewport.zoom);
+
           circuitElements.forEach((el) => drawElement(el));
           if (hoveredWireSegment) {
             ctx.save();
             ctx.strokeStyle = "#007bff";
-            ctx.lineWidth = 2.5;
+            ctx.lineWidth = Math.max(1.4, 2.5 / viewport.zoom);
             ctx.shadowColor = "rgba(0, 123, 255, 0.7)";
-            ctx.shadowBlur = 8;
+            ctx.shadowBlur = 8 / viewport.zoom;
             ctx.lineCap = "round";
             ctx.beginPath();
             ctx.moveTo(hoveredWireSegment.p1.x, hoveredWireSegment.p1.y);
@@ -2177,19 +3813,20 @@
           if (isMarqueeSelecting && marqueeStartPoint) {
             drawMarquee(marqueeStartPoint, currentMousePos);
           }
+
+          ctx.restore();
           updateToolbar();
+          updateInspector();
+          updateZoomHud();
         }
 
         // --- All the rest of your original functions go here ---
         // I have included them all below for a complete file.
 
         function resizeCanvas(newWidth, newHeight) {
-          if (canvas.width >= newWidth && canvas.height >= newHeight) return;
-          const finalWidth = Math.max(canvas.width, newWidth);
-          const finalHeight = Math.max(canvas.height, newHeight);
-          canvas.width = finalWidth;
-          canvas.height = finalHeight;
-          redrawCanvas();
+          // With viewport pan/zoom the drawing space is effectively infinite.
+          // Keep the canvas matched to the visible pane instead of growing it.
+          syncCanvasSize();
         }
 
         function addBulkRow(name = "", qty = 1, label = "Y") {
@@ -2291,7 +3928,7 @@
 
           const componentsPerRow = Math.max(
             1,
-            Math.floor((canvas.width - placementMargin * 2) / placeStepX)
+            Math.floor((getViewWidth() - placementMargin * 2) / placeStepX)
           );
           const requiredRows = Math.ceil(
             totalComponentCount / componentsPerRow
@@ -2329,19 +3966,15 @@
                   "_{" +
                   autoLabelCounters[req.shortName]++ +
                   "}";
-                const newLabel = {
-                  id: nextId++,
-                  type: "text",
-                  text: labelText,
-                  x: placeX,
-                  y: placeY + 45,
-                  rotation: 0,
-                  isItalic: true,
-                };
+                const newLabel = makeAssociatedTextForComponent(
+                  newComp,
+                  "label",
+                  labelText
+                );
                 componentsToAdd.push(newLabel);
               }
               placeX += placeStepX;
-              if (placeX > canvas.width - placementMargin) {
+              if (placeX > getViewWidth() - placementMargin) {
                 placeX = placementStart.x;
                 placeY += placeStepY;
               }
@@ -2394,7 +4027,7 @@
           };
           const requiredHeight =
             placementStart.y + textItems.length * verticalSpacing;
-          resizeCanvas(canvas.width, requiredHeight);
+          resizeCanvas(getViewWidth(), requiredHeight);
 
           let placeY = placementStart.y;
           const textsToAdd = [];
@@ -2568,24 +4201,12 @@
 
                 if (compLabelNum) {
                   const labelPrefix = componentInfo.prefix;
-                  let labelPos = { x: center.x, y: center.y };
-                  const isPlacedVertically =
-                    (rotation === 0 && isIntrinsicallyVertical) ||
-                    (rotation === 90 && !isIntrinsicallyVertical);
-                  if (isPlacedVertically) {
-                    labelPos.x += intrinsicCrossDim / 2 + 25;
-                  } else {
-                    labelPos.y += intrinsicCrossDim / 2 + 25;
-                  }
-                  elementsToAdd.push({
-                    id: nextId++,
-                    type: "text",
-                    text: `${labelPrefix}_{${compLabelNum}}`,
-                    x: labelPos.x,
-                    y: labelPos.y,
-                    rotation: 0,
-                    isItalic: true,
-                  });
+                  const labelEl = makeAssociatedTextForComponent(
+                    newComp,
+                    "label",
+                    `${labelPrefix}_{${compLabelNum}}`
+                  );
+                  elementsToAdd.push(labelEl);
                 }
                 currentPos = endPos;
                 isFirstElement = false;
@@ -2758,13 +4379,125 @@
           });
         }
 
+        function safeEvaluateMathExpression(expression) {
+          const source = String(expression || "").trim();
+          if (!source) throw new Error("Empty expression");
+          const normalized = source
+            .replace(/\pi\b|π/g, "pi")
+            .replace(/\mu\b|μ/g, "1e-6")
+            .replace(/\Omega\b|Ω/g, "");
+          if (!/^[0-9eE+\-*/%.(),\s_a-zA-Z]+$/.test(normalized)) {
+            throw new Error("Unsupported character");
+          }
+
+          const tokens = normalized.match(
+            /sqrt|sin|cos|tan|log10|log|ln|exp|abs|min|max|pi|e|\d*\.\d+(?:e[+\-]?\d+)?|\d+(?:e[+\-]?\d+)?|\*\*|[+\-*/%^(),]/gi
+          );
+          if (!tokens || tokens.join("").replace(/\s/g, "") !== normalized.replace(/\s/g, "")) {
+            throw new Error("Unsupported token");
+          }
+
+          let i = 0;
+          const peek = () => tokens[i];
+          const take = () => tokens[i++];
+          const expect = (token) => {
+            if (peek() !== token) throw new Error(`Expected ${token}`);
+            take();
+          };
+          const funcs = {
+            sqrt: Math.sqrt,
+            sin: Math.sin,
+            cos: Math.cos,
+            tan: Math.tan,
+            log: Math.log10,
+            log10: Math.log10,
+            ln: Math.log,
+            exp: Math.exp,
+            abs: Math.abs,
+            min: Math.min,
+            max: Math.max,
+          };
+
+          function parseExpression() {
+            let value = parseTerm();
+            while (peek() === "+" || peek() === "-") {
+              const op = take();
+              const rhs = parseTerm();
+              value = op === "+" ? value + rhs : value - rhs;
+            }
+            return value;
+          }
+          function parseTerm() {
+            let value = parsePower();
+            while (peek() === "*" || peek() === "/" || peek() === "%") {
+              const op = take();
+              const rhs = parsePower();
+              if (op === "*") value *= rhs;
+              else if (op === "/") value /= rhs;
+              else value %= rhs;
+            }
+            return value;
+          }
+          function parsePower() {
+            let value = parseUnary();
+            while (peek() === "**" || peek() === "^") {
+              take();
+              value = Math.pow(value, parseUnary());
+            }
+            return value;
+          }
+          function parseUnary() {
+            if (peek() === "+") {
+              take();
+              return parseUnary();
+            }
+            if (peek() === "-") {
+              take();
+              return -parseUnary();
+            }
+            return parsePrimary();
+          }
+          function parsePrimary() {
+            const token = take();
+            if (token === undefined) throw new Error("Unexpected end");
+            if (token === "(") {
+              const value = parseExpression();
+              expect(")");
+              return value;
+            }
+            const lower = token.toLowerCase();
+            if (lower === "pi") return Math.PI;
+            if (lower === "e") return Math.E;
+            if (funcs[lower]) {
+              expect("(");
+              const args = [];
+              if (peek() !== ")") {
+                args.push(parseExpression());
+                while (peek() === ",") {
+                  take();
+                  args.push(parseExpression());
+                }
+              }
+              expect(")");
+              return funcs[lower](...args);
+            }
+            const numeric = Number(token);
+            if (Number.isFinite(numeric)) return numeric;
+            throw new Error(`Unknown token ${token}`);
+          }
+
+          const result = parseExpression();
+          if (i !== tokens.length) throw new Error("Unexpected trailing token");
+          if (!Number.isFinite(result)) throw new Error("Non-finite result");
+          return result;
+        }
+
         function evaluateExpressions(text) {
           if (!text || !text.includes("&")) return text;
           const regex = /&(.+?)&/g;
           return text.replace(regex, (match, expression) => {
             try {
-              const result = new Function("return " + expression)();
-              if (typeof result !== "number" || !isFinite(result)) return match;
+              const result = safeEvaluateMathExpression(expression);
               if (
                 Math.abs(result) > 1e6 ||
                 (Math.abs(result) < 1e-6 && result !== 0)
@@ -2790,7 +4523,7 @@
           } else if (el.type === "path-wire") {
             drawPathWire(el, isSelected);
           } else if (el.type === "text") {
-            drawText(el, isSelected);
+            if (isTextVisible(el)) drawText(el, isSelected);
           } else if (el.type === "image") {
             ctx.translate(el.x, el.y);
             ctx.scale(el.flipH ? -1 : 1, el.flipV ? -1 : 1);
@@ -2899,7 +4632,17 @@
         }
 
         function handleMouseDown(e) {
-          const mousePos = getMousePos(e);
+          const screenPos = getMouseScreenPos(e);
+          if (e.button === 1 || isSpaceDown) {
+            e.preventDefault();
+            isPanning = true;
+            panStartScreen = screenPos;
+            panStartViewport = { ...viewport };
+            if (canvasPane) canvasPane.classList.add("active");
+            setEditorMode("panning", "Panning canvas. Release mouse to stop.");
+            return;
+          }
+          const mousePos = screenToWorld(screenPos);
           if (e.altKey) {
             e.preventDefault();
             const newArrow = {
@@ -2936,15 +4679,23 @@
             if (clickedElement) {
               isMarqueeSelecting = false;
               isDragging = true;
+              setEditorMode("dragging-selection", "Dragging selected item(s). Release to commit.");
               dragStartPoint = mousePos;
               if (!selectedElements.some((el) => el.id === clickedElement.id)) {
                 selectedElements = [clickedElement];
               }
+              const selectedIdSetForDrag = new Set(selectedElements.map((item) => item.id));
               selectedElements.forEach((el) => {
                 const initialState = { x: el.x, y: el.y };
+                if (isComponentElement(el)) {
+                  initialState.associatedTextStates = getAssociatedTextElements(el)
+                    .filter((textEl) => !selectedIdSetForDrag.has(textEl.id))
+                    .map((textEl) => ({ id: textEl.id, x: textEl.x, y: textEl.y }));
+                }
                 if (el.type === "wire") {
                   initialState.start = { ...el.start };
                   initialState.end = { ...el.end };
+                  if (el.points) initialState.points = JSON.parse(JSON.stringify(el.points));
                 } else if (el.type === "path-wire") {
                   initialState.points = JSON.parse(JSON.stringify(el.points));
                 }
@@ -2953,12 +4704,18 @@
             } else {
               isMarqueeSelecting = true;
               isDragging = false;
+              setEditorMode("marquee-select", "Marquee select: drag a rectangle around objects.");
               marqueeStartPoint = mousePos;
               selectedElements = [];
             }
           } else if (selectedTool === "wire") {
             isDrawingWire = true;
             wireStartPoint = getSnappingPoint(mousePos.x, mousePos.y);
+            wireMouseDownPoint = mousePos;
+            setEditorMode(
+              "drawing-wire",
+              "Drawing wire: release on terminal/wire. Auto corner routing is active; hold Shift for direct line."
+            );
           } else if (selectedTool === "path-wire") {
             const startPoint = getSnappingPoint(mousePos.x, mousePos.y);
             const commandStr = prompt(
@@ -3023,6 +4780,8 @@
             if (newEl.type === "switch") newEl.state = "open";
             if (newEl.type === "spdtSwitch") newEl.state = 1;
             circuitElements.push(newEl);
+            const associatedTexts = createDefaultAssociatedTexts(newEl);
+            if (associatedTexts.length) circuitElements.push(...associatedTexts);
             selectedTool = "select";
             selectedElements = [newEl];
             needsStateSave = true;
@@ -3044,7 +4803,7 @@
             for (let i = 0; i < path.length - 1; i++) {
               const p1 = path[i];
               const p2 = path[i + 1];
-              if (distToSegment(currentMousePos, p1, p2) < snapTolerance) {
+              if (distToSegment(currentMousePos, p1, p2) < getScreenSnapTolerance()) {
                 hoveredWireSegment = { p1, p2 };
                 return;
               }
@@ -3053,7 +4812,14 @@
         }
 
         function handleMouseMove(e) {
-          currentMousePos = getMousePos(e);
+          const screenPos = getMouseScreenPos(e);
+          if (isPanning && panStartScreen && panStartViewport) {
+            viewport.x = panStartViewport.x + (screenPos.x - panStartScreen.x);
+            viewport.y = panStartViewport.y + (screenPos.y - panStartScreen.y);
+            redrawCanvas();
+            return;
+          }
+          currentMousePos = screenToWorld(screenPos);
           if (isDragging && selectedElements.length > 0 && dragStartPoint) {
             const dx = currentMousePos.x - dragStartPoint.x,
               dy = currentMousePos.y - dragStartPoint.y;
@@ -3066,6 +4832,12 @@
                   el.start.y = snapToGrid(initialState.start.y + dy);
                   el.end.x = snapToGrid(initialState.end.x + dx);
                   el.end.y = snapToGrid(initialState.end.y + dy);
+                  if (initialState.points && el.points) {
+                    el.points.forEach((p, i) => {
+                      p.x = snapToGrid(initialState.points[i].x + dx);
+                      p.y = snapToGrid(initialState.points[i].y + dy);
+                    });
+                  }
                 }
               } else if (el.type === "path-wire") {
                 if (initialState.points) {
@@ -3081,6 +4853,15 @@
                 ) {
                   el.x = snapToGrid(initialState.x + dx);
                   el.y = snapToGrid(initialState.y + dy);
+                  if (initialState.associatedTextStates) {
+                    initialState.associatedTextStates.forEach((state) => {
+                      const textEl = circuitElements.find((item) => item.id === state.id);
+                      if (textEl) {
+                        textEl.x = snapToGrid(state.x + dx);
+                        textEl.y = snapToGrid(state.y + dy);
+                      }
+                    });
+                  }
                 }
               }
             });
@@ -3090,6 +4871,13 @@
         }
 
         function handleMouseUp(e) {
+          if (isPanning) {
+            isPanning = false;
+            if (canvasPane) canvasPane.classList.remove("active");
+            setEditorMode("idle", "Ready. Wheel zooms, Space/middle-drag pans.");
+            redrawCanvas();
+            return;
+          }
           let needsStateSave = false;
           if (isMarqueeSelecting) {
             const rect = {
@@ -3107,18 +4895,31 @@
               currentMousePos.x,
               currentMousePos.y
             );
+            const dragDistance = wireMouseDownPoint
+              ? Math.hypot(
+                  currentMousePos.x - wireMouseDownPoint.x,
+                  currentMousePos.y - wireMouseDownPoint.y
+                )
+              : 0;
             if (
+              dragDistance > 2 &&
               Math.hypot(
                 endPoint.x - wireStartPoint.x,
                 endPoint.y - wireStartPoint.y
               ) > 0
             ) {
+              const points = buildAutoWirePath(
+                wireStartPoint,
+                endPoint,
+                isShiftDown
+              );
               circuitElements.push({
                 id: nextId++,
                 type: "wire",
-                start: wireStartPoint,
-                end: endPoint,
-                routing: isShiftDown ? "direct" : "manhattan",
+                start: cleanPoint(wireStartPoint),
+                end: cleanPoint(endPoint),
+                routing: isShiftDown ? "direct" : "auto",
+                points: points.map(cleanPoint),
               });
               needsStateSave = true;
             }
@@ -3129,8 +4930,10 @@
           isDrawingWire = false;
           isDragging = false;
           isMarqueeSelecting = false;
+          wireMouseDownPoint = null;
           marqueeStartPoint = null;
           dragStartPoint = null;
+          setEditorMode("idle", selectedTool === "wire" ? "Wire tool ready." : "Ready.");
           circuitElements.forEach((el) => delete el.dragInitialState);
           if (needsStateSave) saveState();
           redrawCanvas();
@@ -3231,42 +5034,257 @@
             clickedElement.type !== "open_terminal";
 
           if (isTransformableComponent) {
-            showTransformModal(clickedElement)
-              .then((transformData) => {
-                clickedElement.rotation = transformData.rotation;
-                clickedElement.flipH = transformData.flipH;
-                clickedElement.flipV = transformData.flipV;
-                if (transformData.newWidth !== undefined) {
-                  clickedElement.width = transformData.newWidth;
-                  clickedElement.height = transformData.newHeight;
-                }
-                saveState();
-                redrawCanvas();
-              })
-              .catch(() => {});
+            selectedElements = [clickedElement];
+            setEditorMode("idle", "Use the Inspector for rotation, flip, scale, color, label, and value. The old transform modal is disabled.");
+            redrawCanvas();
             return;
           }
         }
 
-        canvas.addEventListener("mousedown", handleMouseDown);
-        canvas.addEventListener("mousemove", handleMouseMove);
-        canvas.addEventListener("mouseup", handleMouseUp);
-        canvas.addEventListener("dblclick", handleDoubleClick);
-        canvas.addEventListener("mouseout", () => {
+        /* ===== Desktop + iPad unified pointer input (V1.00 Touch) =====
+           Mouse, pen, and touch now enter through Pointer Events.
+           Existing drawing logic is preserved in handleMouseDown/Move/Up. */
+        const activePointers = new Map();
+        let pinchGesture = null;
+        let suppressPointerDrawing = false;
+        let pointerDownScreen = null;
+        let lastTap = { time: 0, x: 0, y: 0 };
+
+        function pointerDistance(a, b) {
+          return Math.hypot(a.x - b.x, a.y - b.y);
+        }
+
+        function pointerMidpoint(a, b) {
+          return {
+            x: (a.x + b.x) / 2,
+            y: (a.y + b.y) / 2,
+          };
+        }
+
+        function cancelTransientPointerAction() {
           isDrawingWire = false;
           isDragging = false;
           isMarqueeSelecting = false;
+          isPanning = false;
+
+          wireMouseDownPoint = null;
+          wireStartPoint = null;
           marqueeStartPoint = null;
-          isShiftDown = false;
+          dragStartPoint = null;
+
+          circuitElements.forEach((el) => delete el.dragInitialState);
+          if (canvasPane) canvasPane.classList.remove("active");
+        }
+
+        function startPinchGesture() {
+          const pts = [...activePointers.values()];
+          if (pts.length < 2) return;
+
+          cancelTransientPointerAction();
+
+          const a = pts[0];
+          const b = pts[1];
+          pinchGesture = {
+            lastDist: pointerDistance(a, b),
+            lastMid: pointerMidpoint(a, b),
+          };
+
+          suppressPointerDrawing = true;
+          setEditorMode("panning", "Two-finger pan / pinch zoom. Release both fingers to draw again.");
+        }
+
+        function updatePinchGesture() {
+          if (!pinchGesture || activePointers.size < 2) return;
+
+          const pts = [...activePointers.values()];
+          const a = pts[0];
+          const b = pts[1];
+
+          const newDist = pointerDistance(a, b);
+          const newMid = pointerMidpoint(a, b);
+
+          if (pinchGesture.lastDist > 1) {
+            const zoomFactor = newDist / pinchGesture.lastDist;
+            zoomAtScreenPoint(newMid, zoomFactor);
+          }
+
+          viewport.x += newMid.x - pinchGesture.lastMid.x;
+          viewport.y += newMid.y - pinchGesture.lastMid.y;
+
+          pinchGesture.lastDist = newDist;
+          pinchGesture.lastMid = newMid;
+          redrawCanvas();
+        }
+
+        function maybeHandleDoubleTap(e) {
+          if (e.pointerType === "mouse") return;
+
+          const now = performance.now();
+          const p = getMouseScreenPos(e);
+          const moved = pointerDownScreen && pointerDistance(pointerDownScreen, p) > 10;
+
+          if (moved) {
+            lastTap = { time: 0, x: 0, y: 0 };
+            return;
+          }
+
+          const isDoubleTap =
+            now - lastTap.time < 350 &&
+            Math.hypot(p.x - lastTap.x, p.y - lastTap.y) < 24;
+
+          if (isDoubleTap) {
+            lastTap = { time: 0, x: 0, y: 0 };
+            handleDoubleClick(e);
+          } else {
+            lastTap = { time: now, x: p.x, y: p.y };
+          }
+        }
+
+        function handlePointerDown(e) {
+          if (e.target !== canvas) return;
+          if (e.pointerType === "mouse" && e.button !== 0 && e.button !== 1) return;
+
+          if (e.pointerType !== "mouse") e.preventDefault();
+          canvas.setPointerCapture?.(e.pointerId);
+
+          const p = getMouseScreenPos(e);
+          activePointers.set(e.pointerId, p);
+          pointerDownScreen = p;
+
+          if (activePointers.size === 2 && e.pointerType !== "mouse") {
+            startPinchGesture();
+            return;
+          }
+
+          if (activePointers.size > 1 || suppressPointerDrawing) return;
+          handleMouseDown(e);
+        }
+
+        function handlePointerMove(e) {
+          const p = getMouseScreenPos(e);
+
+          /* Desktop hover preview when no button is pressed. */
+          if (!activePointers.has(e.pointerId)) {
+            if (e.pointerType === "mouse") handleMouseMove(e);
+            return;
+          }
+
+          activePointers.set(e.pointerId, p);
+
+          if (pinchGesture && activePointers.size >= 2) {
+            e.preventDefault();
+            updatePinchGesture();
+            return;
+          }
+
+          if (activePointers.size === 1 && !suppressPointerDrawing) {
+            if (e.pointerType !== "mouse") e.preventDefault();
+            handleMouseMove(e);
+          }
+        }
+
+        function handlePointerUp(e) {
+          const wasPinching = !!pinchGesture || suppressPointerDrawing;
+          activePointers.delete(e.pointerId);
+          canvas.releasePointerCapture?.(e.pointerId);
+
+          if (wasPinching) {
+            if (activePointers.size < 2) {
+              pinchGesture = null;
+              setEditorMode("idle", "Ready. One finger draws/moves. Two fingers pan/pinch zoom.");
+            }
+            if (activePointers.size === 0) suppressPointerDrawing = false;
+            redrawCanvas();
+            return;
+          }
+
+          handleMouseUp(e);
+          maybeHandleDoubleTap(e);
+
+          if (activePointers.size === 0) suppressPointerDrawing = false;
+        }
+
+        function handlePointerCancel(e) {
+          activePointers.delete(e.pointerId);
+          if (activePointers.size === 0) {
+            pinchGesture = null;
+            suppressPointerDrawing = false;
+            cancelTransientPointerAction();
+            setEditorMode("idle", "Ready. One finger draws/moves. Two fingers pan/pinch zoom.");
+            redrawCanvas();
+          }
+        }
+
+        canvas.addEventListener("pointerdown", handlePointerDown, { passive: false });
+        canvas.addEventListener("pointermove", handlePointerMove, { passive: false });
+        canvas.addEventListener("pointerup", handlePointerUp, { passive: false });
+        canvas.addEventListener("pointercancel", handlePointerCancel, { passive: false });
+        canvas.addEventListener("lostpointercapture", handlePointerCancel, { passive: false });
+
+        canvas.addEventListener("pointerleave", (e) => {
+          if (activePointers.size > 0) return;
+          if (e.pointerType !== "mouse") return;
           hoveredWireSegment = null;
           redrawCanvas();
         });
 
-        function getMousePos(e) {
+        /* Keep desktop double-click. Touch receives double-tap in maybeHandleDoubleTap(). */
+        canvas.addEventListener("dblclick", (e) => {
+          if (e.pointerType && e.pointerType !== "mouse") return;
+          handleDoubleClick(e);
+        });
+
+        /* Keep desktop trackpad/mouse-wheel zoom. Touch receives pinch zoom above. */
+        canvas.addEventListener("wheel", (e) => {
+          e.preventDefault();
+          const factor = Math.exp(-e.deltaY * 0.0015);
+          zoomAtScreenPoint(getMouseScreenPos(e), factor);
+          redrawCanvas();
+        }, { passive: false });
+
+        canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+        if (zoomInBtn) zoomInBtn.addEventListener("click", () => {
+          zoomAtScreenPoint({ x: getViewWidth() / 2, y: getViewHeight() / 2 }, 1.18);
+          redrawCanvas();
+        });
+        if (zoomOutBtn) zoomOutBtn.addEventListener("click", () => {
+          zoomAtScreenPoint({ x: getViewWidth() / 2, y: getViewHeight() / 2 }, 1 / 1.18);
+          redrawCanvas();
+        });
+        if (zoomFitBtn) zoomFitBtn.addEventListener("click", fitDrawingToView);
+        window.addEventListener("resize", () => {
+          syncCanvasSize();
+          redrawCanvas();
+        });
+
+        function getMouseScreenPos(e) {
+          const rect = canvas.getBoundingClientRect();
           return {
-            x: e.clientX - canvas.getBoundingClientRect().left,
-            y: e.clientY - canvas.getBoundingClientRect().top,
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
           };
+        }
+
+        function screenToWorld(p) {
+          return {
+            x: (p.x - viewport.x) / viewport.zoom,
+            y: (p.y - viewport.y) / viewport.zoom,
+          };
+        }
+
+        function worldToScreen(p) {
+          return {
+            x: p.x * viewport.zoom + viewport.x,
+            y: p.y * viewport.zoom + viewport.y,
+          };
+        }
+
+        function getMousePos(e) {
+          return screenToWorld(getMouseScreenPos(e));
+        }
+
+        function getScreenSnapTolerance() {
+          return snapTolerance / Math.max(viewport.zoom, 0.001);
         }
         function snapToGrid(val) {
           return Math.round(val / (gridSize / 4)) * (gridSize / 4);
@@ -3280,7 +5298,7 @@
             for (let i = 0; i < path.length - 1; i++) {
               const p1 = path[i];
               const p2 = path[i + 1];
-              if (distToSegment(pos, p1, p2) < snapTolerance) {
+              if (distToSegment(pos, p1, p2) < getScreenSnapTolerance()) {
                 const projectedPoint = projectPointOnSegment(pos, p1, p2);
                 const snappedX =
                   Math.round(projectedPoint.x / fineGridSize) * fineGridSize;
@@ -3294,10 +5312,8 @@
         }
 
         function getSnappingPoint(x, y) {
-          if (selectedTool === "wire" || selectedTool === "path-wire") {
-            const segmentSnap = getWireSegmentSnapPoint({ x, y });
-            if (segmentSnap) return segmentSnap;
-          }
+          // Terminal priority first. This avoids the common annoyance where a
+          // wire segment near a component steals the snap from the true symbol pin.
           for (const el of circuitElements) {
             if (
               el.type === "wire" ||
@@ -3310,22 +5326,25 @@
               continue;
             const terminals = getAbsoluteTerminals(el);
             for (const term of terminals) {
-              if (Math.hypot(x - term.x, y - term.y) < snapTolerance)
-                return { x: term.x, y: term.y, ownerId: el.id };
+              if (Math.hypot(x - term.x, y - term.y) < getScreenSnapTolerance())
+                return { ...term };
             }
           }
           for (const el of circuitElements) {
             if (el.type === "junction" || el.type === "open_terminal") {
-              if (Math.hypot(x - el.x, y - el.y) < snapTolerance)
-                return { x: el.x, y: el.y, ownerId: el.id };
+              if (Math.hypot(x - el.x, y - el.y) < getScreenSnapTolerance())
+                return { x: el.x, y: el.y, ownerId: el.id, ownerType: el.type };
             }
           }
           for (const el of circuitElements) {
             if (el.type === "wire") {
-              if (Math.hypot(x - el.start.x, y - el.start.y) < snapTolerance)
-                return { x: el.start.x, y: el.start.y };
-              if (Math.hypot(x - el.end.x, y - el.end.y) < snapTolerance)
-                return { x: el.end.x, y: el.end.y };
+              const path = getWirePath(el);
+              const start = path[0];
+              const end = path[path.length - 1];
+              if (Math.hypot(x - start.x, y - start.y) < getScreenSnapTolerance())
+                return { ...start };
+              if (Math.hypot(x - end.x, y - end.y) < getScreenSnapTolerance())
+                return { ...end };
             } else if (
               el.type === "path-wire" &&
               el.points &&
@@ -3333,11 +5352,15 @@
             ) {
               const start = el.points[0];
               const end = el.points[el.points.length - 1];
-              if (Math.hypot(x - start.x, y - start.y) < snapTolerance)
+              if (Math.hypot(x - start.x, y - start.y) < getScreenSnapTolerance())
                 return { ...start };
-              if (Math.hypot(x - end.x, y - end.y) < snapTolerance)
+              if (Math.hypot(x - end.x, y - end.y) < getScreenSnapTolerance())
                 return { ...end };
             }
+          }
+          if (selectedTool === "wire" || selectedTool === "path-wire") {
+            const segmentSnap = getWireSegmentSnapPoint({ x, y });
+            if (segmentSnap) return segmentSnap;
           }
           return { x: snapToGrid(x), y: snapToGrid(y), ownerId: null };
         }
@@ -3354,14 +5377,25 @@
           const cos = Math.cos(angle);
           const sin = Math.sin(angle);
 
-          return defaultData.terminals.map((t) => {
+          return defaultData.terminals.map((t, terminalIndex) => {
             const scaledTermX = t.x * scale;
             const scaledTermY = t.y * scale;
             const flippedX = scaledTermX * flipScaleX;
             const flippedY = scaledTermY * flipScaleY;
             const rotatedX = flippedX * cos - flippedY * sin;
             const rotatedY = flippedX * sin + flippedY * cos;
-            return { x: el.x + rotatedX, y: el.y + rotatedY };
+            const mag = Math.hypot(rotatedX, rotatedY) || 1;
+            return {
+              x: el.x + rotatedX,
+              y: el.y + rotatedY,
+              ownerId: el.id,
+              ownerType: el.type,
+              terminalIndex,
+              dir: {
+                x: Math.abs(rotatedX) < 1e-9 ? 0 : rotatedX / mag,
+                y: Math.abs(rotatedY) < 1e-9 ? 0 : rotatedY / mag,
+              },
+            };
           });
         }
 
@@ -3369,7 +5403,7 @@
           for (let i = circuitElements.length - 1; i >= 0; i--) {
             const el = circuitElements[i];
             if (el.type === "junction" || el.type === "open_terminal") {
-              if (Math.hypot(x - el.x, y - el.y) < snapTolerance) return el;
+              if (Math.hypot(x - el.x, y - el.y) < getScreenSnapTolerance()) return el;
             }
           }
           for (let i = circuitElements.length - 1; i >= 0; i--) {
@@ -3382,6 +5416,7 @@
             )
               continue;
             if (el.type === "text") {
+              if (!isTextVisible(el)) continue;
               const { width, height } = measureParsedText(el);
               const padding = 4;
               if (
@@ -3454,7 +5489,7 @@
           const path =
             wire.type === "wire" ? getWirePath(wire) : wire.points || [];
           for (let i = 0; i < path.length - 1; i++) {
-            if (distToSegment(point, path[i], path[i + 1]) < snapTolerance)
+            if (distToSegment(point, path[i], path[i + 1]) < getScreenSnapTolerance())
               return true;
           }
           return false;
@@ -3462,15 +5497,13 @@
 
         function isElementInRect(el, rect) {
           if (el.type === "wire") {
-            return (
-              el.start.x >= rect.x1 &&
-              el.start.x <= rect.x2 &&
-              el.start.y >= rect.y1 &&
-              el.start.y <= rect.y2 &&
-              el.end.x >= rect.x1 &&
-              el.end.x <= rect.x2 &&
-              el.end.y >= rect.y1 &&
-              el.end.y <= rect.y2
+            const pts = el.points || [el.start, el.end];
+            return pts.every(
+              (p) =>
+                p.x >= rect.x1 &&
+                p.x <= rect.x2 &&
+                p.y >= rect.y1 &&
+                p.y <= rect.y2
             );
           }
           if (el.type === "path-wire" && el.points) {
@@ -3482,6 +5515,7 @@
                 p.y <= rect.y2
             );
           }
+          if (el.type === "text" && !isTextVisible(el)) return false;
           return (
             el.x >= rect.x1 &&
             el.x <= rect.x2 &&
@@ -3490,19 +5524,129 @@
           );
         }
 
+        function getViewWidth() {
+          return canvas.__logicalWidth || Math.max(320, Math.floor(canvas.getBoundingClientRect().width || canvas.clientWidth || 1000));
+        }
+        function getViewHeight() {
+          return canvas.__logicalHeight || Math.max(260, Math.floor(canvas.getBoundingClientRect().height || canvas.clientHeight || 700));
+        }
+        function getCanvasDpr() {
+          return canvas.__dpr || 1;
+        }
+        function syncCanvasSize() {
+          if (!canvasPane) return;
+          const rect = canvasPane.getBoundingClientRect();
+          const width = Math.max(320, Math.floor(rect.width));
+          const height = Math.max(260, Math.floor(rect.height));
+          const dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+          const pixelWidth = Math.round(width * dpr);
+          const pixelHeight = Math.round(height * dpr);
+          canvas.__logicalWidth = width;
+          canvas.__logicalHeight = height;
+          canvas.__dpr = dpr;
+          canvas.style.width = width + "px";
+          canvas.style.height = height + "px";
+          if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+            canvas.width = pixelWidth;
+            canvas.height = pixelHeight;
+          }
+        }
+
+        function updateZoomHud() {
+          if (zoomLabel) zoomLabel.textContent = `${Math.round(viewport.zoom * 100)}%`;
+        }
+
+        function zoomAtScreenPoint(screenPoint, factor) {
+          const oldZoom = viewport.zoom;
+          const worldBefore = screenToWorld(screenPoint);
+          viewport.zoom = Math.max(0.25, Math.min(4, viewport.zoom * factor));
+          const actualFactor = viewport.zoom / oldZoom;
+          viewport.x = screenPoint.x - worldBefore.x * viewport.zoom;
+          viewport.y = screenPoint.y - worldBefore.y * viewport.zoom;
+          updateZoomHud();
+          return actualFactor;
+        }
+
+        function fitDrawingToView() {
+          syncCanvasSize();
+          const bounds = getDrawingBounds();
+          if (!bounds) {
+            viewport = { x: getViewWidth() / 2, y: getViewHeight() / 2, zoom: 1 };
+            redrawCanvas();
+            return;
+          }
+          const pad = 90;
+          const bw = Math.max(40, bounds.maxX - bounds.minX);
+          const bh = Math.max(40, bounds.maxY - bounds.minY);
+          const z = Math.max(0.25, Math.min(3, Math.min((getViewWidth() - pad * 2) / bw, (getViewHeight() - pad * 2) / bh)));
+          viewport.zoom = z;
+          viewport.x = getViewWidth() / 2 - ((bounds.minX + bounds.maxX) / 2) * z;
+          viewport.y = getViewHeight() / 2 - ((bounds.minY + bounds.maxY) / 2) * z;
+          redrawCanvas();
+        }
+
+        function getDrawingBounds() {
+          if (!circuitElements.length) return null;
+          let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+          const add = (x, y, pad = 40) => {
+            minX = Math.min(minX, x - pad);
+            minY = Math.min(minY, y - pad);
+            maxX = Math.max(maxX, x + pad);
+            maxY = Math.max(maxY, y + pad);
+          };
+          circuitElements.forEach((el) => {
+            if (el.type === "wire") {
+              getWirePath(el).forEach((p) => add(p.x, p.y, 12));
+            } else if (el.type === "path-wire" && el.points) {
+              el.points.forEach((p) => add(p.x, p.y, 12));
+            } else if (el.type === "text") {
+              if (!isTextVisible(el)) return;
+              const m = measureParsedText(el);
+              add(el.x, el.y, Math.max(m.width, m.height) / 2 + 12);
+            } else if (el.type === "image" || el.type === "latex") {
+              add(el.x, el.y, Math.max(el.width || 80, el.height || 40) / 2 + 16);
+            } else {
+              const d = getDimensionsAndScale(el);
+              add(el.x || 0, el.y || 0, Math.max(d.width || 60, d.height || 40) / 2 + 30);
+            }
+          });
+          if (!Number.isFinite(minX)) return null;
+          return { minX, minY, maxX, maxY };
+        }
+
         function drawGrid() {
-          ctx.strokeStyle = "#e9ecef";
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          for (let x = 0; x <= canvas.width; x += gridSize) {
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, canvas.height);
-          }
-          for (let y = 0; y <= canvas.height; y += gridSize) {
-            ctx.moveTo(0, y);
-            ctx.lineTo(canvas.width, y);
-          }
-          ctx.stroke();
+          const minor = gridSize * viewport.zoom;
+          const major = gridSize * 5 * viewport.zoom;
+          const w = getViewWidth();
+          const h = getViewHeight();
+          ctx.save();
+          ctx.setTransform(getCanvasDpr(), 0, 0, getCanvasDpr(), 0, 0);
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, w, h);
+
+          const drawLines = (step, color, width) => {
+            if (step < 4) return;
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.beginPath();
+            const ox = ((viewport.x % step) + step) % step;
+            const oy = ((viewport.y % step) + step) % step;
+            for (let x = ox; x <= w; x += step) {
+              const xx = Math.round(x) + 0.5;
+              ctx.moveTo(xx, 0);
+              ctx.lineTo(xx, h);
+            }
+            for (let y = oy; y <= h; y += step) {
+              const yy = Math.round(y) + 0.5;
+              ctx.moveTo(0, yy);
+              ctx.lineTo(w, yy);
+            }
+            ctx.stroke();
+          };
+
+          drawLines(minor, "#edf1f7", 1);
+          drawLines(major, "#d8e0ec", 1.1);
+          ctx.restore();
         }
 
         function drawSelection() {
@@ -3517,6 +5661,7 @@
             } else if (el.type === "path-wire") {
               drawPathWire(el, true);
             } else if (el.type === "text") {
+              if (!isTextVisible(el)) { ctx.restore(); return; }
               const { width, height } = measureParsedText(el);
               const padding = 4;
               ctx.strokeRect(
@@ -3571,12 +5716,89 @@
           ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
           ctx.fill();
         }
+        function cleanPoint(point) {
+          return {
+            x: point.x,
+            y: point.y,
+            ...(point.ownerId !== undefined && point.ownerId !== null
+              ? { ownerId: point.ownerId }
+              : {}),
+            ...(point.ownerType ? { ownerType: point.ownerType } : {}),
+            ...(point.terminalIndex !== undefined
+              ? { terminalIndex: point.terminalIndex }
+              : {}),
+            ...(point.dir ? { dir: { x: point.dir.x, y: point.dir.y } } : {}),
+          };
+        }
+
+        function compactPath(points) {
+          const compact = [];
+          points.forEach((p) => {
+            if (!p) return;
+            const last = compact[compact.length - 1];
+            if (!last || Math.hypot(last.x - p.x, last.y - p.y) > 0.01) {
+              compact.push(p);
+            }
+          });
+          return compact;
+        }
+
+        function snapPointToFineGrid(p) {
+          return {
+            ...p,
+            x: Math.round(p.x / fineGridSize) * fineGridSize,
+            y: Math.round(p.y / fineGridSize) * fineGridSize,
+          };
+        }
+
+        function dominantAxisFromDir(dir, fallbackHorizontal = true) {
+          if (!dir) return fallbackHorizontal ? "h" : "v";
+          return Math.abs(dir.x) >= Math.abs(dir.y) ? "h" : "v";
+        }
+
+        function offsetFromTerminal(point, distance) {
+          if (!point.dir) return { x: point.x, y: point.y };
+          return snapPointToFineGrid({
+            x: point.x + point.dir.x * distance,
+            y: point.y + point.dir.y * distance,
+          });
+        }
+
+        function routeBetweenOrthogonal(a, b, firstAxis) {
+          if (Math.abs(a.x - b.x) < 0.01 || Math.abs(a.y - b.y) < 0.01) {
+            return [a, b];
+          }
+          const corner =
+            firstAxis === "h" ? { x: b.x, y: a.y } : { x: a.x, y: b.y };
+          return [a, snapPointToFineGrid(corner), b];
+        }
+
+        function buildAutoWirePath(start, end, forceDirect = false) {
+          const s = cleanPoint(start);
+          const e = cleanPoint(end);
+          if (forceDirect || Math.abs(s.x - e.x) < 0.01 || Math.abs(s.y - e.y) < 0.01) {
+            return compactPath([s, e]);
+          }
+
+          const terminalStub = gridSize;
+          const sStub = offsetFromTerminal(s, terminalStub);
+          const eStub = offsetFromTerminal(e, terminalStub);
+          const startAxis = dominantAxisFromDir(
+            s.dir,
+            Math.abs(e.x - s.x) >= Math.abs(e.y - s.y)
+          );
+          const between = routeBetweenOrthogonal(sStub, eStub, startAxis);
+          return compactPath([s, ...between, e]).map(snapPointToFineGrid);
+        }
+
         function getWirePath(wire) {
-          return wire.routing === "direct"
-            ? [wire.start, wire.end]
-            : [wire.start, { x: wire.start.x, y: wire.end.y }, wire.end];
+          if (wire.points && wire.points.length >= 2) return wire.points;
+          if (wire.routing === "direct") return [wire.start, wire.end];
+          if (wire.routing === "auto") return buildAutoWirePath(wire.start, wire.end, false);
+          return [wire.start, { x: wire.start.x, y: wire.end.y }, wire.end];
         }
         function drawWireFromPath(path) {
+          if (!path || path.length < 2) return;
           ctx.beginPath();
           ctx.moveTo(path[0].x, path[0].y);
           for (let i = 1; i < path.length; i++) {
@@ -3592,13 +5814,7 @@
           ctx.save();
           setDrawingStyle(true);
           ctx.setLineDash([4, 4]);
-          drawWireFromPath(
-            getWirePath({
-              start,
-              end,
-              routing: isShiftDown ? "direct" : "manhattan",
-            })
-          );
+          drawWireFromPath(buildAutoWirePath(start, end, isShiftDown));
           ctx.restore();
         }
 
@@ -3610,8 +5826,8 @@
           };
           circuitElements.forEach((el) => {
             if (el.type === "wire") {
-              addPoint(el.start);
-              addPoint(el.end);
+              const pts = el.points || [el.start, el.end];
+              pts.forEach((p) => addPoint(p));
             } else if (el.type === "path-wire" && el.points) {
               el.points.forEach((p) => addPoint(p));
             } else if (el.type === "junction" || el.type === "open_terminal") {
@@ -4773,6 +6989,7 @@
             } else if (el.type === "path-wire" && el.points) {
               el.points.forEach((p) => expandBounds(p));
             } else if (el.type === "text") {
+              if (!isTextVisible(el)) { ctx.restore(); return; }
               const { width, height } = measureParsedText(el);
               minX = Math.min(minX, el.x - width / 2);
               maxX = Math.max(maxX, el.x + width / 2);
@@ -4939,9 +7156,10 @@
           );
           if (!filename) return;
           const dataToSave = {
-            version: "0.72Mom",
+            version: "0.75m-fullscreen-labels-compact-inspector-v3",
             elements: circuitElements,
             nextId: nextId,
+            viewport: viewport,
           };
           const dataStr = JSON.stringify(
             dataToSave,
@@ -5011,6 +7229,9 @@
               const data = JSON.parse(e.target.result);
               if (data && data.elements && data.nextId !== undefined) {
                 nextId = data.nextId;
+                if (data.viewport && Number.isFinite(data.viewport.zoom)) {
+                  viewport = data.viewport;
+                }
                 loadElements(data.elements).then(() => {
                   const bounds = calculateBoundingBox();
                   if (bounds) {
@@ -5076,6 +7297,8 @@
           link.click();
         }
 
+        syncCanvasSize();
+        viewport = { x: 80, y: 80, zoom: 1 };
         saveState();
         redrawCanvas();
       });
